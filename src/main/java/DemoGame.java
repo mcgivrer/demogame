@@ -1,9 +1,14 @@
+import com.google.gson.Gson;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,6 +78,10 @@ public class DemoGame implements KeyListener {
             go.foregroundColor = Color.ORANGE;
             addObject(go);
         }
+
+        // read a map
+        MapLevel ml = new MapLevel();
+        ml.readFromFile("res/maps/map_1.json");
 
         // Create camera
         Camera cam = new Camera("camera", player, 0.002f, new Dimension(config.screenWidth, config.screenHeight));
@@ -437,7 +446,8 @@ public class DemoGame implements KeyListener {
 
     public class MapObject {
         public String id;
-        public BufferedImage image;
+        public String image;
+        public BufferedImage imageBuffer;
 
         public boolean collectable;
         public boolean hit;
@@ -449,6 +459,8 @@ public class DemoGame implements KeyListener {
 
         public boolean levelOutput;
         public String nextLevel;
+
+
     }
 
     public class MapObjectAsset {
@@ -478,8 +490,25 @@ public class DemoGame implements KeyListener {
         GameObject player;
         List<GameObject> enemies;
 
-        public void readFromFile(String filemap) throws IOException {
+        public MapLevel readFromFile(String fileMap){
+            MapLevel mapLevel = null;
+            try {
+                String jsonDataString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(fileMap).toURI())));
+                if(!jsonDataString.equals("")){
+                    Gson gson = new Gson();
+                    mapLevel = gson.fromJson(jsonDataString,MapLevel.class);
 
+                    String jsonAssetString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(mapLevel.objectSet).toURI())));
+                    if(!jsonAssetString.equals("")) {
+                        MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
+                        mapLevel.objects = mop;
+                    }
+                }
+
+            } catch (IOException | URISyntaxException e) {
+                System.out.println("Unable to create MapLevel from Json");
+            }
+            return mapLevel;
         }
     }
 
