@@ -400,7 +400,7 @@
                                     <arguments>
                                         <argument>docs/metadata.yml</argument>
                                         <argument>docs/index.md</argument>
-                                        <argument>docs/01-{chapters list}.md</argument>
+                                        <!--argument>docs/01-{chapters list}.md</argument-->
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>-t</argument>

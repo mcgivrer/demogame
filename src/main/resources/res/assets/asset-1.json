@@ -5,6 +5,17 @@
   "tileHeight": 16,
   "objects": [
     {
+      "id": "E",
+      "type": "enemy",
+      "image": "todo"
+    },
+    {
+      "id": "P",
+      "type": "player",
+      "image": "todo"
+    },
+
+    {
       "id": "o",
       "image": "coin-small.png",
       "collectable": true,
@@ -66,7 +77,7 @@
       "block": true
     },
     {
-      "id": "E",
+      "id": "X",
       "image": "door-level-out.png",
       "levelOutput": true,
       "nextlevel": "map_2"

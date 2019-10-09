@@ -75,7 +75,7 @@ public class DemoGame implements KeyListener {
         }
 
         // Create camera
-        Camera cam = new Camera("camera", player, 0.022f, new Dimension(config.screenWidth, config.screenHeight));
+        Camera cam = new Camera("camera", player, 0.002f, new Dimension(config.screenWidth, config.screenHeight));
         addObject(cam);
     }
 
@@ -114,8 +114,7 @@ public class DemoGame implements KeyListener {
             input();
             update(elapsed);
             render();
-            float currentTime = System.currentTimeMillis();
-            float wait = ((config.fps * 0.001f) - (currentTime - startTime));
+            float wait = ((config.fps * 0.001f));
             if (wait > 0) {
                 try {
                     Thread.sleep((int) wait);
@@ -452,7 +451,7 @@ public class DemoGame implements KeyListener {
         public String nextLevel;
     }
 
-    public class MapObjectSet {
+    public class MapObjectAsset {
         public String name;
         public String imageName;
         public BufferedImage image;
@@ -466,7 +465,7 @@ public class DemoGame implements KeyListener {
         public String description;
 
         public String objectSet;
-        public MapObjectSet objects;
+        public MapObjectAsset objects;
 
         public int width;
         public int height;
@@ -551,9 +550,15 @@ public class DemoGame implements KeyListener {
             this.dy = dy;
         }
 
+        public void setSize(float width, float height) {
+            this.width = width;
+            this.height = height;
+        }
+
     }
 
     public class Camera extends GameObject {
+
         public GameObject target;
         public float tween;
         Dimension viewport;
@@ -566,13 +571,8 @@ public class DemoGame implements KeyListener {
         }
 
         public void update(DemoGame dg, float elapsed) {
-
-            // this.position = (target.position - (view / 2) - this.position) * tweenFactor
-            // * elapsedTime
-
-            this.x = (target.x - (viewport.width * 0.5f) - this.x) * tween * elapsed;
-            this.y = (target.y - (viewport.height * 0.5f) - this.y) * tween * elapsed;
-
+            this.x += (target.x - ((float) viewport.width * 0.5f) - this.x) * tween * elapsed;
+            this.y += (target.y - ((float) viewport.height * 0.5f) - this.y) * tween * elapsed;
         }
 
         public void render(DemoGame dg, Graphics2D g) {
