@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -22,12 +23,17 @@ public class DemoGame implements KeyListener {
     private String[] argc;
     private boolean[] keys = new boolean[65536];
     private boolean[] previousKeys = new boolean[65536];
+
     private BufferedImage screenBuffer;
-    private List<GameObject> objects = new ArrayList<>();
-    private GameObject player;
-    private int score = 0;
-    private int lifes = 3;
     private Camera camera;
+
+    private Map<String, GameObject> objects = new ConcurrentHashMap<>();
+    private List<GameObject> renderingObjectpipelines = new ArrayList<>();
+
+    private GameObject player;
+
+    private int score = 0;
+    private int lifes = 4;
 
 
     public DemoGame(String[] argc) {
@@ -69,7 +75,7 @@ public class DemoGame implements KeyListener {
         }
 
         // Create camera
-        Camera cam = new Camera("camera", player, 0.02f, new Dimension(config.screenWidth, config.screenHeight));
+        Camera cam = new Camera("camera", player, 0.022f, new Dimension(config.screenWidth, config.screenHeight));
         addObject(cam);
     }
 
@@ -81,18 +87,17 @@ public class DemoGame implements KeyListener {
      */
     public JFrame createWindow(Config config) {
         jf = new JFrame(config.title);
-        Dimension dim = new Dimension(
-                (int) (config.screenWidth * config.screenScale),
-                (int) (config.screenHeight * config.screenScale));
-        jf.pack();
+        Insets ins = jf.getInsets();
+        Dimension dim = new Dimension((int) (config.screenWidth * config.screenScale) - (ins.left + ins.right),
+                (int) (config.screenHeight * config.screenScale) - (ins.top + ins.bottom));
         jf.setSize(dim);
-        jf.setMaximumSize(dim);
-        jf.setMinimumSize(dim);
         jf.setPreferredSize(dim);
+        jf.pack();
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         jf.addKeyListener(this);
 
+        jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);
         jf.setVisible(true);
         return jf;
@@ -154,7 +159,7 @@ public class DemoGame implements KeyListener {
     public void update(float elapsed) {
 
         // update all objects
-        for (GameObject go : objects) {
+        for (GameObject go : objects.values()) {
             if (!(go instanceof Camera)) {
                 go.update(this, elapsed);
                 constrainToViewport(screenBuffer, go);
@@ -206,14 +211,14 @@ public class DemoGame implements KeyListener {
         }
 
         // draw all objects
-        for (GameObject go : objects) {
+        for (GameObject go : renderingObjectpipelines) {
             if (!(go instanceof Camera)) {
                 go.render(this, g);
             }
         }
         // if required, display debug info on GameObjects
         if (config.debug > 3) {
-            for (GameObject go : objects) {
+            for (GameObject go : renderingObjectpipelines) {
                 if (!(go instanceof Camera)) {
                     displayDebugInfo(g, go);
                 }
@@ -226,12 +231,14 @@ public class DemoGame implements KeyListener {
         }
 
         // draw score
-        int offsetX = 4, offsetY = 25;
+        int offsetX = 4, offsetY = 30;
+        Font f = g.getFont();
+        g.setFont(f.deriveFont(8));
         drawOutLinedText(g, String.format("%05d", score), offsetX, offsetY, Color.WHITE, Color.BLACK);
         // draw Lifes
         String lifeStr = "[x]";
         drawOutLinedText(g, String.format("%s", String.format("%0" + lifes + "d", 0).replace("0", lifeStr)), config.screenWidth - (60 + offsetX), offsetY, Color.GREEN, Color.BLACK);
-
+        g.setFont(f);
         g.dispose();
 
         // render image to real screen (applying scale factor)
@@ -268,17 +275,46 @@ public class DemoGame implements KeyListener {
     public void addObject(GameObject go) {
         if (go instanceof Camera) {
             this.camera = (Camera) go;
-        } else if (!objects.contains(go)) {
+        } else if (!objects.containsKey(go.name)) {
 
-            objects.add(go);
+            objects.put(go.name, go);
+            renderingObjectpipelines.add(go);
 
-            Collections.sort(objects, new Comparator<GameObject>() {
+            Collections.sort(renderingObjectpipelines, new Comparator<GameObject>() {
                 public int compare(GameObject g1, GameObject g2) {
                     return (g1.priority < g2.priority ? (g1.layer < g2.layer ? 1 : -1) : -1);
                 }
             });
         }
     }
+
+    public void removeObject(GameObject go) {
+        objects.remove(go.name);
+        renderingObjectpipelines.remove(go);
+    }
+
+    public void removeObject(String name) {
+        if (objects.containsKey(name)) {
+            GameObject go = objects.get(name);
+            renderingObjectpipelines.remove(go);
+            objects.remove(go);
+        }
+    }
+
+    public void removeFilteredObjects(String nameFilter) {
+        List<GameObject> toBeRemoved = new ArrayList<>();
+        for (GameObject go : objects.values()) {
+            if (go.name.contains(nameFilter)) {
+                toBeRemoved.add(go);
+            }
+        }
+        if (!toBeRemoved.isEmpty()) {
+            renderingObjectpipelines.removeAll(toBeRemoved);
+            objects.values().removeAll(toBeRemoved);
+            toBeRemoved.clear();
+        }
+    }
+
 
     public void run() {
         System.out.println("Run game");
@@ -401,27 +437,27 @@ public class DemoGame implements KeyListener {
     }
 
     public class MapObject {
-        String id;
-        BufferedImage image;
+        public String id;
+        public BufferedImage image;
 
-        boolean collectable;
-        boolean hit;
-        boolean block;
+        public boolean collectable;
+        public boolean hit;
+        public boolean block;
 
-        int money;
-        int damage;
-        int energy;
+        public int money;
+        public int damage;
+        public int energy;
 
-        boolean levelOutput;
-        String nextLevel;
+        public boolean levelOutput;
+        public String nextLevel;
     }
 
     public class MapObjectSet {
-        String name;
-        String imageName;
-        BufferedImage image;
-        int tileWidth, tileHeight;
-        Map<String, MapObject> objects;
+        public String name;
+        public String imageName;
+        public BufferedImage image;
+        public int tileWidth, tileHeight;
+        public Map<String, MapObject> objects;
     }
 
     public class MapLevel {
