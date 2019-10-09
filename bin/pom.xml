@@ -1,0 +1,20 @@
+<project>
+	<modelVersion>4.0</modelVersion>
+	<groupId>fr.snapgames</groupId>
+	<artifactId>DemoGame</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>This is a sample demo game class only based on the Java JRE capabilities.</description>
+	<inceptionYear>2019</inceptionYear>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
