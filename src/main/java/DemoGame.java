@@ -430,7 +430,7 @@ public class DemoGame implements KeyListener {
                 case "debug":
                     config.debug = Integer.parseInt(parts[1]);
                 default:
-                    System.out.println(String.format("Unkonwn arguments '%s'", arg));
+                    System.out.println(String.format("Unknown arguments '%s'", arg));
                     break;
             }
         }
@@ -447,9 +447,16 @@ public class DemoGame implements KeyListener {
     public class MapObject {
         public String id;
         public String image;
+        public String type;
+        public String clazz;
+
+        public String offset;
+        public String size;
+        public int offsetX, offsetY, width, height;
+
         public BufferedImage imageBuffer;
 
-        public boolean collectable;
+        public boolean collectible;
         public boolean hit;
         public boolean block;
 
@@ -457,18 +464,21 @@ public class DemoGame implements KeyListener {
         public int damage;
         public int energy;
 
+        public Map<String, Object> attributes = new HashMap<>();
+
         public boolean levelOutput;
         public String nextLevel;
-
-
     }
 
     public class MapObjectAsset {
         public String name;
-        public String imageName;
-        public BufferedImage image;
+        public String image;
+        public BufferedImage imageBuffer;
+
         public int tileWidth, tileHeight;
+
         public Map<String, MapObject> objects;
+
     }
 
     public class MapLevel {
@@ -476,8 +486,8 @@ public class DemoGame implements KeyListener {
         public String levelName;
         public String description;
 
-        public String objectSet;
-        public MapObjectAsset objects;
+        public String objects;
+        public MapObjectAsset asset;
 
         public int width;
         public int height;
@@ -498,10 +508,10 @@ public class DemoGame implements KeyListener {
                     Gson gson = new Gson();
                     mapLevel = gson.fromJson(jsonDataString,MapLevel.class);
 
-                    String jsonAssetString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(mapLevel.objectSet).toURI())));
+                    String jsonAssetString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource("res/assets/" + mapLevel.objects + ".json").toURI())));
                     if(!jsonAssetString.equals("")) {
                         MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
-                        mapLevel.objects = mop;
+                        mapLevel.asset = mop;
                     }
                 }
 
