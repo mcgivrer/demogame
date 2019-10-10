@@ -33,14 +33,19 @@ public class DemoGame implements KeyListener {
     private Camera camera;
 
     private Map<String, GameObject> objects = new ConcurrentHashMap<>();
-    private List<GameObject> renderingObjectpipelines = new ArrayList<>();
+    private List<GameObject> renderingObjectPipeline = new ArrayList<>();
 
     private GameObject player;
 
     private int score = 0;
     private int lifes = 4;
 
-
+    /**
+     * Create the Game container.
+     *
+     * @param argc list of arguments.
+     * @see DemoGame#analyzeArgc(String[])
+     */
     public DemoGame(String[] argc) {
         super();
         config = analyzeArgc(argc);
@@ -48,6 +53,11 @@ public class DemoGame implements KeyListener {
         screenBuffer = new BufferedImage(config.screenWidth, config.screenHeight, BufferedImage.TYPE_INT_ARGB);
     }
 
+    /**
+     * The famous java Execution entry point.
+     *
+     * @param argc
+     */
     public static void main(String[] argc) {
         DemoGame dg = new DemoGame(argc);
         dg.run();
@@ -219,17 +229,9 @@ public class DemoGame implements KeyListener {
         }
 
         // draw all objects
-        for (GameObject go : renderingObjectpipelines) {
+        for (GameObject go : renderingObjectPipeline) {
             if (!(go instanceof Camera)) {
                 go.render(this, g);
-            }
-        }
-        // if required, display debug info on GameObjects
-        if (config.debug > 3) {
-            for (GameObject go : renderingObjectpipelines) {
-                if (!(go instanceof Camera)) {
-                    displayDebugInfo(g, go);
-                }
             }
         }
 
@@ -256,22 +258,53 @@ public class DemoGame implements KeyListener {
     public void renderToScreen() {
         if (jf != null) {
             Graphics2D g = (Graphics2D) jf.getGraphics();
+            float sX = jf.getWidth()/config.screenWidth;
+            float sY = jf.getHeight()/config.screenHeight;
+
             if (g != null) {
                 g.drawImage(screenBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, config.screenWidth, config.screenHeight,
                         Color.BLACK, null);
-                if (config.debug > 1) {
+                if (config.debug > 0) {
                     g.setColor(Color.ORANGE);
                     g.drawString(
-                            String.format("debug:%d | cam:(%f,%f) | player:(%f,%f)", config.debug, camera.x, camera.y, player.x, player.y),
+                            String.format("debug:%d | cam:(%03.1f,%03.1f) | player:(%03.1f,%03.1f)",
+                                    config.debug,
+                                    camera.x, camera.y,
+                                    player.x, player.y),
                             4, jf.getHeight() - 20);
+
+                    for (GameObject go : renderingObjectPipeline) {
+                        displayDebugInfo(g, go, camera, sX, sY);
+                    }
                 }
                 g.dispose();
             }
         }
     }
 
-    public void displayDebugInfo(Graphics2D g, GameObject go) {
-        // TODO implement debug data
+    public void displayDebugInfo(Graphics2D g, GameObject go, Camera cam, float sX, float sY) {
+        Font debugFont = g.getFont().deriveFont(5.0f);
+        if (config.debug > 1) {
+            float offsetX = go.x + go.width + 2-cam.x;
+            float offsetY = go.y - cam.y;
+
+            g.setColor(Color.LIGHT_GRAY);
+            g.drawString(
+                    String.format("name:%s", go.name),
+                    (offsetX * sX), offsetY * sY);
+            g.drawString(
+                    String.format("pos:(%03.1f,%03.1f)",
+                            go.x, go.y),
+                    (offsetX * sX), (offsetY + 10) * sY);
+            g.drawString(
+                    String.format("vel:(%03.1f,%03.1f)",
+                            go.dx, go.dy),
+                    (offsetX * sX), (offsetY + 20) * sY);
+            g.drawString(
+                    String.format("debug:%d",
+                            config.debug),
+                    (offsetX) * sX, (offsetY + 30) * sY);
+        }
     }
 
     /**
@@ -286,9 +319,9 @@ public class DemoGame implements KeyListener {
         } else if (!objects.containsKey(go.name)) {
 
             objects.put(go.name, go);
-            renderingObjectpipelines.add(go);
+            renderingObjectPipeline.add(go);
 
-            Collections.sort(renderingObjectpipelines, new Comparator<GameObject>() {
+            Collections.sort(renderingObjectPipeline, new Comparator<GameObject>() {
                 public int compare(GameObject g1, GameObject g2) {
                     return (g1.priority < g2.priority ? (g1.layer < g2.layer ? 1 : -1) : -1);
                 }
@@ -298,13 +331,13 @@ public class DemoGame implements KeyListener {
 
     public void removeObject(GameObject go) {
         objects.remove(go.name);
-        renderingObjectpipelines.remove(go);
+        renderingObjectPipeline.remove(go);
     }
 
     public void removeObject(String name) {
         if (objects.containsKey(name)) {
             GameObject go = objects.get(name);
-            renderingObjectpipelines.remove(go);
+            renderingObjectPipeline.remove(go);
             objects.remove(go);
         }
     }
@@ -317,7 +350,7 @@ public class DemoGame implements KeyListener {
             }
         }
         if (!toBeRemoved.isEmpty()) {
-            renderingObjectpipelines.removeAll(toBeRemoved);
+            renderingObjectPipeline.removeAll(toBeRemoved);
             objects.values().removeAll(toBeRemoved);
             toBeRemoved.clear();
         }
@@ -500,16 +533,16 @@ public class DemoGame implements KeyListener {
         GameObject player;
         List<GameObject> enemies;
 
-        public MapLevel readFromFile(String fileMap){
+        public MapLevel readFromFile(String fileMap) {
             MapLevel mapLevel = null;
             try {
                 String jsonDataString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(fileMap).toURI())));
-                if(!jsonDataString.equals("")){
+                if (!jsonDataString.equals("")) {
                     Gson gson = new Gson();
-                    mapLevel = gson.fromJson(jsonDataString,MapLevel.class);
+                    mapLevel = gson.fromJson(jsonDataString, MapLevel.class);
 
                     String jsonAssetString = new String(Files.readAllBytes(Paths.get(this.getClass().getResource("res/assets/" + mapLevel.objects + ".json").toURI())));
-                    if(!jsonAssetString.equals("")) {
+                    if (!jsonAssetString.equals("")) {
                         MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
                         mapLevel.asset = mop;
                     }
@@ -523,7 +556,25 @@ public class DemoGame implements KeyListener {
     }
 
     /**
-     * Class defining any object displayed by the game.
+     * A Renderer for the MapLevel.
+     */
+    public class MapRenderer {
+        /**
+         * Rendering the MapLevel according to the camera position.
+         *
+         * @param dg     the DemoGame container
+         * @param g      The graphics API to be used
+         * @param map    The MapLevel to be rendered
+         * @param camera the camera to be used as a point of view.
+         */
+        void render(DemoGame dg, Graphics2D g, MapLevel map, Camera camera) {
+
+        }
+    }
+
+
+    /**
+     * Any object displayed by the game.
      */
     public class GameObject {
 
@@ -541,6 +592,8 @@ public class DemoGame implements KeyListener {
         public int layer = 0;
         public int priority = 0;
 
+        public int debugLevel = 0;
+
         public GameObjectType type;
 
         public Color foregroundColor = Color.RED;
@@ -548,6 +601,15 @@ public class DemoGame implements KeyListener {
 
         public Map<String, Object> attributes = new HashMap<>();
 
+        /**
+         * Create a new object in the game with its position <code>(x,y)</code> and size <code>(width,height)</code>.
+         *
+         * @param name   Name of this object.
+         * @param x      horizontal position
+         * @param y      vertical position
+         * @param width  width of the object (if no image set)
+         * @param height height of the object (if no image set)
+         */
         public GameObject(String name, float x, float y, float width, float height) {
             this.name = name;
             this.x = x;
@@ -557,11 +619,23 @@ public class DemoGame implements KeyListener {
             this.type = GameObjectType.RECTANGLE;
         }
 
+        /**
+         * update the object (on all its characteristics, not only position if needed)
+         *
+         * @param dg      the DemoGame containing the object.
+         * @param elapsed the elapsed time since previous call.
+         */
         public void update(DemoGame dg, float elapsed) {
             x += (dx * elapsed);
             y += (dy * elapsed);
         }
 
+        /**
+         * Rendering of the object (will be delegated to another component in a next version.
+         *
+         * @param dg the DemoGame containing the object.
+         * @param g  the graphics API.
+         */
         public void render(DemoGame dg, Graphics2D g) {
             switch (type) {
                 case RECTANGLE:
@@ -575,10 +649,10 @@ public class DemoGame implements KeyListener {
                 case IMAGE:
                     g.drawImage(image, (int) x, (int) y, null);
                     break;
-
             }
         }
 
+        /*------- Setters ---------------*/
         public void setPosition(float x, float y) {
             this.x = x;
             this.y = y;
@@ -596,12 +670,25 @@ public class DemoGame implements KeyListener {
 
     }
 
+    /**
+     * A 2D Camera to render scene from a constrained point of view.
+     */
     public class Camera extends GameObject {
 
         public GameObject target;
         public float tween;
-        Dimension viewport;
+        public Dimension viewport;
+        public float zoom = 1.0f;
 
+        /**
+         * Create a Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
+         * manage camera sensitivity, and in a <code>viewport</code> size.
+         *
+         * @param name     name of the new camera.
+         * @param target   the GameObject to be followed by the camera.
+         * @param tween    the tween factor to manage camera sensitivity.
+         * @param viewPort the size of the display window.
+         */
         public Camera(String name, GameObject target, float tween, Dimension viewPort) {
             super(name, target.x, target.y, viewPort.width, viewPort.height);
             this.target = target;
@@ -609,11 +696,26 @@ public class DemoGame implements KeyListener {
             this.viewport = viewPort;
         }
 
+        /**
+         * Update the camera according to the <code>elapsed</code> time.
+         * Position is relative to the <code>target</code> object and the camera speed is computed through the <code>tween</code> factor.
+         *
+         * @param dg      the DemoGame container for this camera
+         * @param elapsed the elapsed time since previous update.
+         */
         public void update(DemoGame dg, float elapsed) {
             this.x += (target.x - ((float) viewport.width * 0.5f) - this.x) * tween * elapsed;
             this.y += (target.y - ((float) viewport.height * 0.5f) - this.y) * tween * elapsed;
+            viewport.height *= zoom;
+            viewport.width *= zoom;
         }
 
+        /**
+         * rendering of some (only) debug information.
+         *
+         * @param dg the containing game
+         * @param g  the graphics API.
+         */
         public void render(DemoGame dg, Graphics2D g) {
             if (dg.config.debug > 1) {
                 g.setColor(Color.YELLOW);
@@ -622,6 +724,9 @@ public class DemoGame implements KeyListener {
         }
     }
 
+    /**
+     * A configuration component to manage and use easily parameters.
+     */
     public class Config {
         public int screenWidth;
         public int screenHeight;
@@ -630,6 +735,9 @@ public class DemoGame implements KeyListener {
         public String title;
         public int debug;
 
+        /**
+         * Initialization of default values for configuraiton.
+         */
         public Config() {
             this.title = "notitle";
             this.screenWidth = 0;
@@ -639,5 +747,4 @@ public class DemoGame implements KeyListener {
             this.debug = 0;
         }
     }
-
 }
