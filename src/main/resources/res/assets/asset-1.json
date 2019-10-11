@@ -11,6 +11,7 @@
       "image": "todo",
       "offset": "6,1",
       "size": "32,32",
+      "color": "RED",
       "attributes": {
         "energy": 100,
         "damage": 10,
@@ -24,6 +25,7 @@
       "image": "todo",
       "offset": "4,1",
       "size": "32,32",
+      "color": "BLUE",
       "attributes": {
         "energy": 100,
         "mana": 100,

@@ -19,6 +19,8 @@ public class GameObject {
 
     public float dx = 0, dy = 0;
 
+    public int direction = 1;
+
     public int layer = 0;
     public int priority = 0;
 
@@ -86,7 +88,11 @@ public class GameObject {
                 g.fillOval((int) x, (int) y, (int) width, (int) height);
                 break;
             case IMAGE:
-                g.drawImage(image, (int) x, (int) y, null);
+                if(direction<0) {
+                    g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
+                }else{
+                    g.drawImage(image, (int) x, (int) y, (int)width, (int) height, null);
+                }
                 break;
         }
     }

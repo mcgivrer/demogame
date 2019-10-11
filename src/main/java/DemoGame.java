@@ -160,9 +160,11 @@ public class DemoGame implements KeyListener {
         }
         if (keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
+            mapLevel.player.direction=-1;
         }
         if (keys[KeyEvent.VK_RIGHT]) {
             mapLevel.player.dx = 0.2f;
+            mapLevel.player.direction=1;
         }
         if (keys[KeyEvent.VK_SPACE]) {
             // Todo implement Jump
@@ -190,12 +192,12 @@ public class DemoGame implements KeyListener {
     }
 
     public void constrainToMapLevel(MapLevel bi, GameObject go) {
-        if (go.x + go.width > bi.width*bi.asset.tileWidth) {
-            go.x = bi.width*bi.asset.tileWidth - go.width;
+        if (go.x + go.width > bi.width * bi.asset.tileWidth) {
+            go.x = bi.width * bi.asset.tileWidth - go.width;
             go.dx = -go.dx;
         }
-        if (go.y + go.height > bi.height*bi.asset.tileHeight) {
-            go.y = bi.height*bi.asset.tileHeight - go.height;
+        if (go.y + go.height > bi.height * bi.asset.tileHeight) {
+            go.y = bi.height * bi.asset.tileHeight - go.height;
             go.dy = -go.dy;
         }
 
@@ -248,8 +250,13 @@ public class DemoGame implements KeyListener {
         g.setFont(f.deriveFont(8));
         drawOutLinedText(g, String.format("%05d", score), offsetX, offsetY, Color.WHITE, Color.BLACK);
         // draw Lifes
-        String lifeStr = "[x]";
-        drawOutLinedText(g, String.format("%s", String.format("%0" + lifes + "d", 0).replace("0", lifeStr)), config.screenWidth - (60 + offsetX), offsetY, Color.GREEN, Color.BLACK);
+        String lifeStr = "<o>";
+        drawOutLinedText(g, String.format("%s",
+                String.format("%0" + lifes + "d", 0).replace("0", lifeStr)),
+                config.screenWidth - (60 + offsetX),
+                offsetY,
+                Color.GREEN,
+                Color.BLACK);
         g.setFont(f);
         g.dispose();
 
@@ -495,6 +502,7 @@ public class DemoGame implements KeyListener {
         public String image;
         public String type;
         public String clazz;
+        public String color;
 
         public String offset;
         public String size;
@@ -568,17 +576,42 @@ public class DemoGame implements KeyListener {
                         MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
                         mapLevel.asset = mop;
 
-                        // generate all objects.
-                        mapLevel = generateObject(mapLevel);
-
                         // generate tiles
                         mapLevel.tiles = new MapObject[mapLevel.width][mapLevel.height];
+                        // generate all objects.
+                        mapLevel = createAssetMapObjects(mapLevel);
+                        // build Map
                         for (int y = 0; y < mapLevel.height; y++) {
                             String line = mapLevel.map.get(y);
                             for (int x = 0; x < mapLevel.width; x++) {
                                 String code = "" + line.charAt(x);
                                 if (mapLevel.asset.objects.containsKey(code)) {
-                                    mapLevel.tiles[x][y] = mapLevel.asset.objects.get(code);
+                                    MapObject mo = mapLevel.asset.objects.get(code);
+                                    if(!mo.type.equals("player") && !mo.type.equals("enemy_")){
+                                        mapLevel.tiles[x][y] = mo;
+                                    }else{
+                                        GameObject go = null;
+                                        try {
+                                            go = generateGameObject(mapLevel, mo);
+                                            switch(mo.type){
+                                                case"player":
+                                                    mapLevel.player = go;
+                                                    break;
+                                                case "enemy_":
+                                                    if(mapLevel.enemies==null){
+                                                        mapLevel.enemies = new ArrayList<>();
+                                                    }
+                                                    mapLevel.enemies.add(go);
+                                                    break;
+                                                default:
+                                                    System.out.println(String.format("Unknown object type %s",mo.type));
+                                                    break;
+                                            }
+                                        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
                                 } else {
                                     mapLevel.tiles[x][y] = null;
                                 }
@@ -593,39 +626,45 @@ public class DemoGame implements KeyListener {
             return mapLevel;
         }
 
-        private static MapLevel generateObject(MapLevel mapLevel) {
+        private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+            GameObject go=null;
+            switch (mo.type) {
+                case "player":
+                    Class<?> classO = Class.forName(mo.clazz);
+                    go = (GameObject) classO.newInstance();
+                    go = populateGo(mapLevel, go, mo);
+                    go.layer = 1;
+                    go.priority = 1;
+                    break;
+                case "enemy_":
+                    Class<?> class1 = Class.forName(mo.clazz);
+                    go = (GameObject) class1.newInstance();
+                    go = populateGo(mapLevel, go, mo);
+                    go.layer = 2;
+                    go.priority = 10;
+                    break;
+            }
+            return go;
+        }
+
+        private static MapLevel createAssetMapObjects(MapLevel mapLevel) {
             try {
                 mapLevel.asset.imageBuffer = ImageIO.read(MapReader.class.getResource(mapLevel.asset.image).openStream());
                 for (Entry<String, MapObject> emo : mapLevel.asset.objects.entrySet()) {
                     MapObject mo = emo.getValue();
                     if (mo != null) {
                         switch (mo.type) {
-                            case "player":
-                                Class<?> classO = Class.forName(mo.clazz);
-                                GameObject player = (GameObject) classO.newInstance();
-                                player = populateGo(mapLevel, player, mo);
-                                mapLevel.player = player;
-                                break;
-                            case "enemy_":
-                                Class<?> class1 = Class.forName(mo.clazz);
-                                GameObject enemy = (GameObject) class1.newInstance();
-                                enemy = populateGo(mapLevel, enemy, mo);
-                                if (mapLevel.enemies == null) {
-                                    mapLevel.enemies = new ArrayList<>();
-                                }
-                                mapLevel.enemies.add(enemy);
-                                break;
                             case "tile":
                             case "object":
                             default:
                                 if (mo.offset != null && mo.imageBuffer == null && mo.offset.equals("")) {
                                     String[] offsetValue = mo.offset.split(",");
-                                    mo.offsetX = Integer.parseInt(offsetValue[0]);
-                                    mo.offsetY = Integer.parseInt(offsetValue[1]);
+                                    mo.offsetX = Integer.parseInt(offsetValue[1]);
+                                    mo.offsetY = Integer.parseInt(offsetValue[0]);
                                     if (mo.size != null && !mo.size.equals("")) {
                                         String[] sizeValue = mo.offset.split(",");
-                                        mo.width = Integer.parseInt(offsetValue[0]);
-                                        mo.height = Integer.parseInt(offsetValue[1]);
+                                        mo.width = Integer.parseInt(offsetValue[1]);
+                                        mo.height = Integer.parseInt(offsetValue[0]);
                                     } else {
                                         mo.width = mapLevel.asset.tileWidth;
                                         mo.height = mapLevel.asset.tileHeight;
@@ -641,7 +680,7 @@ public class DemoGame implements KeyListener {
                         }
                     }
                 }
-            } catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            } catch (IOException e) {
                 System.out.println("unable to intantiate " + e.getMessage() +
                         "Stack:" + e.getStackTrace());
             }
@@ -651,14 +690,33 @@ public class DemoGame implements KeyListener {
         private static GameObject populateGo(MapLevel mapLevel, GameObject go, MapObject mo) {
             if (!mo.offset.equals("")) {
                 String[] values = mo.offset.split(",");
-                int ox = Integer.parseInt(values[0]);
-                int oy = Integer.parseInt(values[1]);
+                int ox = Integer.parseInt(values[1]);
+                int oy = Integer.parseInt(values[0]);
 
                 values = mo.size.split(",");
                 go.width = Integer.parseInt(values[0]);
                 go.height = Integer.parseInt(values[1]);
                 //get image
-                go.image = mapLevel.asset.imageBuffer.getSubimage(ox * mapLevel.asset.tileWidth, oy * mapLevel.asset.tileHeight, (int) go.width, (int) go.height);
+                go.image = mapLevel.asset.imageBuffer.getSubimage(
+                        (ox-1) * mapLevel.asset.tileWidth,
+                        (oy-1) * mapLevel.asset.tileHeight,
+                        (int) go.width,
+                        (int) go.height);
+                go.type = GameObjectType.IMAGE;
+            }
+            if (!mo.color.equals("")) {
+                switch (mo.color) {
+                    case "RED":
+                        go.foregroundColor = Color.RED;
+                        break;
+                    case "BLUE":
+                        go.foregroundColor = Color.BLUE;
+                        break;
+                    case "GREEN":
+                        go.foregroundColor = Color.GREEN;
+                        break;
+
+                }
             }
             go.name = mo.type.replace("_", "_" + (++idxEnemy));
             // initialize attributes
@@ -732,8 +790,8 @@ public class DemoGame implements KeyListener {
          * @param elapsed the elapsed time since previous update.
          */
         public void update(DemoGame dg, float elapsed) {
-            this.x += (target.x - ((float) (viewport.width+dg.screenBuffer.getWidth()) * 0.5f) - this.x) * tween * elapsed;
-            this.y += (target.y - ((float) (viewport.height+dg.screenBuffer.getHeight()) * 0.5f) - this.y) * tween * elapsed;
+            this.x += (target.x + (target.width) - ((float) (viewport.width + dg.screenBuffer.getWidth()) * 0.5f) - this.x) * tween * elapsed;
+            this.y += (target.y + (target.height) - ((float) (viewport.height + dg.screenBuffer.getHeight()) * 0.5f) - this.y) * tween * elapsed;
             viewport.height *= zoom;
             viewport.width *= zoom;
         }
