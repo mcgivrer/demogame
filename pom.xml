@@ -184,51 +184,6 @@
                 </executions>
             </plugin>
 
-            <!-- create a Windows EXE -->
-            <!-- https://github.com/lukaszlenart/launch4j-maven-plugin/blob/master/src/main/resources/README.adoc -->
-            <!-- see http://launch4j.sourceforge.net/ -->
-            <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>1.7.25</version>
-                <executions>
-                    <execution>
-                        <id>l4j-clui</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <jar>${project.build.directory}/${project.name}-${project.version}-shaded.jar</jar>
-                            <outfile>${project.build.directory}/DemoGame.exe</outfile>
-                            <downloadUrl>http://java.com/download</downloadUrl>
-                            <classPath>
-                                <mainClass>DemoGame</mainClass>
-                                <preCp>anything</preCp>
-                            </classPath>
-                            <icon>src/main/resources/res/app-icon.ico</icon>
-                            <jre>
-                                <minVersion>1.8.0</minVersion>
-                                <jdkPreference>preferJre</jdkPreference>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>${project.version}</txtFileVersion>
-                                <fileDescription>DemoGame</fileDescription>
-                                <copyright>${project.inceptionYear} - http://snapgames.fr</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>DemoGame</productName>
-                                <companyName>SnapGames</companyName>
-                                <internalName>DemoGame</internalName>
-                                <originalFilename>DemoGame.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- Release -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -423,5 +378,58 @@
                 </plugins>
             </build>
         </profile>
+	<profile>
+		<id>create-exe</id>
+		<build>
+			<plugins>
+		            <!-- create a Windows EXE -->
+		            <!-- https://github.com/lukaszlenart/launch4j-maven-plugin/blob/master/src/main/resources/README.adoc -->
+		            <!-- see http://launch4j.sourceforge.net/ -->
+		            <plugin>
+		                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+		                <artifactId>launch4j-maven-plugin</artifactId>
+		                <version>1.7.25</version>
+		                <executions>
+		                    <execution>
+		                        <id>l4j-clui</id>
+		                        <phase>package</phase>
+		                        <goals>
+		                            <goal>launch4j</goal>
+		                        </goals>
+		                        <configuration>
+		                            <headerType>gui</headerType>
+		                            <jar>${project.build.directory}/${project.name}-${project.version}-shaded.jar</jar>
+		                            <outfile>${project.build.directory}/DemoGame.exe</outfile>
+		                            <downloadUrl>http://java.com/download</downloadUrl>
+		                            <classPath>
+		                                <mainClass>DemoGame</mainClass>
+		                                <preCp>anything</preCp>
+		                            </classPath>
+		                            <icon>src/main/resources/res/app-icon.ico</icon>
+		                            <jre>
+		                                <minVersion>1.8.0</minVersion>
+		                                <jdkPreference>preferJre</jdkPreference>
+		                            </jre>
+		                            <versionInfo>
+		                                <fileVersion>1.0.0.0</fileVersion>
+		                                <txtFileVersion>${project.version}</txtFileVersion>
+		                                <fileDescription>DemoGame</fileDescription>
+		                                <copyright>${project.inceptionYear} - http://snapgames.fr</copyright>
+		                                <productVersion>1.0.0.0</productVersion>
+		                                <txtProductVersion>1.0.0.0</txtProductVersion>
+		                                <productName>DemoGame</productName>
+		                                <companyName>SnapGames</companyName>
+		                                <internalName>DemoGame</internalName>
+		                                <originalFilename>DemoGame.exe</originalFilename>
+		                            </versionInfo>
+		                        </configuration>
+		                    </execution>
+		                </executions>
+		            </plugin>
+
+
+			</plugins>
+		</build>
+	</profile>
     </profiles>
 </project>

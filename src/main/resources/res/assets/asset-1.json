@@ -1,86 +1,116 @@
 {
   "name": "Objects Set 1",
-  "image": "images/tileset-1.png",
+  "image": "res/images/tileset-1.png",
   "tileWidth": 16,
   "tileHeight": 16,
-  "objects": [
-    {
+  "objects": {
+    "E": {
       "id": "E",
-      "type": "enemy",
-      "image": "todo"
+      "type": "enemy_",
+      "clazz": "GameObject",
+      "image": "todo",
+      "offset": "6,1",
+      "size": "32,32",
+      "color": "RED",
+      "attributes": {
+        "energy": 100,
+        "damage": 10,
+        "coins":5
+      }
     },
-    {
+    "P": {
       "id": "P",
       "type": "player",
-      "image": "todo"
+      "clazz": "GameObject",
+      "image": "todo",
+      "offset": "4,1",
+      "size": "32,32",
+      "color": "BLUE",
+      "attributes": {
+        "energy": 100,
+        "mana": 100,
+        "damage": 50,
+        "coins":25
+      }
     },
-
-    {
+    "o": {
+      "type": "object",
       "id": "o",
-      "image": "coin-small.png",
-      "collectable": true,
-      "money": 10
+      "collectible": true,
+      "money": 10,
+      "offset": "10,2"
     },
-    {
+    "O": {
+      "type": "object",
       "id": "O",
-      "image": "coin-large.png",
-      "collectable": true,
-      "money": 100
+      "collectible": true,
+      "money": 100,
+      "offset": "10,3"
     },
-    {
+    ">": {
+      "type": "tile",
       "id": ">",
       "image": "pic-right.png",
       "hit": true,
       "damage": 10
     },
-    {
+    "<": {
+      "type": "tile",
       "id": "<",
       "image": "pic-left.png",
       "hit": true,
       "damage": 10
     },
-    {
+    "V": {
+      "type": "tile",
       "id": "V",
       "image": "pic-down.png",
       "hit": true,
       "damage": 10
     },
-    {
+    "|": {
+      "type": "tile",
       "id": "|",
       "image": "pic-up.png",
       "hit": true,
       "damage": 10
     },
-    {
+    "B": {
+      "type": "tile",
       "id": "B",
-      "image": "brick.png",
-      "block": true
+      "block": true,
+      "offset": "19,8"
     },
-    {
+    "H": {
+      "type": "tile",
       "id": "H",
-      "image": "ladder.png",
-      "block": false
+      "block": false,
+      "offset": "13,6"
     },
-    {
+    "h": {
+      "type": "tile",
       "id": "h",
-      "image": "ladder-upper-brick.png",
-      "block": false
+      "block": false,
+      "offset": "19,5"
     },
-    {
+    "k": {
+      "type": "tile",
       "id": "k",
-      "image": "ladder-upper-wood.png",
-      "block": false
+      "block": false,
+      "offset": "19,5"
     },
-    {
+    "=": {
+      "type": "tile",
       "id": "=",
-      "image": "wood-horizontal.png",
-      "block": true
+      "block": true,
+      "offset": "19,5"
     },
-    {
+    "X": {
+      "type": "tile",
       "id": "X",
       "image": "door-level-out.png",
       "levelOutput": true,
-      "nextlevel": "map_2"
+      "nextLevel": "map_2"
     }
-  ]
+  }
 }
