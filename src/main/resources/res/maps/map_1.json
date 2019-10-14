@@ -2,7 +2,7 @@
   "levelName": "Level 1.1",
   "description": "This a demonstration level.",
   "objects": "asset-1",
-  "background": "images/background-1.png",
+  "background": "res/images/background-1.jpg",
   "map": [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",

@@ -26,7 +26,7 @@ public class GameObject {
 
     public int debugLevel = 0;
 
-    public DemoGame.GameObjectType type;
+    public GameObjectType type;
 
     public Color foregroundColor = Color.RED;
     public Color backgroundColor = Color.BLACK;
@@ -39,7 +39,7 @@ public class GameObject {
         this.y = 0;
         this.width = 0;
         this.height = 0;
-        this.type = DemoGame.GameObjectType.RECTANGLE;
+        this.type = GameObjectType.RECTANGLE;
     }
 
     /**
@@ -57,7 +57,7 @@ public class GameObject {
         this.y = y;
         this.width = width;
         this.height = height;
-        this.type = DemoGame.GameObjectType.RECTANGLE;
+        this.type = GameObjectType.RECTANGLE;
     }
 
     /**
