@@ -2,6 +2,9 @@ import java.awt.*;
 
 /**
  * A Renderer for the MapLevel.
+ *
+ * @year 2019
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class MapRenderer {
     /**

@@ -9,6 +9,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * The class read the map file from a fileMap path and generate/load all needed resources.
+ * - It will build the assets for map rendering,
+ * - It will load the background image is provided,
+ * - It will create the entities for this level.
+ *
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
+ * @year 2019
+ */
 public class MapReader {
     private static int idxEnemy = 0;
 
@@ -23,7 +32,7 @@ public class MapReader {
                 mapLevel.width = mapLevel.map.get(0).length();
                 mapLevel.height = mapLevel.map.size();
 
-                if(mapLevel!=null && mapLevel.background!=null && !mapLevel.background.equals("")){
+                if (mapLevel != null && mapLevel.background != null && !mapLevel.background.equals("")) {
                     mapLevel.backgroundImage = ImageIO.read(MapReader.class.getResourceAsStream(mapLevel.background));
                 }
                 // load asset from json file.
@@ -48,7 +57,7 @@ public class MapReader {
                                 } else {
                                     GameObject go = null;
                                     try {
-                                        go = generateGameObject(mapLevel, mo);
+                                        go = generateGameObject(mapLevel, mo, x, y);
                                         switch (mo.type) {
                                             case "player":
                                                 mapLevel.player = go;
@@ -82,7 +91,7 @@ public class MapReader {
         return mapLevel;
     }
 
-    private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo, int x, int y) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         GameObject go = null;
         switch (mo.type) {
             case "player":
@@ -91,6 +100,8 @@ public class MapReader {
                 go = populateGo(mapLevel, go, mo);
                 go.layer = 1;
                 go.priority = 1;
+                go.x = (x - 1) * mapLevel.asset.tileWidth;
+                go.y = (y - 1) * mapLevel.asset.tileHeight;
                 break;
             case "enemy_":
                 Class<?> class1 = Class.forName(mo.clazz);
@@ -98,6 +109,8 @@ public class MapReader {
                 go = populateGo(mapLevel, go, mo);
                 go.layer = 2;
                 go.priority = 10;
+                go.x = (x - 1) * mapLevel.asset.tileWidth;
+                go.y = (y - 1) * mapLevel.asset.tileHeight;
                 break;
         }
         return go;
@@ -125,8 +138,8 @@ public class MapReader {
                                     mo.width = mapLevel.asset.tileWidth;
                                     mo.height = mapLevel.asset.tileHeight;
                                 }
-                                int ix = (mo.offsetX-1) * mapLevel.asset.tileWidth;
-                                int iy = (mo.offsetY-1) * mapLevel.asset.tileHeight;
+                                int ix = (mo.offsetX - 1) * mapLevel.asset.tileWidth;
+                                int iy = (mo.offsetY - 1) * mapLevel.asset.tileHeight;
                                 mo.imageBuffer = mapLevel.asset.imageBuffer.getSubimage(
                                         ix,
                                         iy,
