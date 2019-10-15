@@ -10,4 +10,7 @@ Play with :
 
     $> java DemoGame
 
+
+![Screenshot of the demo](src/docs/images/screen-1.png "open the image")
+
 McG.
