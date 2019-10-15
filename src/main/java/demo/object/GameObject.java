@@ -1,3 +1,7 @@
+package demo.object;
+
+import demo.DemoGame;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -63,7 +67,7 @@ public class GameObject {
     /**
      * update the object (on all its characteristics, not only position if needed)
      *
-     * @param dg      the DemoGame containing the object.
+     * @param dg      the demo.DemoGame containing the object.
      * @param elapsed the elapsed time since previous call.
      */
     public void update(DemoGame dg, float elapsed) {
@@ -74,7 +78,7 @@ public class GameObject {
     /**
      * Rendering of the object (will be delegated to another component in a next version.
      *
-     * @param dg the DemoGame containing the object.
+     * @param dg the demo.DemoGame containing the object.
      * @param g  the graphics API.
      */
     public void render(DemoGame dg, Graphics2D g) {

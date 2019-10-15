@@ -1,3 +1,7 @@
+package demo.map;
+
+import demo.map.MapObject;
+
 import java.awt.image.BufferedImage;
 import java.util.Map;
 

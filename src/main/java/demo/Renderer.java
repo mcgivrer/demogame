@@ -1,3 +1,10 @@
+package demo;
+
+import demo.map.MapLevel;
+import demo.map.MapRenderer;
+import demo.object.Camera;
+import demo.object.GameObject;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -7,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * This Renderer class is the main rendering component for all objects managed by its parent DemoGame instance.
+ * This demo.Renderer class is the main rendering component for all objects managed by its parent demo.DemoGame instance.
  *
  * @year 2019
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
@@ -23,7 +30,7 @@ public class Renderer {
     /**
      * Create the Game renderer.
      *
-     * @param dg the DemoGame instance parent for this Renderer.
+     * @param dg the demo.DemoGame instance parent for this demo.Renderer.
      */
     public Renderer(DemoGame dg) {
         jf = createWindow(dg);
@@ -31,9 +38,9 @@ public class Renderer {
     }
 
     /**
-     * create a WXindow to host the game display according to Config object.
+     * create a WXindow to host the game display according to demo.Config object.
      *
-     * @param dg the DemoGame object to access the configuration instance.
+     * @param dg the demo.DemoGame object to access the configuration instance.
      * @return a JFrame initialized conforming to config attributes.
      */
     public JFrame createWindow(DemoGame dg) {
@@ -73,17 +80,20 @@ public class Renderer {
             g.translate(-dg.camera.x, -dg.camera.y);
         }
 
-        if(dg.config.debug>2){
-            g.setColor(Color.BLUE);
-            g.fillRect(0,0,(int)dg.mapLevel.width,(int)dg.mapLevel.height);
-        }
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        mapRenderer.render(dg, g, dg.mapLevel, dg.camera);
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         // draw all objects
         for (GameObject go : renderingObjectPipeline) {
             if (!(go instanceof Camera)) {
                 go.render(dg, g);
+            }
+            if(go instanceof MapLevel){
+                if(dg.config.debug>2){
+                    g.setColor(Color.BLUE);
+                    g.fillRect(0,0,(int)go.width,(int)go.height);
+                }
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                mapRenderer.render(dg, g, (MapLevel)go, dg.camera);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
             }
         }
 
@@ -93,24 +103,14 @@ public class Renderer {
         }
 
         // draw score
-        int offsetX = 4, offsetY = 30;
-        Font f = g.getFont();
-        g.setFont(f.deriveFont(8));
-        drawOutLinedText(g, String.format("%05d", dg.score), offsetX, offsetY, Color.WHITE, Color.BLACK);
-        // draw Lifes
-        String lifeStr = "<o>";
-        drawOutLinedText(g, String.format("%s",
-                String.format("%0" + dg.lifes + "d", 0).replace("0", lifeStr)),
-                dg.config.screenWidth - (60 + offsetX),
-                offsetY,
-                Color.GREEN,
-                Color.BLACK);
-        g.setFont(f);
+        dg.drawHUD(this, g);
         g.dispose();
 
         // render image to real screen (applying scale factor)
         renderToScreen(dg);
     }
+
+
 
     public void renderToScreen(DemoGame dg) {
         if (jf != null) {
@@ -124,11 +124,11 @@ public class Renderer {
                 if (dg.config.debug > 0) {
                     g.setColor(Color.ORANGE);
                     g.drawString(
-                            String.format("debug:%d | cam:(%03.1f,%03.1f) | player:(%03.1f,%03.1f)",
+                            String.format("debug:%d | cam:(%03.1f,%03.1f)",
                                     dg.config.debug,
-                                    dg.camera.x, dg.camera.y,
-                                    dg.mapLevel.player.x, dg.mapLevel.player.y),
-                            4, jf.getHeight() - 20);
+                                    dg.camera.x, dg.camera.y),
+                            4,
+                            jf.getHeight() - 20);
 
                     for (GameObject go : renderingObjectPipeline) {
                         displayDebugInfo(dg, g, go, dg.camera, sX, sY);
@@ -201,7 +201,7 @@ public class Renderer {
                 }
             });
         } else {
-            System.out.println(String.format("Error : GameObject %s already exists in rendering pipeline.", go.name));
+            System.out.println(String.format("Error : demo.object.GameObject %s already exists in rendering pipeline.", go.name));
         }
 
     }

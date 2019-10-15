@@ -1,3 +1,9 @@
+package demo;
+
+import demo.map.MapLevel;
+import demo.object.Camera;
+import demo.object.GameObject;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -12,24 +18,20 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Frédéric Delorme
  * @since 2019
  */
-public class DemoGame implements KeyListener {
+public abstract class DemoGame implements KeyListener {
 
     private static long goIndex = 0;
     public Config config;
-    private boolean exitRequest = false;
+    public boolean exitRequest = false;
     private String[] argc;
-    private boolean[] keys = new boolean[65536];
-    private boolean[] previousKeys = new boolean[65536];
+    protected boolean[] keys = new boolean[65536];
+    protected boolean[] previousKeys = new boolean[65536];
 
     public Renderer renderer;
 
     public Camera camera;
-    public MapLevel mapLevel;
+    public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 
-    private Map<String, GameObject> objects = new ConcurrentHashMap<>();
-
-    public int score = 0;
-    public int lifes = 4;
 
     /**
      * Create the Game container.
@@ -40,30 +42,16 @@ public class DemoGame implements KeyListener {
     public DemoGame(String[] argc) {
         super();
         config = Config.analyzeArgc(argc);
-        renderer = new Renderer(this);
     }
 
-    /**
-     * The famous java Execution entry point.
-     *
-     * @param argc
-     */
-    public static void main(String[] argc) {
-        DemoGame dg = new DemoGame(argc);
-        dg.run();
-    }
 
     public void initialize() {
+        renderer = new Renderer(this);
 
-        mapLevel = MapReader.readFromFile("res/maps/map_1.json");
-
-        addObject(mapLevel.player);
-        addAllObject(mapLevel.enemies);
-
-        // Create camera
-        Camera cam = new Camera("camera", mapLevel.player, 0.017f, new Dimension(mapLevel.width, mapLevel.height));
-        addObject(cam);
+        loadState();
     }
+
+    public abstract void loadState();
 
 
     public void loop() {
@@ -90,29 +78,7 @@ public class DemoGame implements KeyListener {
     }
 
     public void input() {
-        if (keys[KeyEvent.VK_ESCAPE]) {
-            exitRequest = true;
-        }
 
-        mapLevel.player.setSpeed(0.0f, 0.0f);
-
-        if (keys[KeyEvent.VK_UP]) {
-            mapLevel.player.dy = -0.2f;
-        }
-        if (keys[KeyEvent.VK_DOWN]) {
-            mapLevel.player.dy = 0.2f;
-        }
-        if (keys[KeyEvent.VK_LEFT]) {
-            mapLevel.player.dx = -0.2f;
-            mapLevel.player.direction = -1;
-        }
-        if (keys[KeyEvent.VK_RIGHT]) {
-            mapLevel.player.dx = 0.2f;
-            mapLevel.player.direction = 1;
-        }
-        if (keys[KeyEvent.VK_SPACE]) {
-            // Todo implement Jump
-        }
     }
 
     /**
@@ -122,17 +88,6 @@ public class DemoGame implements KeyListener {
      */
     public void update(float elapsed) {
 
-        // update all objects
-        for (GameObject go : objects.values()) {
-            if (!(go instanceof Camera)) {
-                go.update(this, elapsed);
-                constrainToMapLevel(mapLevel, go);
-            }
-        }
-        // active Camera update
-        if (this.camera != null) {
-            camera.update(this, elapsed);
-        }
     }
 
     public void constrainToMapLevel(MapLevel bi, GameObject go) {
@@ -157,11 +112,11 @@ public class DemoGame implements KeyListener {
 
     /**
      * Add a Game object to the managed objects list.
-     * If the <code>go</code> GameObject is a Camera instance, it will be set as the default camera.
+     * If the <code>go</code> demo.object.GameObject is a demo.object.Camera instance, it will be set as the default camera.
      *
-     * @param go the GameObject to be added to the DemoGame#objects list.
+     * @param go the demo.object.GameObject to be added to the demo.DemoGame#objects list.
      */
-    private void addObject(GameObject go) {
+    public void addObject(GameObject go) {
         if (go instanceof Camera) {
             this.camera = (Camera) go;
         } else if (!objects.containsKey(go.name)) {
@@ -175,7 +130,7 @@ public class DemoGame implements KeyListener {
     /**
      * Add a bunch of object to the game !
      *
-     * @param objects the list of GameObject to be added to the DemoGame#objects list.
+     * @param objects the list of demo.object.GameObject to be added to the demo.DemoGame#objects list.
      */
     public void addAllObject(List<GameObject> objects) {
         for (GameObject o : objects) {
@@ -259,5 +214,5 @@ public class DemoGame implements KeyListener {
         }
     }
 
-
+    public abstract void drawHUD(Renderer r, Graphics2D g);
 }

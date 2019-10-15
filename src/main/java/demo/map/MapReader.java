@@ -1,4 +1,8 @@
+package demo.map;
+
 import com.google.gson.Gson;
+import demo.object.GameObject;
+import demo.object.GameObjectType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -36,13 +40,13 @@ public class MapReader {
                     mapLevel.backgroundImage = ImageIO.read(MapReader.class.getResourceAsStream(mapLevel.background));
                 }
                 // load asset from json file.
-                String jsonAssetString = new String(Files.readAllBytes(Paths.get(MapReader.class.getResource("res/assets/" + mapLevel.objects + ".json").toURI())));
+                String jsonAssetString = new String(Files.readAllBytes(Paths.get(MapReader.class.getResource("/res/assets/" + mapLevel.objects + ".json").toURI())));
                 if (!jsonAssetString.equals("")) {
                     MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
                     mapLevel.asset = mop;
 
                     // generate tiles
-                    mapLevel.tiles = new MapObject[mapLevel.width][mapLevel.height];
+                    mapLevel.tiles = new MapObject[(int)mapLevel.width][(int)mapLevel.height];
                     // generate all objects.
                     mapLevel = createAssetMapObjects(mapLevel);
                     // build Map
@@ -86,7 +90,7 @@ public class MapReader {
             }
 
         } catch (IOException | URISyntaxException e) {
-            System.out.println("Unable to create MapLevel from Json");
+            System.out.println("Unable to create demo.map.MapLevel from Json");
         }
         return mapLevel;
     }

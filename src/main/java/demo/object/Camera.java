@@ -1,7 +1,11 @@
+package demo.object;
+
+import demo.DemoGame;
+
 import java.awt.*;
 
 /**
- * A 2D Camera to render scene from a constrained point of view.
+ * A 2D demo.object.Camera to render scene from a constrained point of view.
  */
 public class Camera extends GameObject {
 
@@ -11,11 +15,11 @@ public class Camera extends GameObject {
     public float zoom = 1.0f;
 
     /**
-     * Create a Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
+     * Create a demo.object.Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
      * manage camera sensitivity, and in a <code>viewport</code> size.
      *
      * @param name     name of the new camera.
-     * @param target   the GameObject to be followed by the camera.
+     * @param target   the demo.object.GameObject to be followed by the camera.
      * @param tween    the tween factor to manage camera sensitivity.
      * @param viewPort the size of the display window.
      */
@@ -30,7 +34,7 @@ public class Camera extends GameObject {
      * Update the camera according to the <code>elapsed</code> time.
      * Position is relative to the <code>target</code> object and the camera speed is computed through the <code>tween</code> factor.
      *
-     * @param dg      the DemoGame container for this camera
+     * @param dg      the demo.DemoGame container for this camera
      * @param elapsed the elapsed time since previous update.
      */
     public void update(DemoGame dg, float elapsed) {

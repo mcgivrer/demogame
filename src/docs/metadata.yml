@@ -1,0 +1,18 @@
+---
+title: demo.DemoGame
+subtitle: How-to Java 2D platform game ?
+author:
+  - Frédéric Delorme
+date: 2019-05-01
+keywords: 
+  - java
+  - 2d
+  - platform
+  - pattern
+category: gamedev
+description: |
+    This small how-to is an introduction to java 2D game development, guiding java developer to abc patterns used for beginners.
+lang: en-US
+header: How-To Java 2D Platform - 2019
+footer: fredericDOTdelormeATgmailDOTcom [p]
+---

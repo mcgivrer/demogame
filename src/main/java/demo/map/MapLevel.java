@@ -1,17 +1,16 @@
+package demo.map;
+
+import demo.object.GameObject;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapLevel {
-
-    public String levelName;
+public class MapLevel extends GameObject{
     public String description;
 
     public String objects;
     public MapObjectAsset asset;
-
-    public int width;
-    public int height;
 
     public String background;
     public BufferedImage backgroundImage;

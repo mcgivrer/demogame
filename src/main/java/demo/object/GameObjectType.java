@@ -1,3 +1,5 @@
+package demo.object;
+
 /**
  * Game object type definition.
  */
