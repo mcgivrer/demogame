@@ -22,8 +22,8 @@ cache:
   - "$HOME/.m2"
   - "$HOME/.cache"
 
-before_install:
-  - chmod +x mvnw
+#before_install:
+#  - chmod +x mvn
 
 # Define X11 env. for test execution
 before_script:
