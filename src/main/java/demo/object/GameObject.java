@@ -18,6 +18,8 @@ public class GameObject {
 
     public BufferedImage image;
 
+    public boolean enable = true;
+
     public float x, y;
     public float width, height;
 

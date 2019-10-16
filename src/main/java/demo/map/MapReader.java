@@ -102,7 +102,7 @@ public class MapReader {
                 Class<?> classO = Class.forName(mo.clazz);
                 go = (GameObject) classO.newInstance();
                 go = populateGo(mapLevel, go, mo);
-                go.layer = 1;
+                go.layer = 2;
                 go.priority = 1;
                 go.x = (x - 1) * mapLevel.asset.tileWidth;
                 go.y = (y - 1) * mapLevel.asset.tileHeight;

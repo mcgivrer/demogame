@@ -16,8 +16,8 @@ import java.util.List;
 /**
  * This demo.Renderer class is the main rendering component for all objects managed by its parent demo.DemoGame instance.
  *
- * @year 2019
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
+ * @year 2019
  */
 public class Renderer {
 
@@ -45,13 +45,14 @@ public class Renderer {
      */
     public JFrame createWindow(DemoGame dg) {
         jf = new JFrame(dg.config.title);
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jf.setBackground(Color.BLACK);
         Insets ins = jf.getInsets();
         Dimension dim = new Dimension((int) (dg.config.screenWidth * dg.config.screenScale) - (ins.left + ins.right),
                 (int) (dg.config.screenHeight * dg.config.screenScale) - (ins.top + ins.bottom));
         jf.setSize(dim);
         jf.setPreferredSize(dim);
         jf.pack();
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         jf.addKeyListener(dg);
 
@@ -82,18 +83,21 @@ public class Renderer {
 
         // draw all objects
         for (GameObject go : renderingObjectPipeline) {
-            if (!(go instanceof Camera)) {
-                go.render(dg, g);
-            }
-            if(go instanceof MapLevel){
-                if(dg.config.debug>2){
-                    g.setColor(Color.BLUE);
-                    g.fillRect(0,0,(int)go.width,(int)go.height);
-                }
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                mapRenderer.render(dg, g, (MapLevel)go, dg.camera);
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (go.enable) {
+                if (go instanceof MapLevel) {
 
+                    if (dg.config.debug > 2) {
+                        g.setColor(Color.BLUE);
+                        g.fillRect(0, 0, (int) go.width, (int) go.height);
+                    }
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    mapRenderer.render(dg, g, (MapLevel) go, dg.camera);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                } else if (go instanceof GameObject) {
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    go.render(dg, g);
+
+                }
             }
         }
 
@@ -109,7 +113,6 @@ public class Renderer {
         // render image to real screen (applying scale factor)
         renderToScreen(dg);
     }
-
 
 
     public void renderToScreen(DemoGame dg) {
@@ -133,10 +136,10 @@ public class Renderer {
                     for (GameObject go : renderingObjectPipeline) {
                         displayDebugInfo(dg, g, go, dg.camera, sX, sY);
                     }
-                    if(dg.config.debug>2){
+                    if (dg.config.debug > 2) {
                         g.setColor(Color.ORANGE);
-                        g.drawString("cam:"+dg.camera.name,(int)(20+sX),(int)(20*sY));
-                        g.drawRect((int)((10)*sX),(int)((10)*sY),(int)((dg.config.screenWidth-20)*sX),(int)((dg.config.screenHeight-20)*sY));
+                        g.drawString("cam:" + dg.camera.name, (int) (20 + sX), (int) (20 * sY));
+                        g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX), (int) ((dg.config.screenHeight - 20) * sY));
                     }
                 }
                 g.dispose();
