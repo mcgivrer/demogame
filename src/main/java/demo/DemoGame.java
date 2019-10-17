@@ -3,6 +3,7 @@ package demo;
 import core.Config;
 import core.Game;
 import core.Renderer;
+import core.ResourceManager;
 import core.map.MapCollider;
 import core.map.MapCollider.Direction;
 import core.map.MapLevel;
@@ -12,6 +13,7 @@ import core.object.GameObject;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -52,19 +54,25 @@ public class DemoGame extends Game {
     public void initialize() {
         super.initialize();
         mapCollider = new MapCollider();
+
+        ResourceManager.add(new String[]{"/res/maps/map_1.json","/res/assets/asset-1.json","/res/images/background-1.jpg","/res/images/tileset-1.png"});
+
+        loadState();
     }
 
     public void loadState() {
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
-        mapLevel.priority = 1;
-        mapLevel.layer = 3;
-        addObject(mapLevel);
-        addObject(mapLevel.player);
-        addAllObject(mapLevel.enemies);
-
-        // Create camera
-        Camera cam = new Camera("camera", mapLevel.player, 0.017f, new Dimension((int) mapLevel.width, (int) mapLevel.height));
-        addObject(cam);
+        if (mapLevel!=null){
+            mapLevel.priority = 1;
+            mapLevel.layer = 3;
+            addObject(mapLevel);
+            addObject(mapLevel.player);
+            addAllObject(mapLevel.enemies);
+    
+            // Create camera
+            Camera cam = new Camera("camera", mapLevel.player, 0.017f, new Dimension((int) mapLevel.width, (int) mapLevel.height));
+            addObject(cam);    
+        }
     }
 
     /**
@@ -79,7 +87,7 @@ public class DemoGame extends Game {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(this, elapsed);
                 constrainToMapLevel(mapLevel, go);
-                Direction ir = mapCollider.isColliding(mapLevel,go);
+                //Direction ir = mapCollider.isColliding(mapLevel,go);
 
             }
         }
