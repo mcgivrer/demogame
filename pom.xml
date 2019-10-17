@@ -6,8 +6,8 @@
     <artifactId>DemoGame</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>core.Game</name>
-    <description>THis is a sample implmentaiton of a Game with Java JRE only</description>
-    <url>https://github.com/mcgivrer/DemoGame</url>
+    <description>This is a sample implementaiton of a Game with Java JRE only</description>
+    <url>https://github.com/mcgivrer/demogame</url>
     <inceptionYear>2019</inceptionYear>
 
     <!-- Authors and Designers -->
@@ -86,6 +86,14 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -417,7 +425,7 @@
 		                        <configuration>
 		                            <headerType>gui</headerType>
 		                            <jar>${project.build.directory}/${project.name}-${project.version}-shaded.jar</jar>
-		                            <outfile>${project.build.directory}/DemoGame.exe</outfile>
+		                            <outfile>${project.build.directory}/${project.name}.exe</outfile>
 		                            <downloadUrl>http://java.com/download</downloadUrl>
 		                            <classPath>
 		                                <mainClass>${mainClass}</mainClass>
@@ -431,21 +439,19 @@
 		                            <versionInfo>
 		                                <fileVersion>1.0.0.0</fileVersion>
 		                                <txtFileVersion>${project.version}</txtFileVersion>
-		                                <fileDescription>core.Game</fileDescription>
+		                                <fileDescription>${project.name}</fileDescription>
 		                                <copyright>${project.inceptionYear} - http://snapgames.fr</copyright>
 		                                <productVersion>1.0.0.0</productVersion>
 		                                <txtProductVersion>1.0.0.0</txtProductVersion>
-		                                <productName>core.Game</productName>
+		                                <productName>${project.name}</productName>
 		                                <companyName>SnapGames</companyName>
-		                                <internalName>core.Game</internalName>
-		                                <originalFilename>core.Game.exe</originalFilename>
+		                                <internalName>${project.name}</internalName>
+		                                <originalFilename>${project.name}</originalFilename>
 		                            </versionInfo>
 		                        </configuration>
 		                    </execution>
 		                </executions>
 		            </plugin>
-
-
 			</plugins>
 		</build>
 	</profile>
