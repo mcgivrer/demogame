@@ -45,7 +45,7 @@
       "id": "O",
       "collectible": true,
       "money": 100,
-      "offset": "10,3"
+      "offset": "11,2"
     },
     ">": {
       "type": "tile",
