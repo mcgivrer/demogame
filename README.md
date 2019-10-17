@@ -1,6 +1,6 @@
 # DemoGame
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/631ddda85cc24966bd29b8c1fcba10c5)](https://www.codacy.com/manual/SnapGames/demogame?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mcgivrer/demogame&amp;utm_campaign=Badge_Grade)
+[![demogame](https://api.travis-ci.org/mcgivrer/demogame.svg?branch=develop)](https://travis-ci.org/mcgivrer/demogame "visit Travis-CI demogame project build page") [![Codacy Badge](https://api.codacy.com/project/badge/Grade/631ddda85cc24966bd29b8c1fcba10c5)](https://www.codacy.com/manual/SnapGames/demogame?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mcgivrer/demogame&amp;utm_campaign=Badge_Grade "visit Codacy demogame project quality page")
 
 
 This is a simple java game demonstration to play with ABC of game development.
