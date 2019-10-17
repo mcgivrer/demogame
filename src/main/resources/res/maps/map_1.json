@@ -1,8 +1,8 @@
 {
-  "levelName": "Level 1.1",
+  "name": "Level 1.1",
   "description": "This a demonstration level.",
-  "objects": "asset-1",
-  "background": "res/images/background-1.jpg",
+  "objects": "/res/assets/asset-1.json",
+  "background": "/res/images/background-1.jpg",
   "map": [
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",

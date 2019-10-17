@@ -1,3 +1,5 @@
+package core.object;
+
 /**
  * Game object type definition.
  */

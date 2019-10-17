@@ -1,21 +1,26 @@
+package core.map;
+
+import core.object.Camera;
+import core.Game;
+
 import java.awt.*;
 
 /**
- * A Renderer for the MapLevel.
+ * A core.Renderer for the core.map.MapLevel.
  *
  * @year 2019
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class MapRenderer {
     /**
-     * Rendering the MapLevel according to the camera position.
+     * Rendering the core.map.MapLevel according to the camera position.
      *
-     * @param dg     the DemoGame container
+     * @param dg     the core.Game container
      * @param g      The graphics API to be used
-     * @param map    The MapLevel to be rendered
+     * @param map    The core.map.MapLevel to be rendered
      * @param camera the camera to be used as a point of view.
      */
-    void render(DemoGame dg, Graphics2D g, MapLevel map, Camera camera) {
+    public void render(Game dg, Graphics2D g, MapLevel map, Camera camera) {
         int mWidth = map.map.get(0).length();
         int mHeight = map.map.size();
         if(map.backgroundImage!=null){
