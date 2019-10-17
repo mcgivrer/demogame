@@ -1,19 +1,20 @@
 package demo;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+
 import core.Config;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
 import core.map.MapCollider;
-import core.map.MapCollider.Direction;
 import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -55,23 +56,25 @@ public class DemoGame extends Game {
         super.initialize();
         mapCollider = new MapCollider();
 
-        ResourceManager.add(new String[]{"/res/maps/map_1.json","/res/assets/asset-1.json","/res/images/background-1.jpg","/res/images/tileset-1.png"});
+        ResourceManager.add(new String[] { "/res/maps/map_1.json", "/res/assets/asset-1.json",
+                "/res/images/background-1.jpg", "/res/images/tileset-1.png" });
 
         loadState();
     }
 
     public void loadState() {
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
-        if (mapLevel!=null){
+        if (mapLevel != null) {
             mapLevel.priority = 1;
             mapLevel.layer = 3;
             addObject(mapLevel);
             addObject(mapLevel.player);
             addAllObject(mapLevel.enemies);
-    
+
             // Create camera
-            Camera cam = new Camera("camera", mapLevel.player, 0.017f, new Dimension((int) mapLevel.width, (int) mapLevel.height));
-            addObject(cam);    
+            Camera cam = new Camera("camera", mapLevel.player, 0.017f,
+                    new Dimension((int) mapLevel.width, (int) mapLevel.height));
+            addObject(cam);
         }
     }
 
@@ -87,7 +90,7 @@ public class DemoGame extends Game {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(this, elapsed);
                 constrainToMapLevel(mapLevel, go);
-                //Direction ir = mapCollider.isColliding(mapLevel,go);
+                // Direction ir = mapCollider.isColliding(mapLevel,go);
 
             }
         }
@@ -130,12 +133,8 @@ public class DemoGame extends Game {
         r.drawOutLinedText(g, String.format("%05d", score), offsetX, offsetY, Color.WHITE, Color.BLACK);
         // draw Lifes
         String lifeStr = ":)";
-        r.drawOutLinedText(g, String.format("%s",
-                String.format("%0" + lifes + "d", 0).replace("0", lifeStr)),
-                config.screenWidth - (60 + offsetX),
-                offsetY,
-                Color.GREEN,
-                Color.BLACK);
+        r.drawOutLinedText(g, String.format("%s", String.format("%0" + lifes + "d", 0).replace("0", lifeStr)),
+                config.screenWidth - (60 + offsetX), offsetY, Color.GREEN, Color.BLACK);
         g.setFont(f);
     }
 }
