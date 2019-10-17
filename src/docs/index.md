@@ -1,8 +1,8 @@
-# demo.DemoGame
+# core.Game
 
 ## Introduction
 
-the demo.DemoGame project is a starter for discovering Game development with the java language and on the basic JDK proposed features.
+the core.Game project is a starter for discovering Game development with the java language and on the basic JDK proposed features.
 
 The small tutorial will drive you to the build of an ABC 2D platform game with some reusable and extensible principles, where you will be able to create new level and new game play, from scratch to a minimum but operational framework.
 
@@ -30,14 +30,14 @@ while(!exit){
 } 
 ```
 
-In a well formed java class, let's name it `demo.DemoGame`, we will create those methods:
+In a well formed java class, let's name it `core.Game`, we will create those methods:
 
 
 ```java
-public class demo.DemoGame {
+public class core.Game {
   private boolean exit=false;
   
-  public demo.DemoGame(){
+  public core.Game(){
   }
   
   public void initialize(){}
@@ -60,7 +60,7 @@ public class demo.DemoGame {
   public void render(){}
   
   public static void main(String[] argc){
-    demo.DemoGame dm = new demo.DemoGame();
+    core.Game dm = new core.Game();
     rm.run();
   }
 }
@@ -72,36 +72,36 @@ First initialize things, then start looping.
 
 With such simple class we will incrementally create our platform game.
 
-## demo.object.GameObject
+## core.object.GameObject
 
-As introduced before, I talk about some entities managed by the game. This where the `demo.object.GameObject` is going to play.  
+As introduced before, I talk about some entities managed by the game. This where the `core.object.GameObject` is going to play.  
 
-Any entity manage by the game,  the player character, the NPC (non playable characters), the score, the life, the all background display are objects in a game. The `demo.object.GameObject` is going to be the core matter of the `demo.DemoGame`.
+Any entity manage by the game,  the player character, the NPC (non playable characters), the score, the life, the all background display are objects in a game. The `core.object.GameObject` is going to be the core matter of the `core.Game`.
 
 To be able to draw anything on screen, we will need for each object , a position, a size. We would need some other properties like an image of a color, a shape (square, circle, rectangle), and to be animated more new attributes we will discover later.
 
 So, to start with a sustainable thing, create our class:
 
 ```java
-public class demo.object.GameObject {
+public class core.object.GameObject {
 	public String name;
 	public float x,y;
 	public float width,height;
 	public Color color;
-	public Color demo.object.GameObjectType type;
+	public Color core.object.GameObjectType type;
 	public Map<String,Object> attributes;
 }
 ```
 
 Manage our objects will be easier by adding a name and some free attributes map.
 
-So, our demo.DemoGame class will be enhance with some objects:
+So, our core.Game class will be enhance with some objects:
 
 ```java
-public class demo.DemoGame {
+public class core.Game {
   ...
   
-  private Map<String,demo.object.GameObject> objects;
+  private Map<String,core.object.GameObject> objects;
   
   ...
   

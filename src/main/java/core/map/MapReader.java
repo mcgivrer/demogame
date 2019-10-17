@@ -1,8 +1,8 @@
-package demo.map;
+package core.map;
 
 import com.google.gson.Gson;
-import demo.object.GameObject;
-import demo.object.GameObjectType;
+import core.object.GameObject;
+import core.object.GameObjectType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -90,7 +90,7 @@ public class MapReader {
             }
 
         } catch (IOException | URISyntaxException e) {
-            System.out.println("Unable to create demo.map.MapLevel from Json");
+            System.out.println("Unable to create core.map.MapLevel from Json");
         }
         return mapLevel;
     }

@@ -1,11 +1,11 @@
-package demo.object;
+package core.object;
 
-import demo.DemoGame;
+import core.Game;
 
 import java.awt.*;
 
 /**
- * A 2D demo.object.Camera to render scene from a constrained point of view.
+ * A 2D core.object.Camera to render scene from a constrained point of view.
  */
 public class Camera extends GameObject {
 
@@ -15,11 +15,11 @@ public class Camera extends GameObject {
     public float zoom = 1.0f;
 
     /**
-     * Create a demo.object.Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
+     * Create a core.object.Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
      * manage camera sensitivity, and in a <code>viewport</code> size.
      *
      * @param name     name of the new camera.
-     * @param target   the demo.object.GameObject to be followed by the camera.
+     * @param target   the core.object.GameObject to be followed by the camera.
      * @param tween    the tween factor to manage camera sensitivity.
      * @param viewPort the size of the display window.
      */
@@ -34,10 +34,10 @@ public class Camera extends GameObject {
      * Update the camera according to the <code>elapsed</code> time.
      * Position is relative to the <code>target</code> object and the camera speed is computed through the <code>tween</code> factor.
      *
-     * @param dg      the demo.DemoGame container for this camera
+     * @param dg      the core.Game container for this camera
      * @param elapsed the elapsed time since previous update.
      */
-    public void update(DemoGame dg, float elapsed) {
+    public void update(Game dg, float elapsed) {
         this.x += (target.x + (target.width) - ((float) (viewport.width + dg.renderer.screenBuffer.getWidth()) * 0.5f) - this.x) * tween * elapsed;
         this.y += (target.y + (target.height) - ((float) (viewport.height + dg.renderer.screenBuffer.getHeight()) * 0.5f) - this.y) * tween * elapsed;
         viewport.height *= zoom;
@@ -50,7 +50,7 @@ public class Camera extends GameObject {
      * @param dg the containing game
      * @param g  the graphics API.
      */
-    public void render(DemoGame dg, Graphics2D g) {
+    public void render(Game dg, Graphics2D g) {
         if (dg.config.debug > 1) {
             g.setColor(Color.YELLOW);
             g.drawRect((int) this.x, (int) this.y, viewport.width, viewport.height);

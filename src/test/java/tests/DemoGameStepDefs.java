@@ -3,8 +3,7 @@ package tests;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import demo.BddTestGame;
-import demo.DemoGame;
+import core.BddTestGame;
 
 import static org.junit.Assert.assertTrue;
 

@@ -1,6 +1,6 @@
-package demo.object;
+package core.object;
 
-import demo.DemoGame;
+import core.Game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -33,6 +33,8 @@ public class GameObject {
     public int debugLevel = 0;
 
     public GameObjectType type;
+
+    public BBox bbox;
 
     public Color foregroundColor = Color.RED;
     public Color backgroundColor = Color.BLACK;
@@ -69,10 +71,10 @@ public class GameObject {
     /**
      * update the object (on all its characteristics, not only position if needed)
      *
-     * @param dg      the demo.DemoGame containing the object.
+     * @param dg      the core.Game containing the object.
      * @param elapsed the elapsed time since previous call.
      */
-    public void update(DemoGame dg, float elapsed) {
+    public void update(Game dg, float elapsed) {
         x += (dx * elapsed);
         y += (dy * elapsed);
     }
@@ -80,10 +82,10 @@ public class GameObject {
     /**
      * Rendering of the object (will be delegated to another component in a next version.
      *
-     * @param dg the demo.DemoGame containing the object.
+     * @param dg the core.Game containing the object.
      * @param g  the graphics API.
      */
-    public void render(DemoGame dg, Graphics2D g) {
+    public void render(Game dg, Graphics2D g) {
         switch (type) {
             case RECTANGLE:
                 g.setColor(this.foregroundColor);

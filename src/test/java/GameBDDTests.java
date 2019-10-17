@@ -21,5 +21,5 @@ import org.junit.runner.RunWith;
                 "usage:target/cucumber-usage.json",
                 "junit:target/cucumber-results.xml",
         })
-public class DemoGameBDDTests {
+public class GameBDDTests {
 }

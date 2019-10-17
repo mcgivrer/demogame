@@ -7,7 +7,7 @@
     "E": {
       "id": "E",
       "type": "enemy_",
-      "clazz": "demo.object.GameObject",
+      "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "6,1",
       "size": "32,32",
@@ -21,7 +21,7 @@
     "P": {
       "id": "P",
       "type": "player",
-      "clazz": "demo.object.GameObject",
+      "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "4,1",
       "size": "32,32",

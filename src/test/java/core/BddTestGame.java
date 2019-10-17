@@ -1,8 +1,8 @@
-package demo;
+package core;
 
 import java.awt.*;
 
-public class BddTestGame extends DemoGame {
+public class BddTestGame extends Game {
 
     /**
      * Create the Game container.

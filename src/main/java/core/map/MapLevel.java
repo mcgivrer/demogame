@@ -1,6 +1,6 @@
-package demo.map;
+package core.map;
 
-import demo.object.GameObject;
+import core.object.GameObject;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

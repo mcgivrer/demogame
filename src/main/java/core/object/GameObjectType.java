@@ -1,4 +1,4 @@
-package demo.object;
+package core.object;
 
 /**
  * Game object type definition.

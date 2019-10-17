@@ -1,4 +1,4 @@
-package demo.map;
+package core.map;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;

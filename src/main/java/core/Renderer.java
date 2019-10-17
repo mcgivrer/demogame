@@ -1,9 +1,9 @@
-package demo;
+package core;
 
-import demo.map.MapLevel;
-import demo.map.MapRenderer;
-import demo.object.Camera;
-import demo.object.GameObject;
+import core.map.MapLevel;
+import core.map.MapRenderer;
+import core.object.Camera;
+import core.object.GameObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * This demo.Renderer class is the main rendering component for all objects managed by its parent demo.DemoGame instance.
+ * This core.Renderer class is the main rendering component for all objects managed by its parent core.Game instance.
  *
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @year 2019
@@ -30,20 +30,20 @@ public class Renderer {
     /**
      * Create the Game renderer.
      *
-     * @param dg the demo.DemoGame instance parent for this demo.Renderer.
+     * @param dg the core.Game instance parent for this core.Renderer.
      */
-    public Renderer(DemoGame dg) {
+    public Renderer(Game dg) {
         jf = createWindow(dg);
         screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
     }
 
     /**
-     * create a WXindow to host the game display according to demo.Config object.
+     * create a WXindow to host the game display according to core.Config object.
      *
-     * @param dg the demo.DemoGame object to access the configuration instance.
+     * @param dg the core.Game object to access the configuration instance.
      * @return a JFrame initialized conforming to config attributes.
      */
-    public JFrame createWindow(DemoGame dg) {
+    public JFrame createWindow(Game dg) {
         jf = new JFrame(dg.config.title);
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jf.setBackground(Color.BLACK);
@@ -65,7 +65,7 @@ public class Renderer {
     /**
      * Render all objects !
      */
-    public void render(DemoGame dg) {
+    public void render(Game dg) {
         Graphics2D g = screenBuffer.createGraphics();
 
         // activate Antialiasing for image and text rendering.
@@ -115,7 +115,7 @@ public class Renderer {
     }
 
 
-    public void renderToScreen(DemoGame dg) {
+    public void renderToScreen(Game dg) {
         if (jf != null) {
             Graphics2D g = (Graphics2D) jf.getGraphics();
             float sX = jf.getWidth() / dg.config.screenWidth;
@@ -147,7 +147,7 @@ public class Renderer {
         }
     }
 
-    public void displayDebugInfo(DemoGame dg, Graphics2D g, GameObject go, Camera cam, float sX, float sY) {
+    public void displayDebugInfo(Game dg, Graphics2D g, GameObject go, Camera cam, float sX, float sY) {
         Font debugFont = g.getFont().deriveFont(5.0f);
         if (dg.config.debug > 1) {
             float offsetX = go.x + go.width + 2 - cam.x;
@@ -204,7 +204,7 @@ public class Renderer {
                 }
             });
         } else {
-            System.out.println(String.format("Error : demo.object.GameObject %s already exists in rendering pipeline.", go.name));
+            System.out.println(String.format("Error : core.object.GameObject %s already exists in rendering pipeline.", go.name));
         }
 
     }
