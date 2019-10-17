@@ -1,14 +1,14 @@
 # DemoGame
 
-This is a mono java class game demonstration to play with ABC of game development.
+This is a simple java game demonstration to play with ABC of game development.
 
 Build with :
 
-    $> javac DemoGame.java
+    $> mvn clean install
 
 Play with :
 
-    $> java DemoGame
+    $> mvn exec:java
 
 
 ![Screenshot of the demo](src/docs/images/screen-1.png "open the image")
