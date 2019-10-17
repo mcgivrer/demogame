@@ -45,7 +45,7 @@
     </ciManagement>
 
     <properties>
-        <mainClass>core.Game</mainClass>
+        <mainClass>demo.DemoGame</mainClass>
     </properties>
 
     <!-- Project Dependencies -->
@@ -227,7 +227,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>core.Game</mainClass>
+                    <mainClass>${mainClass}</mainClass>
                     <arguments>
                         <!-- to be soon interpreted by a CLI impl. -->
                         <argument>d=0</argument>
@@ -420,7 +420,7 @@
 		                            <outfile>${project.build.directory}/DemoGame.exe</outfile>
 		                            <downloadUrl>http://java.com/download</downloadUrl>
 		                            <classPath>
-		                                <mainClass>core.Game</mainClass>
+		                                <mainClass>${mainClass}</mainClass>
 		                                <preCp>anything</preCp>
 		                            </classPath>
 		                            <icon>src/main/resources/res/app-icon.ico</icon>
