@@ -1,0 +1,21 @@
+{
+  "name": "Level test",
+  "description": "BDD test level.",
+  "objects": "asset-test",
+  "background": "/res/images/background-1.jpg",
+  "map": [
+    "B",
+    "V",
+    "P",
+    "o",
+    ">",
+    "E",
+    "h",
+    "H",
+    "<",
+    "O",
+    "=",
+    "k",
+    "|"
+  ]
+}

@@ -1,3 +1,5 @@
+package core;
+
 /**
  * A configuration component to manage and use easily parameters.
  */
@@ -23,7 +25,7 @@ public class Config {
 
     public static Config analyzeArgc(String[] argc) {
         Config config = new Config();
-        config.title = "DemoGame";
+        config.title = "core.Game";
         config.screenWidth = 320;
         config.screenHeight = 200;
         config.screenScale = 2.0f;
