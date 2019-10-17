@@ -3,6 +3,7 @@ package demo;
 import core.Config;
 import core.Game;
 import core.Renderer;
+import core.ResourceManager;
 import core.map.MapCollider;
 import core.map.MapCollider.Direction;
 import core.map.MapLevel;
@@ -12,6 +13,7 @@ import core.object.GameObject;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -52,6 +54,8 @@ public class DemoGame extends Game {
     public void initialize() {
         super.initialize();
         mapCollider = new MapCollider();
+
+        ResourceManager.add(new String[]{"/res/maps/map_1.json","res/assets/asset-1.json","background-1.jpg","tileset-1.png"});
     }
 
     public void loadState() {
@@ -79,7 +83,7 @@ public class DemoGame extends Game {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(this, elapsed);
                 constrainToMapLevel(mapLevel, go);
-                Direction ir = mapCollider.isColliding(mapLevel,go);
+                //Direction ir = mapCollider.isColliding(mapLevel,go);
 
             }
         }
