@@ -1,41 +1,42 @@
 package core.map;
 
+import core.object.BBox;
 import core.object.GameObject;
-
-import java.awt.*;
 
 public class MapCollider {
 
-    public enum Direction{
-        NONE,
-        TOP,
-        BOTTOM,
-        LEFT,
-        RIGHT;
+    public void checkCollision(MapLevel map, GameObject go) {
+
+        int ox = (int) (go.bbox.x / map.asset.tileWidth);
+        int oy = (int) (go.bbox.y / map.asset.tileHeight);
+
+        MapObject mo;
+        if (Math.signum(go.dx) > 0.0f) {
+            mo = getTile(map, ox + 1, oy);
+            if (mo.block) {
+                go.dx = 0.0f;
+                go.x = mo.bbox.x - go.width;
+            }
+        }
+        if (Math.signum(go.dx) < 0.0f) {
+            mo = getTile(map, ox - 1, oy);
+            if (mo.block) {
+                go.dx = 0.0f;
+                go.x = mo.bbox.x;
+            }
+        }
+
+
     }
 
-    public Direction isColliding(MapLevel map, GameObject go) {
-        int ox = (int) (go.bbox.x / map.asset.tileWidth);
-        int oy = (int) (go.bbox.x / map.asset.tileHeight);
-        int ow = (int) (go.bbox.width / map.asset.tileWidth);
-        int oh = (int) (go.bbox.height / map.asset.tileHeight);
 
-        MapObject mo = map.tiles[ox-1][oy];
-        MapObject mo1 = map.tiles[ox+ow+1][oy];
-        MapObject mo2 = map.tiles[ox][oy-1];
-        MapObject mo3 = map.tiles[ox][oy+oh+1];
-        if(mo!=null){
-            return Direction.LEFT;
+    public MapObject getTile(MapLevel map, int x, int y) {
+        BBox bbox = null;
+        MapObject mo = map.tiles[x][y];
+        if (mo != null) {
+            bbox = new BBox(x * map.asset.tileWidth, y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
+            mo.bbox = bbox;
         }
-        if(mo1!=null){
-            return Direction.RIGHT;
-        }
-        if(mo2!=null){
-            return Direction.TOP;
-        }
-        if(mo3!=null){
-            return Direction.BOTTOM;
-        }
-        return Direction.NONE;
+        return mo;
     }
 }

@@ -1,5 +1,7 @@
 package core.map;
 
+import core.object.BBox;
+
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,4 +31,5 @@ public class MapObject {
 
     public boolean levelOutput;
     public String nextLevel;
+    public BBox bbox;
 }

@@ -1,7 +1,7 @@
 package core.map;
 
-import core.object.Camera;
 import core.Game;
+import core.object.Camera;
 
 import java.awt.*;
 
@@ -12,6 +12,7 @@ import java.awt.*;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class MapRenderer {
+    Color backTransparent = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     /**
      * Rendering the core.map.MapLevel according to the camera position.
      *
@@ -24,7 +25,10 @@ public class MapRenderer {
         int mWidth = map.map.get(0).length();
         int mHeight = map.map.size();
         if(map.backgroundImage!=null){
-            g.drawImage(map.backgroundImage,(int)camera.x,(int)camera.y,null);
+            double bx = camera.x * map.backgroundImage.getWidth() / (mWidth*map.asset.tileWidth);
+            double by = camera.y;
+
+            g.drawImage(map.backgroundImage,(int)bx,(int)by,null);
         }
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
@@ -32,7 +36,8 @@ public class MapRenderer {
                 if (mo != null) {
                     g.drawImage(mo.imageBuffer, x * mo.width, y * mo.height, null);
                 } else {
-                    //g.clearRect(x * map.asset.tileWidth, y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
+                    g.setBackground(backTransparent);
+                    g.clearRect(x * map.asset.tileWidth, y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
                 }
             }
         }
