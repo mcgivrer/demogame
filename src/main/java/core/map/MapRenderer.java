@@ -24,7 +24,10 @@ public class MapRenderer {
         int mWidth = map.map.get(0).length();
         int mHeight = map.map.size();
         if(map.backgroundImage!=null){
-            g.drawImage(map.backgroundImage,(int)camera.x,(int)camera.y,null);
+            double bx = camera.x * map.backgroundImage.getWidth() / (mWidth*map.asset.tileWidth);
+            double by = camera.y;
+
+            g.drawImage(map.backgroundImage,(int)bx,(int)by,null);
         }
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
