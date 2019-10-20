@@ -25,8 +25,8 @@ public class Config {
 
     public static Config analyzeArgc(String[] argc) {
         Config config = new Config();
-        config.title = "core.Game";
-        config.screenWidth = 320;
+        config.title = "DemoGame";
+        config.screenWidth = 360;
         config.screenHeight = 200;
         config.screenScale = 2.0f;
         config.debug = 0;

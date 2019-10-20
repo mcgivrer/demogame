@@ -47,8 +47,6 @@ public abstract class Game implements KeyListener {
 
     public void initialize() {
         renderer = new Renderer(this);
-
-        loadState();
     }
 
     public abstract void loadState();
@@ -119,7 +117,7 @@ public abstract class Game implements KeyListener {
     public void addObject(GameObject go) {
         if (go instanceof Camera) {
             this.camera = (Camera) go;
-        } else if (!objects.containsKey(go.name)) {
+        } else if (objects!=null && !objects.containsKey(go.name)) {
 
             objects.put(go.name, go);
             renderer.add(go);
@@ -209,6 +207,8 @@ public abstract class Game implements KeyListener {
                 // roll the debug level.
                 config.debug = (config.debug < 6 ? config.debug + 1 : 0);
                 break;
+            case KeyEvent.VK_F3:
+                renderer.saveScreenshot(config);
             default:
                 break;
         }
