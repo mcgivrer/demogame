@@ -192,7 +192,7 @@
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>core.Game</mainClass>
+                            <mainClass>${mainClass}</mainClass>
                         </transformer>
                         <!--transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
                             <resource>src/main/resources/res</resource> <file>server.properties</file>
