@@ -13,6 +13,6 @@ Play with :
 
     $> mvn exec:java
 
-![Screenshot of the core](src/docs/images/screen-1.png "open the image")
+![Screenshot of the core](src/docs/images/screen-2.png "A Good view for a prototype !")
 
 McG.

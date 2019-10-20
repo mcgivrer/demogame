@@ -207,6 +207,8 @@ public abstract class Game implements KeyListener {
                 // roll the debug level.
                 config.debug = (config.debug < 6 ? config.debug + 1 : 0);
                 break;
+            case KeyEvent.VK_F3:
+                renderer.saveScreenshot(config);
             default:
                 break;
         }

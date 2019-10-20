@@ -150,7 +150,7 @@ public class DemoGame extends Game {
         // draw Life
         g.drawImage(lifeImg, offsetX, offsetY - 16, null);
         g.setFont(f.deriveFont(10.0f));
-        r.drawOutLinedText(g, String.format("%d", life), offsetX + 8, offsetY, Color.WHITE, Color.BLACK);
+        r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY+1, Color.WHITE, Color.BLACK);
         // draw Coins
         g.drawImage(coinsImg, offsetX, offsetY, null);
         g.setFont(f.deriveFont(10.0f));

@@ -5,9 +5,15 @@ import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +32,8 @@ public class Renderer {
     private MapRenderer mapRenderer = new MapRenderer();
 
     public BufferedImage screenBuffer;
+
+    private static int screenShotIndex = 0;
 
     /**
      * Create the Game renderer.
@@ -215,5 +223,25 @@ public class Renderer {
 
     public void removeAll(List<GameObject> toBeRemoved) {
         renderingObjectPipeline.removeAll(toBeRemoved);
+    }
+
+    /**
+     * Save a screenshot of the current buffer.
+     */
+    public void saveScreenshot(Config config) {
+        final String path = this.getClass().getResource("/").getFile();
+        Path targetDir = Paths.get(path + File.separator);
+        String filename = path + File.separator + config.title + "-screenshot-" + java.lang.System.nanoTime() + "-"
+                + (screenShotIndex++) + ".png";
+
+        try {
+            if (!Files.exists(targetDir)) {
+                Files.createDirectory(targetDir);
+            }
+            File out = new File(filename);
+            ImageIO.write(screenBuffer, "PNG", out);
+        } catch (IOException e) {
+            java.lang.System.err.println("Unable to write screenshot to " + filename + ":" + e.getMessage());
+        }
     }
 }
