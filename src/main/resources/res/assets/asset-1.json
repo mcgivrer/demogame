@@ -13,8 +13,8 @@
       "size": "32,32",
       "color": "RED",
       "attributes": {
-        "energy": 100,
-        "damage": 10,
+        "energy": 100.0,
+        "damage": 10.0,
         "coins":5
       }
     },
@@ -27,10 +27,10 @@
       "size": "32,32",
       "color": "BLUE",
       "attributes": {
-        "energy": 100,
-        "mana": 100,
-        "damage": 50,
-        "coins":25
+        "energy": 100.0,
+        "mana": 100.0,
+        "damage": 50.0,
+        "coins":250
       }
     },
     "o": {
@@ -75,6 +75,12 @@
       "hit": true,
       "damage": 10
     },
+    "b": {
+      "type": "tile",
+      "id": "b",
+      "block": true,
+      "offset": "17,8"
+    },
     "B": {
       "type": "tile",
       "id": "B",
@@ -92,6 +98,12 @@
       "id": "h",
       "block": false,
       "offset": "19,5"
+    },
+    "T": {
+      "type": "tile",
+      "id": "T",
+      "block": false,
+      "offset": "19,6"
     },
     "k": {
       "type": "tile",
@@ -111,6 +123,18 @@
       "image": "door-level-out.png",
       "levelOutput": true,
       "nextLevel": "map_2"
+    },
+    "(": {
+      "type": "tile",
+      "id": "(",
+      "block": true,
+      "offset": "19,7"
+    },
+    ")": {
+      "type": "tile",
+      "id": "(",
+      "block": true,
+      "offset": "20,7"
     }
   }
 }

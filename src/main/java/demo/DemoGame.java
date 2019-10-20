@@ -1,11 +1,5 @@
 package demo;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-
 import core.Config;
 import core.Game;
 import core.Renderer;
@@ -15,6 +9,10 @@ import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -28,7 +26,14 @@ public class DemoGame extends Game {
     public MapCollider mapCollider;
 
     public int score = 0;
-    public int lifes = 4;
+    public int life = 4;
+    private int maxItemsOnScreen = 2;
+
+    private BufferedImage energyImg;
+    private BufferedImage manaImg;
+    private BufferedImage coinsImg;
+    private BufferedImage lifeImg;
+    private BufferedImage itemHolderImg;
 
     /**
      * Create the Game container.
@@ -56,13 +61,23 @@ public class DemoGame extends Game {
         super.initialize();
         mapCollider = new MapCollider();
 
-        ResourceManager.add(new String[] { "/res/maps/map_1.json", "/res/assets/asset-1.json",
-                "/res/images/background-1.jpg", "/res/images/tileset-1.png" });
+        ResourceManager.add(new String[]{
+                "/res/maps/map_1.json",
+                "/res/assets/asset-1.json",
+                "/res/images/background-1.jpg",
+                "/res/images/tileset-1.png"});
+        BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
+        energyImg = sprites.getSubimage(0, 0, 41, 9);
+        manaImg = sprites.getSubimage(0, 22, 41, 5);
+        lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
+        coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
+        itemHolderImg = sprites.getSubimage((5 * 16)+1, 16, 18, 18);
 
         loadState();
     }
 
     public void loadState() {
+
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
         if (mapLevel != null) {
             mapLevel.priority = 1;
@@ -127,14 +142,38 @@ public class DemoGame extends Game {
     }
 
     public void drawHUD(Renderer r, Graphics2D g) {
-        int offsetX = 4, offsetY = 30;
+        int offsetX = 12, offsetY = 30;
         Font f = g.getFont();
-        g.setFont(f.deriveFont(8));
-        r.drawOutLinedText(g, String.format("%05d", score), offsetX, offsetY, Color.WHITE, Color.BLACK);
-        // draw Lifes
-        String lifeStr = ":)";
-        r.drawOutLinedText(g, String.format("%s", String.format("%0" + lifes + "d", 0).replace("0", lifeStr)),
-                config.screenWidth - (60 + offsetX), offsetY, Color.GREEN, Color.BLACK);
+        g.setFont(f.deriveFont(12.0f));
+        // draw Score
+        r.drawOutLinedText(g, String.format("%05d", score), config.screenWidth - (46 + offsetX), offsetY, Color.WHITE, Color.BLACK);
+        // draw Life
+        g.drawImage(lifeImg, offsetX, offsetY - 16, null);
+        g.setFont(f.deriveFont(10.0f));
+        r.drawOutLinedText(g, String.format("%d", life), offsetX + 8, offsetY, Color.WHITE, Color.BLACK);
+        // draw Coins
+        g.drawImage(coinsImg, offsetX, offsetY, null);
+        g.setFont(f.deriveFont(10.0f));
+        double coins = (double)(mapLevel.player.attributes.get("coins"));
+        r.drawOutLinedText(g, String.format("%d", (int)coins), offsetX + 8, offsetY+16, Color.WHITE, Color.BLACK);
+        // draw Mana
+        float nrjRatio = (energyImg.getWidth() / 100.0f);
+        double nrj = nrjRatio * ((double) (mapLevel.player.attributes.get("energy")));
+        g.drawImage(energyImg, offsetX + 24, offsetY - 8, (int) nrj, energyImg.getHeight(), null);
+        // draw Energy
+        float manaRatio = (manaImg.getWidth() / 100.0f);
+        double mana = manaRatio * ((double) (mapLevel.player.attributes.get("mana")));
+        g.drawImage(manaImg, offsetX + 24, offsetY + 2, (int) mana, manaImg.getHeight(), null);
+
+        // draw Items
+        for (int itmNb = 1; itmNb <= maxItemsOnScreen; itmNb++) {
+            g.drawImage(itemHolderImg,
+                    config.screenWidth - offsetX - (itmNb * (itemHolderImg.getWidth()-1)),
+                    config.screenHeight - (itemHolderImg.getHeight()+12),
+                    itemHolderImg.getWidth(),
+                    itemHolderImg.getHeight(),
+                    null);
+        }
         g.setFont(f);
     }
 }
