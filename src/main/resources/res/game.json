@@ -1,0 +1,6 @@
+{
+  "defaultState": "game",
+  "states": {
+    "game": "demo.states.DemoState"
+  }
+}

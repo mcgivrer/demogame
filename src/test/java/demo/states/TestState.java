@@ -1,6 +1,5 @@
-package demo;
+package demo.states;
 
-import core.Config;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
@@ -9,18 +8,14 @@ import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
+import core.state.AbstractState;
+import core.state.State;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-/**
- * An extra class to demonstrate some basics to create a simple java game.
- *
- * @author Frédéric Delorme
- * @since 2019
- */
-public class DemoGame extends Game {
+public class TestState extends AbstractState implements State {
 
     public MapLevel mapLevel;
     public MapCollider mapCollider;
@@ -35,30 +30,39 @@ public class DemoGame extends Game {
     private BufferedImage lifeImg;
     private BufferedImage itemHolderImg;
 
-    /**
-     * Create the Game container.
-     *
-     * @param argc list of arguments.
-     * @see Config#analyzeArgc(String[])
-     */
-    public DemoGame(String[] argc) {
-        super(argc);
-        config = Config.analyzeArgc(argc);
-    }
-
-    /**
-     * The famous java Execution entry point.
-     *
-     * @param argc
-     */
-    public static void main(String[] argc) {
-        DemoGame dg = new DemoGame(argc);
-        dg.run();
+    public TestState(Game g) {
+        super(g);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void input(Game g) {
+        if (g.keys[KeyEvent.VK_ESCAPE]) {
+            g.exitRequest = true;
+        }
+
+        mapLevel.player.setSpeed(0.0f, 0.0f);
+
+        if (g.keys[KeyEvent.VK_UP]) {
+            mapLevel.player.dy = -0.2f;
+        }
+        if (g.keys[KeyEvent.VK_DOWN]) {
+            mapLevel.player.dy = 0.2f;
+        }
+        if (g.keys[KeyEvent.VK_LEFT]) {
+            mapLevel.player.dx = -0.2f;
+            mapLevel.player.direction = -1;
+        }
+        if (g.keys[KeyEvent.VK_RIGHT]) {
+            mapLevel.player.dx = 0.2f;
+            mapLevel.player.direction = 1;
+        }
+        if (g.keys[KeyEvent.VK_SPACE]) {
+            // Todo implement Jump
+        }
+    }
+
+    @Override
+    public void initialize(Game g) {
         mapCollider = new MapCollider();
 
         ResourceManager.add(new String[]{
@@ -71,13 +75,12 @@ public class DemoGame extends Game {
         manaImg = sprites.getSubimage(0, 22, 41, 5);
         lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
         coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
-        itemHolderImg = sprites.getSubimage((5 * 16)+1, 16, 18, 18);
+        itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
 
-        loadState();
     }
 
-    public void loadState() {
-
+    @Override
+    public void load(Game g) {
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
         if (mapLevel != null) {
             mapLevel.priority = 1;
@@ -93,69 +96,52 @@ public class DemoGame extends Game {
         }
     }
 
-    /**
-     * Update all the object according to elapsed time.
-     *
-     * @param elapsed
-     */
-    public void update(float elapsed) {
+    @Override
+    public boolean isLoaded() {
+        return false;
+    }
+
+    @Override
+    public void update(Game g, float elapsed) {
 
         // update all objects
         for (GameObject go : objects.values()) {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
-                go.update(this, elapsed);
-                constrainToMapLevel(mapLevel, go);
-                // Direction ir = mapCollider.isColliding(mapLevel,go);
-
+                go.update(g, elapsed);
+                mapLevel.constrainToMapLevel(go);
             }
         }
         // active core.object.Camera update
         if (this.camera != null) {
-            camera.update(this, elapsed);
+            camera.update(g, elapsed);
         }
     }
 
-    public void input() {
-        if (keys[KeyEvent.VK_ESCAPE]) {
-            exitRequest = true;
-        }
+    @Override
+    public void render(Game g, Renderer r) {
 
-        mapLevel.player.setSpeed(0.0f, 0.0f);
-
-        if (keys[KeyEvent.VK_UP]) {
-            mapLevel.player.dy = -0.2f;
-        }
-        if (keys[KeyEvent.VK_DOWN]) {
-            mapLevel.player.dy = 0.2f;
-        }
-        if (keys[KeyEvent.VK_LEFT]) {
-            mapLevel.player.dx = -0.2f;
-            mapLevel.player.direction = -1;
-        }
-        if (keys[KeyEvent.VK_RIGHT]) {
-            mapLevel.player.dx = 0.2f;
-            mapLevel.player.direction = 1;
-        }
-        if (keys[KeyEvent.VK_SPACE]) {
-            // Todo implement Jump
-        }
     }
 
-    public void drawHUD(Renderer r, Graphics2D g) {
+    @Override
+    public void dispose(Game g) {
+
+    }
+
+    public void drawHUD(Game ga,Renderer r, Graphics2D g) {
         int offsetX = 12, offsetY = 30;
         Font f = g.getFont();
         g.setFont(f.deriveFont(12.0f));
         // draw Score
-        r.drawOutLinedText(g, String.format("%05d", score), config.screenWidth - (46 + offsetX), offsetY, Color.WHITE, Color.BLACK);
+        r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY, Color.WHITE, Color.BLACK);
         // draw Life
         g.drawImage(lifeImg, offsetX, offsetY - 16, null);
         g.setFont(f.deriveFont(10.0f));
-        r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY+1, Color.WHITE, Color.BLACK);
+        r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK);
         // draw Coins
         g.drawImage(coinsImg, offsetX, offsetY, null);
         g.setFont(f.deriveFont(10.0f));
-        double coins = (double)(mapLevel.player.attributes.get("coins"));
-        r.drawOutLinedText(g, String.format("%d", (int)coins), offsetX + 8, offsetY+16, Color.WHITE, Color.BLACK);
+        double coins = (double) (mapLevel.player.attributes.get("coins"));
+        r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK);
         // draw Mana
         float nrjRatio = (energyImg.getWidth() / 100.0f);
         double nrj = nrjRatio * ((double) (mapLevel.player.attributes.get("energy")));
@@ -168,8 +154,8 @@ public class DemoGame extends Game {
         // draw Items
         for (int itmNb = 1; itmNb <= maxItemsOnScreen; itmNb++) {
             g.drawImage(itemHolderImg,
-                    config.screenWidth - offsetX - (itmNb * (itemHolderImg.getWidth()-1)),
-                    config.screenHeight - (itemHolderImg.getHeight()+12),
+                    ga.config.screenWidth - offsetX - (itmNb * (itemHolderImg.getWidth() - 1)),
+                    ga.config.screenHeight - (itemHolderImg.getHeight() + 12),
                     itemHolderImg.getWidth(),
                     itemHolderImg.getHeight(),
                     null);

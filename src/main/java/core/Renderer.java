@@ -76,6 +76,8 @@ public class Renderer {
     public void render(Game dg) {
         Graphics2D g = screenBuffer.createGraphics();
 
+        Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+
         // activate Antialiasing for image and text rendering.
 
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -85,8 +87,8 @@ public class Renderer {
         g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
 
         // if a camera is set, use it.
-        if (dg.camera != null) {
-            g.translate(-dg.camera.x, -dg.camera.y);
+        if (camera != null) {
+            g.translate(-camera.x, -camera.y);
         }
 
         // draw all objects
@@ -99,7 +101,7 @@ public class Renderer {
                         g.fillRect(0, 0, (int) go.width, (int) go.height);
                     }
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                    mapRenderer.render(dg, g, (MapLevel) go, dg.camera);
+                    mapRenderer.render(dg, g, (MapLevel) go, camera);
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 } else if (go instanceof GameObject) {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -110,12 +112,12 @@ public class Renderer {
         }
 
         // if a camera is set, use it.
-        if (dg.camera != null) {
-            g.translate(dg.camera.x, dg.camera.y);
+        if (camera != null) {
+            g.translate(camera.x, camera.y);
         }
 
-        // draw score
-        dg.drawHUD(this, g);
+        // draw HUD
+        dg.stateManager.getCurrent().drawHUD(dg,this, g);
         g.dispose();
 
         // render image to real screen (applying scale factor)
@@ -124,6 +126,7 @@ public class Renderer {
 
 
     public void renderToScreen(Game dg) {
+        Camera camera = dg.stateManager.getCurrent().getActiveCamera();
         if (jf != null) {
             Graphics2D g = (Graphics2D) jf.getGraphics();
             float sX = jf.getWidth() / dg.config.screenWidth;
@@ -137,16 +140,16 @@ public class Renderer {
                     g.drawString(
                             String.format("debug:%d | cam:(%03.1f,%03.1f)",
                                     dg.config.debug,
-                                    dg.camera.x, dg.camera.y),
+                                    camera.x, camera.y),
                             4,
                             jf.getHeight() - 20);
 
                     for (GameObject go : renderingObjectPipeline) {
-                        displayDebugInfo(dg, g, go, dg.camera, sX, sY);
+                        displayDebugInfo(dg, g, go, camera, sX, sY);
                     }
                     if (dg.config.debug > 2) {
                         g.setColor(Color.ORANGE);
-                        g.drawString("cam:" + dg.camera.name, (int) (20 + sX), (int) (20 * sY));
+                        g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
                         g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX), (int) ((dg.config.screenHeight - 20) * sY));
                     }
                 }
