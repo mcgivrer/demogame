@@ -10,6 +10,7 @@ public class Config {
     public int fps;
     public String title;
     public int debug;
+    public String statesPath;
 
     /**
      * Initialization of default values for configuraiton.
@@ -21,6 +22,7 @@ public class Config {
         this.screenScale = 0f;
         this.fps = 0;
         this.debug = 0;
+        this.statesPath = "/res/game.json";
     }
 
     public static Config analyzeArgc(String[] argc) {

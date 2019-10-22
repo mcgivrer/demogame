@@ -1,16 +1,12 @@
 package core;
 
 import core.map.MapLevel;
-import core.object.Camera;
 import core.object.GameObject;
+import core.state.StateManager;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -18,19 +14,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Frédéric Delorme
  * @since 2019
  */
-public abstract class Game implements KeyListener {
+public class Game implements KeyListener {
 
-    private static long goIndex = 0;
+    public static long goIndex = 0;
     public Config config;
     public boolean exitRequest = false;
     private String[] argc;
-    protected boolean[] keys = new boolean[65536];
-    protected boolean[] previousKeys = new boolean[65536];
+    public boolean[] keys = new boolean[65536];
+    public boolean[] previousKeys = new boolean[65536];
 
     public Renderer renderer;
-
-    public Camera camera;
-    public Map<String, GameObject> objects = new ConcurrentHashMap<>();
+    public StateManager stateManager;
 
 
     /**
@@ -44,26 +38,37 @@ public abstract class Game implements KeyListener {
         config = Config.analyzeArgc(argc);
     }
 
-
-    public void initialize() {
-        renderer = new Renderer(this);
+    public void run() {
+        System.out.println("Run game");
+        initialize();
+        loop();
+        System.out.println("Game stopped");
+        System.exit(0);
     }
 
-    public abstract void loadState();
-
+    public void initialize() {
+        ResourceManager.add("/res/game.json");
+        renderer = new Renderer(this);
+        stateManager = new StateManager(this);
+    }
 
     public void loop() {
+        stateManager.initialize(this);
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
 
         while (!exitRequest) {
             startTime = System.currentTimeMillis();
+
             float elapsed = startTime - previousTime;
-            input();
-            update(elapsed);
-            renderer.render(this);
+
+            stateManager.input(this);
+            stateManager.update(this, elapsed);
+            stateManager.render(this, renderer);
+
             float wait = ((config.fps * 0.001f));
+
             if (wait > 0) {
                 try {
                     Thread.sleep((int) wait);
@@ -88,89 +93,6 @@ public abstract class Game implements KeyListener {
 
     }
 
-    public void constrainToMapLevel(MapLevel bi, GameObject go) {
-        if (go.x + go.width > bi.width * bi.asset.tileWidth) {
-            go.x = bi.width * bi.asset.tileWidth - go.width;
-            go.dx = -go.dx;
-        }
-        if (go.y + go.height > bi.height * bi.asset.tileHeight) {
-            go.y = bi.height * bi.asset.tileHeight - go.height;
-            go.dy = -go.dy;
-        }
-
-        if (go.x < 0.0f) {
-            go.x = 0.0f;
-            go.dx = -go.dx;
-        }
-        if (go.y < 0.0f) {
-            go.y = 0.0f;
-            go.dy = -go.dy;
-        }
-    }
-
-    /**
-     * Add a Game object to the managed objects list.
-     * If the <code>go</code> core.object.GameObject is a core.object.Camera instance, it will be set as the default camera.
-     *
-     * @param go the core.object.GameObject to be added to the core.Game#objects list.
-     */
-    public void addObject(GameObject go) {
-        if (go instanceof Camera) {
-            this.camera = (Camera) go;
-        } else if (objects!=null && !objects.containsKey(go.name)) {
-
-            objects.put(go.name, go);
-            renderer.add(go);
-
-        }
-    }
-
-    /**
-     * Add a bunch of object to the game !
-     *
-     * @param objects the list of core.object.GameObject to be added to the core.Game#objects list.
-     */
-    public void addAllObject(List<GameObject> objects) {
-        for (GameObject o : objects) {
-            addObject(o);
-        }
-    }
-
-    public void removeObject(GameObject go) {
-        objects.remove(go.name);
-        renderer.remove(go);
-    }
-
-    public void removeObject(String name) {
-        if (objects.containsKey(name)) {
-            GameObject go = objects.get(name);
-            renderer.remove(go);
-            objects.remove(go);
-        }
-    }
-
-    public void removeFilteredObjects(String nameFilter) {
-        List<GameObject> toBeRemoved = new ArrayList<>();
-        for (GameObject go : objects.values()) {
-            if (go.name.contains(nameFilter)) {
-                toBeRemoved.add(go);
-            }
-        }
-        if (!toBeRemoved.isEmpty()) {
-            renderer.removeAll(toBeRemoved);
-            objects.values().removeAll(toBeRemoved);
-            toBeRemoved.clear();
-        }
-    }
-
-
-    public void run() {
-        System.out.println("Run game");
-        initialize();
-        loop();
-        System.out.println("Game stopped");
-        System.exit(0);
-    }
 
     public void keyTyped(KeyEvent e) {
     }
@@ -214,5 +136,13 @@ public abstract class Game implements KeyListener {
         }
     }
 
-    public abstract void drawHUD(Renderer r, Graphics2D g);
+    /**
+     * The famous java Execution entry point.
+     *
+     * @param argc
+     */
+    public static void main(String[] argc) {
+        Game dg = new Game(argc);
+        dg.run();
+    }
 }
