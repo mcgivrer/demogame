@@ -61,4 +61,6 @@ public interface State {
 
     void removeFilteredObjects(String nameFilter);
 
+    void setGame(Game g);
+
 }

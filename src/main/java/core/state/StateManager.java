@@ -30,6 +30,7 @@ public class StateManager {
             for (Entry<String, String> stateItem : statesMap.states.entrySet()) {
                 Class<State> cs = (Class<State>) Class.forName(stateItem.getValue());
                 State s = cs.newInstance();
+                s.setGame(game);
                 states.put(stateItem.getKey(), s);
             }
             activate(statesMap.defaultState);

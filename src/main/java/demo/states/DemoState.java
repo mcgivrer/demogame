@@ -130,11 +130,12 @@ public class DemoState extends AbstractState implements State {
     @Override
     public void render(Game g, Renderer r) {
 
+        g.renderer.render(g);
     }
 
     @Override
     public void dispose(Game g) {
-
+        //ResourceManager.remove();
     }
 
     public void drawHUD(Game ga, Renderer r, Graphics2D g) {

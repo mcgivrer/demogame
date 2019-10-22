@@ -103,4 +103,8 @@ public abstract class AbstractState implements State {
     public Map<String, GameObject> getObjects() {
         return objects;
     }
+
+    public void setGame(Game g){
+        this.game = g;
+    }
 }
