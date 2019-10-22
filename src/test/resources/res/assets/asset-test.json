@@ -15,7 +15,7 @@
       "attributes": {
         "energy": 100,
         "damage": 10,
-        "coins":5
+        "coins": 5
       }
     },
     "P": {
@@ -30,7 +30,7 @@
         "energy": 100,
         "mana": 100,
         "damage": 50,
-        "coins":25
+        "coins": 25
       }
     },
     "o": {

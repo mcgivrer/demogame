@@ -77,9 +77,12 @@ public abstract class AbstractState implements State {
     public void removeObject(String name) {
         if (objects.containsKey(name)) {
             GameObject go = objects.get(name);
-            game.renderer.remove(go);
-            objects.remove(go);
+            removeObject(go);
         }
+    }
+    public void removeAllObjects(List<GameObject> objectsToBeRemoved){
+        game.renderer.removeAll(objectsToBeRemoved);
+        objects.values().removeAll(objectsToBeRemoved);
     }
 
     public void removeFilteredObjects(String nameFilter) {
@@ -90,8 +93,7 @@ public abstract class AbstractState implements State {
             }
         }
         if (!toBeRemoved.isEmpty()) {
-            game.renderer.removeAll(toBeRemoved);
-            objects.values().removeAll(toBeRemoved);
+            removeAllObjects(toBeRemoved);
             toBeRemoved.clear();
         }
     }

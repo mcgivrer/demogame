@@ -66,8 +66,8 @@ public class TestState extends AbstractState implements State {
         mapCollider = new MapCollider();
 
         ResourceManager.add(new String[]{
-                "/res/maps/map_1.json",
-                "/res/assets/asset-1.json",
+                "/res/maps/map_test.json",
+                "/res/assets/asset-test.json",
                 "/res/images/background-1.jpg",
                 "/res/images/tileset-1.png"});
         BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
