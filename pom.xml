@@ -45,7 +45,7 @@
     </ciManagement>
 
     <properties>
-        <mainClass>demo.DemoGame</mainClass>
+        <mainClass>demo.Game</mainClass>
     </properties>
 
     <!-- Project Dependencies -->
