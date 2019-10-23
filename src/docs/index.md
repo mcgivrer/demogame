@@ -1,8 +1,8 @@
-# core.Game
+# DemoGame
 
 ## Introduction
 
-the core.Game project is a starter for discovering Game development with the java language and on the basic JDK proposed features.
+the Game project is a starter for discovering Game development with the java language and on the basic JDK proposed features.
 
 The small tutorial will drive you to the build of an ABC 2D platform game with some reusable and extensible principles, where you will be able to create new level and new game play, from scratch to a minimum but operational framework.
 
@@ -34,10 +34,10 @@ In a well formed java class, let's name it `core.Game`, we will create those met
 
 
 ```java
-public class core.Game {
+public class Game {
   private boolean exit=false;
   
-  public core.Game(){
+  public Game(){
   }
   
   public void initialize(){}
@@ -60,7 +60,7 @@ public class core.Game {
   public void render(){}
   
   public static void main(String[] argc){
-    core.Game dm = new core.Game();
+    Game dm = new Game();
     rm.run();
   }
 }
@@ -72,7 +72,7 @@ First initialize things, then start looping.
 
 With such simple class we will incrementally create our platform game.
 
-## core.object.GameObject
+## GameObject
 
 As introduced before, I talk about some entities managed by the game. This where the `core.object.GameObject` is going to play.  
 
