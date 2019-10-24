@@ -14,10 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.*;
 
 /**
  * This core.Renderer class is the main rendering component for all objects managed by its parent core.Game instance.
@@ -103,9 +101,11 @@ public class Renderer {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     mapRenderer.render(dg, g, (MapLevel) go, camera);
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
                 } else if (go instanceof GameObject) {
+
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    go.render(dg, g);
+                    renderObject(dg, go, g);
 
                 }
             }
@@ -124,6 +124,32 @@ public class Renderer {
         renderToScreen(dg);
     }
 
+    /**
+     * Rendering of the object (will be delegated to another component in a next
+     * version.
+     *
+     * @param dg the core.Game containing the object.
+     * @param g  the graphics API.
+     */
+    public void renderObject(Game dg, GameObject go, Graphics2D g) {
+        switch (go.type) {
+            case RECTANGLE:
+                g.setColor(go.foregroundColor);
+                g.fillRect((int) go.x, (int) go.y, (int) go.width, (int) go.height);
+                break;
+            case CIRCLE:
+                g.setColor(go.foregroundColor);
+                g.fillOval((int) go.x, (int) go.y, (int) go.width, (int) go.height);
+                break;
+            case IMAGE:
+                if (go.direction < 0) {
+                    g.drawImage(go.image, (int) (go.x + go.width), (int) go.y, (int) (-go.width), (int) go.height, null);
+                } else {
+                    g.drawImage(go.image, (int) go.x, (int) go.y, (int) go.width, (int) go.height, null);
+                }
+                break;
+        }
+    }
 
     public void renderToScreen(Game dg) {
         Camera camera = dg.stateManager.getCurrent().getActiveCamera();
@@ -180,6 +206,14 @@ public class Renderer {
                     String.format("debug:%d",
                             dg.config.debug),
                     (offsetX) * sX, (offsetY + 30) * sY);
+            int i = 0;
+            for (Map.Entry<String, Object> e : go.attributes.entrySet()) {
+                g.drawString(
+                        String.format("%s:%s",
+                                e.getKey(), e.getValue().toString()),
+                        (offsetX) * sX, (offsetY + 40 + (i * 10) * sY));
+                i++;
+            }
         }
     }
 

@@ -1,10 +1,7 @@
 package core;
 
-import core.map.MapLevel;
-import core.object.GameObject;
 import core.state.StateManager;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
