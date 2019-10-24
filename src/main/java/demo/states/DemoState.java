@@ -3,7 +3,7 @@ package demo.states;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
-import core.map.MapCollider;
+import core.map.MapCollidingService;
 import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
 public class DemoState extends AbstractState implements State {
 
     public MapLevel mapLevel;
-    public MapCollider mapCollider;
+    public MapCollidingService mapCollider;
 
     public int score = 0;
     public int life = 4;
@@ -41,7 +41,7 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollider();
+        mapCollider = new MapCollidingService();
 
         if (mapLevel != null) {
             mapLevel.priority = 1;
@@ -81,7 +81,7 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public boolean isLoaded() {
-        return mapLevel!=null;
+        return mapLevel != null;
     }
 
     @Override
@@ -171,6 +171,14 @@ public class DemoState extends AbstractState implements State {
                     itemHolderImg.getWidth(),
                     itemHolderImg.getHeight(),
                     null);
+            if (itmNb - 1 < mapLevel.player.items.size()
+                    && mapLevel.player.items.get(itmNb - 1) != null) {
+                r.renderMapObject(g,
+                        mapLevel.player.items.get(itmNb - 1),
+                        ga.config.screenWidth - offsetX - (itmNb * (itemHolderImg.getWidth() - 1)),
+                        ga.config.screenHeight - (itemHolderImg.getHeight() + 12)
+                );
+            }
         }
         g.setFont(f);
     }

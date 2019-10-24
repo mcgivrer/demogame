@@ -1,6 +1,7 @@
 package core;
 
 import core.map.MapLevel;
+import core.map.MapObject;
 import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
@@ -246,5 +247,9 @@ public class Renderer {
         } catch (IOException e) {
             java.lang.System.err.println("Unable to write screenshot to " + filename + ":" + e.getMessage());
         }
+    }
+
+    public void renderMapObject(Graphics2D g, MapObject mo, float x, float y) {
+        g.drawImage(mo.imageBuffer, (int) x, (int) y, null);
     }
 }

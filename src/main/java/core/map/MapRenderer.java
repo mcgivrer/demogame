@@ -35,10 +35,11 @@ public class MapRenderer {
                 MapObject mo = map.tiles[x][y];
                 if (mo != null) {
                     g.drawImage(mo.imageBuffer, x * mo.width, y * mo.height, null);
-                } else {
+                }
+                /*else {
                     g.setBackground(backTransparent);
                     g.clearRect(x * map.asset.tileWidth, y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
-                }
+                }*/
             }
         }
     }

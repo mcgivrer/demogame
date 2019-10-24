@@ -3,7 +3,7 @@ package demo.states;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
-import core.map.MapCollider;
+import core.map.MapCollidingService;
 import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
 public class TestState extends AbstractState implements State {
 
     public MapLevel mapLevel;
-    public MapCollider mapCollider;
+    public MapCollidingService mapCollider;
 
     public int score = 0;
     public int life = 4;
@@ -63,7 +63,7 @@ public class TestState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollider();
+        mapCollider = new MapCollidingService();
 
         ResourceManager.add(new String[]{
                 "/res/maps/map_test.json",

@@ -15,6 +15,11 @@ public class MapObject {
 
     public String offset;
     public String size;
+
+    public String description;
+    public String usage;
+
+
     public int offsetX, offsetY, width, height;
 
     public BufferedImage imageBuffer;
@@ -22,6 +27,8 @@ public class MapObject {
     public boolean collectible;
     public boolean hit;
     public boolean block;
+    public boolean canCollect;
+    public boolean can;
 
     public int money;
     public int damage;

@@ -1,12 +1,14 @@
 package core.object;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
-
 import core.Game;
+import core.map.MapObject;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Any object displayed by the game.
@@ -22,6 +24,7 @@ public class GameObject {
     public boolean enable = true;
 
     public float x, y;
+    public float oldX, oldY;
     public float width, height;
 
     public float dx = 0, dy = 0;
@@ -33,6 +36,8 @@ public class GameObject {
 
     public int debugLevel = 0;
 
+    public boolean canCollect;
+
     public GameObjectType type;
 
     public BBox bbox;
@@ -41,6 +46,7 @@ public class GameObject {
     public Color backgroundColor = Color.BLACK;
 
     public Map<String, Object> attributes = new HashMap<>();
+    public List<MapObject> items = new ArrayList<>();
 
     public GameObject() {
         this.name = "gameObjectName";
@@ -78,6 +84,8 @@ public class GameObject {
      * @param elapsed the elapsed time since previous call.
      */
     public void update(Game dg, float elapsed) {
+        oldX = x;
+        oldY = y;
         x += (dx * elapsed);
         y += (dy * elapsed);
         bbox.x = x;
