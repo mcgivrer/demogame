@@ -1,11 +1,12 @@
 package core.object;
 
-import core.Game;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
+
+import core.Game;
 
 /**
  * Any object displayed by the game.
@@ -48,10 +49,12 @@ public class GameObject {
         this.width = 0;
         this.height = 0;
         this.type = GameObjectType.RECTANGLE;
+        bbox = new BBox(x, y, width, height);
     }
 
     /**
-     * Create a new object in the game with its position <code>(x,y)</code> and size <code>(width,height)</code>.
+     * Create a new object in the game with its position <code>(x,y)</code> and size
+     * <code>(width,height)</code>.
      *
      * @param name   Name of this object.
      * @param x      horizontal position
@@ -77,31 +80,34 @@ public class GameObject {
     public void update(Game dg, float elapsed) {
         x += (dx * elapsed);
         y += (dy * elapsed);
+        bbox.x = x;
+        bbox.y = y;
     }
 
     /**
-     * Rendering of the object (will be delegated to another component in a next version.
+     * Rendering of the object (will be delegated to another component in a next
+     * version.
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
-            case RECTANGLE:
-                g.setColor(this.foregroundColor);
-                g.fillRect((int) x, (int) y, (int) width, (int) height);
-                break;
-            case CIRCLE:
-                g.setColor(this.foregroundColor);
-                g.fillOval((int) x, (int) y, (int) width, (int) height);
-                break;
-            case IMAGE:
-                if(direction<0) {
-                    g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
-                }else{
-                    g.drawImage(image, (int) x, (int) y, (int)width, (int) height, null);
-                }
-                break;
+        case RECTANGLE:
+            g.setColor(this.foregroundColor);
+            g.fillRect((int) x, (int) y, (int) width, (int) height);
+            break;
+        case CIRCLE:
+            g.setColor(this.foregroundColor);
+            g.fillOval((int) x, (int) y, (int) width, (int) height);
+            break;
+        case IMAGE:
+            if (direction < 0) {
+                g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
+            } else {
+                g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
+            }
+            break;
         }
     }
 
@@ -109,16 +115,19 @@ public class GameObject {
     public void setPosition(float x, float y) {
         this.x = x;
         this.y = y;
+        bbox.fromGameObject(this);
     }
 
     public void setSpeed(float dx, float dy) {
         this.dx = dx;
         this.dy = dy;
+        bbox.fromGameObject(this);
     }
 
     public void setSize(float width, float height) {
         this.width = width;
         this.height = height;
+        bbox.fromGameObject(this);
     }
 
 }

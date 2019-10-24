@@ -1,20 +1,20 @@
 package tests;
 
+import core.Game;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import core.BddTestGame;
 
 import static org.junit.Assert.assertTrue;
 
 public class DemoGameStepDefs {
-    BddTestGame dg;
+    Game dg;
     String[] argc;
 
     @Given("^DemoGame is instantiated with \"([^\"]*)\"$")
     public void demoGameIsInstantiatedWith(String arguments) throws Throwable {
         argc = arguments.split(" ");
-        dg = new BddTestGame(argc);
+        dg = new Game(argc);
     }
 
     @And("^the DemoGame config has width=(\\d+)$")

@@ -1,0 +1,6 @@
+{
+  "defaultState": "test",
+  "states": {
+    "test": "demo.states.TestState"
+  }
+}

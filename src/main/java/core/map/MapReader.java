@@ -2,6 +2,7 @@ package core.map;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -58,24 +59,20 @@ public class MapReader {
                                 mapLevel.tiles[x][y] = mo;
                             } else {
                                 GameObject go = null;
-                                try {
-                                    go = generateGameObject(mapLevel, mo, x, y);
-                                    switch (mo.type) {
-                                    case "player":
-                                        mapLevel.player = go;
-                                        break;
-                                    case "enemy_":
-                                        if (mapLevel.enemies == null) {
-                                            mapLevel.enemies = new ArrayList<>();
-                                        }
-                                        mapLevel.enemies.add(go);
-                                        break;
-                                    default:
-                                        System.out.println(String.format("Unknown object type %s", mo.type));
-                                        break;
+                                go = generateGameObject(mapLevel, mo, x, y);
+                                switch (mo.type) {
+                                case "player":
+                                    mapLevel.player = go;
+                                    break;
+                                case "enemy_":
+                                    if (mapLevel.enemies == null) {
+                                        mapLevel.enemies = new ArrayList<>();
                                     }
-                                } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-                                    e.printStackTrace();
+                                    mapLevel.enemies.add(go);
+                                    break;
+                                default:
+                                    System.out.println(String.format("Unknown object type %s", mo.type));
+                                    break;
                                 }
                             }
 
@@ -89,29 +86,36 @@ public class MapReader {
         return mapLevel;
     }
 
-    private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo, int x, int y)
-            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo, int x, int y) {
         GameObject go = null;
-        switch (mo.type) {
-        case "player":
-            Class<?> classO = Class.forName(mo.clazz);
-            go = (GameObject) classO.newInstance();
-            go = populateGo(mapLevel, go, mo);
-            go.layer = 2;
-            go.priority = 1;
-            go.x = (x - 1) * mapLevel.asset.tileWidth;
-            go.y = (y - 1) * mapLevel.asset.tileHeight;
-            break;
-        case "enemy_":
-            Class<?> class1 = Class.forName(mo.clazz);
-            go = (GameObject) class1.newInstance();
-            go = populateGo(mapLevel, go, mo);
-            go.layer = 2;
-            go.priority = 10;
-            go.x = (x - 1) * mapLevel.asset.tileWidth;
-            go.y = (y - 1) * mapLevel.asset.tileHeight;
-            break;
+        try {
+            switch (mo.type) {
+            case "player":
+                go = createObjectFromClass(mapLevel, mo, x, y, 2, 1);
+                break;
+            case "enemy_":
+                go = createObjectFromClass(mapLevel, mo, x, y, 2, 10);
+                break;
+            default:
+                break;
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            System.out.println("Unable to instantiate the " + mo.clazz + " object.");
         }
+        return go;
+    }
+
+    private static GameObject createObjectFromClass(MapLevel mapLevel, MapObject mo, int x, int y, int priority,
+            int layer) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        GameObject go;
+        Class<?> class1 = Class.forName(mo.clazz);
+        go = (GameObject) class1.newInstance();
+        go = populateGo(mapLevel, go, mo);
+        go.layer = layer;
+        go.priority = priority;
+        go.x = (x - 1) * mapLevel.asset.tileWidth;
+        go.y = (y - 1) * mapLevel.asset.tileHeight;
+        go.bbox.fromGameObject(go);
         return go;
     }
 
