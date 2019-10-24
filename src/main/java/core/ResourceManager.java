@@ -1,21 +1,21 @@
 package core;
 
+import core.system.System;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.imageio.ImageIO;
-
 /**
  * The ResourceManager is the resource store where to load all needed resources.
- * 
+ * <p>
  * Sample usage : ```Java // in a next version you will be able to // provide a
  * listener to implement for example // a Gauge to track loading status.
  * ResourceManager.AddListener(new MyListener()); // at initialization time :
@@ -24,7 +24,8 @@ import javax.imageio.ImageIO;
  * ResourceManager.getString("MyFile.json"); BufferedImage img =
  * ResourceManager.getString("image.png"); ```
  */
-public class ResourceManager {
+@Slf4j
+public class ResourceManager implements System {
 
     private static ResourceManager instance = new ResourceManager();
 
@@ -41,6 +42,7 @@ public class ResourceManager {
     public static void add(String[] paths) {
         for (String path : paths) {
             add(path);
+            log.info("Add resource {}", path);
         }
     }
 
@@ -62,7 +64,7 @@ public class ResourceManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Unable to read the resource :" + path + ":" + e.getMessage());
+            log.error("Unable to read the resource :{}", path, e);
         }
     }
 
@@ -72,7 +74,17 @@ public class ResourceManager {
         }
     }
 
-    public static void dispose() {
+    @Override
+    public String getName() {
+        return ResourceManager.class.getCanonicalName();
+    }
+
+    @Override
+    public int initialize(Game game) {
+        return 0;
+    }
+
+    public void dispose() {
         instance.resources.clear();
     }
 }
