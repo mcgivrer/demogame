@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
+import core.system.System;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class StateManager {
+@Slf4j
+public class StateManager implements System {
 
     private final Game game;
     private Map<String, State> states = new HashMap<>();
@@ -32,11 +35,12 @@ public class StateManager {
                 State s = cs.newInstance();
                 s.setGame(game);
                 states.put(stateItem.getKey(), s);
+                log.info("load state {}", stateItem.getKey());
             }
             activate(statesMap.defaultState);
 
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-            System.out.println("Unable to create class " + e.getMessage());
+            log.info("Unable to create class ", e);
         }
     }
 
@@ -45,11 +49,23 @@ public class StateManager {
         current = states.get(s);
         if (!current.isLoaded()) {
             current.load(game);
+            log.debug("activate state {}", s);
         }
     }
 
-    public void initialize(Game g) {
+    @Override
+    public String getName() {
+        return StateManager.class.getCanonicalName();
+    }
+
+    public int initialize(Game g) {
         current.initialize(g);
+        return 0;
+    }
+
+    @Override
+    public void dispose() {
+
     }
 
     public void load(Game g) {
