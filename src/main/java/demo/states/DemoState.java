@@ -119,6 +119,7 @@ public class DemoState extends AbstractState implements State {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(g, elapsed);
                 mapLevel.constrainToMapLevel(go);
+                mapCollider.checkCollision(mapLevel, go);
             }
         }
         // active core.object.Camera update
