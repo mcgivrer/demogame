@@ -1,5 +1,6 @@
 package core;
 
+import core.audio.SoundClip;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,6 +40,11 @@ public class ResourceManager implements System {
         return (String) instance.resources.get(path);
     }
 
+    public static SoundClip getSoundClip(String path) {
+        return (SoundClip) instance.resources.get(path);
+    }
+
+
     public static void add(String[] paths) {
         for (String path : paths) {
             add(path);
@@ -61,6 +67,13 @@ public class ResourceManager implements System {
                         .collect(Collectors.joining("\n"));
                 if (json != null && !json.equals("")) {
                     instance.resources.put(path, json);
+                }
+            }
+            if (path.contains(".wav") || path.contains(".mp3")) {
+                InputStream sndStream = ResourceManager.class.getResourceAsStream(path);
+                SoundClip sc = new SoundClip(path, sndStream);
+                if (sc != null) {
+                    instance.resources.put(path, sc);
                 }
             }
         } catch (IOException e) {

@@ -1,11 +1,9 @@
 package core;
 
-import core.map.MapLevel;
-import core.object.GameObject;
+import core.audio.SoundSystem;
 import core.state.StateManager;
 import core.system.SystemManager;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -28,6 +26,7 @@ public class Game implements KeyListener {
 
     public Renderer renderer;
     public StateManager stateManager;
+    private SoundSystem soundSystem;
 
 
     /**
@@ -53,10 +52,14 @@ public class Game implements KeyListener {
     public void initialize() {
         ResourceManager.add("/res/game.json");
         sysMan = SystemManager.initialize(this);
+
         renderer = new Renderer(this);
         stateManager = new StateManager(this);
+        soundSystem = new SoundSystem(this);
+
         sysMan.add(renderer);
         sysMan.add(stateManager);
+        sysMan.add(soundSystem);
 
     }
 

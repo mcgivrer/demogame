@@ -64,7 +64,8 @@ public class DemoState extends AbstractState implements State {
                 "/res/maps/map_1.json",
                 "/res/assets/asset-1.json",
                 "/res/images/background-1.jpg",
-                "/res/images/tileset-1.png"});
+                "/res/images/tileset-1.png",
+                "/res/audio/sounds/collect-coin.wav"});
 
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
 
@@ -75,8 +76,6 @@ public class DemoState extends AbstractState implements State {
         lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
         coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
         itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
-
-
     }
 
     @Override
