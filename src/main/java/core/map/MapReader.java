@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import core.ResourceManager;
 import core.object.GameObject;
 import core.object.GameObjectType;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,14 +20,22 @@ import java.util.Map;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @year 2019
  */
+@Slf4j
 public class MapReader {
     private static int idxEnemy = 0;
 
+    /**
+     * Read the json file fileMap to renegare al tiles and object for a level map.
+     *
+     * @param fileMap the json file to ne read.
+     * @return a fully ready to play a MapLevel
+     */
     public static MapLevel readFromFile(String fileMap) {
         MapLevel mapLevel = null;
         // load level from json file
         String jsonDataString = ResourceManager.getString(fileMap);
         if (jsonDataString != null && !jsonDataString.equals("")) {
+            log.debug("parse the {} json file as e map level", fileMap);
             Gson gson = new Gson();
             mapLevel = gson.fromJson(jsonDataString, MapLevel.class);
             mapLevel.width = mapLevel.map.get(0).length();
@@ -34,6 +43,7 @@ public class MapReader {
 
             if (mapLevel != null && mapLevel.background != null && !mapLevel.background.equals("")) {
                 mapLevel.backgroundImage = ResourceManager.getImage(mapLevel.background);
+                log.debug("Lod a specific background image {}", mapLevel.background);
             }
             // load asset from json file.
             String jsonAssetString = ResourceManager.getString(mapLevel.objects);
@@ -42,45 +52,56 @@ public class MapReader {
                 mapLevel.asset = mop;
 
                 // generate tiles
-                mapLevel.tiles = new MapObject[(int) mapLevel.width][(int) mapLevel.height];
-                // generate all objects.
-                mapLevel = createAssetMapObjects(mapLevel);
-                // build Map
-                for (int y = 0; y < mapLevel.height; y++) {
-                    String line = mapLevel.map.get(y);
-                    for (int x = 0; x < mapLevel.width; x++) {
-                        String code = "" + line.charAt(x);
-                        if (mapLevel.asset.objects.containsKey(code)) {
-                            MapObject mo = mapLevel.asset.objects.get(code);
-                            if (!mo.type.equals("player") && !mo.type.equals("enemy_")) {
-                                mapLevel.tiles[x][y] = mo;
-                            } else {
-                                GameObject go = null;
-                                go = generateGameObject(mapLevel, mo, x, y);
-                                switch (mo.type) {
-                                    case "player":
-                                        mapLevel.player = go;
-                                        break;
-                                    case "enemy_":
-                                        if (mapLevel.enemies == null) {
-                                            mapLevel.enemies = new ArrayList<>();
-                                        }
-                                        mapLevel.enemies.add(go);
-                                        break;
-                                    default:
-                                        System.out.println(String.format("Unknown object type %s", mo.type));
-                                        break;
-                                }
-                            }
+                mapLevel = generateTilesAndObject(mapLevel);
+            }
+        }
+        return mapLevel;
+    }
 
-                        } else {
-                            mapLevel.tiles[x][y] = null;
-                        }
+    public static MapLevel generateTilesAndObject(MapLevel mapLevel) {
+        mapLevel.tiles = new MapObject[(int) mapLevel.width][(int) mapLevel.height];
+        // generate all objects.
+        mapLevel = createAssetMapObjects(mapLevel);
+        // build Map
+        for (int y = 0; y < mapLevel.height; y++) {
+            String line = mapLevel.map.get(y);
+            for (int x = 0; x < mapLevel.width; x++) {
+                String code = "" + line.charAt(x);
+                if (mapLevel.asset.objects.containsKey(code)) {
+                    MapObject mo = mapLevel.asset.objects.get(code);
+                    // those MapObject is tile
+                    if (!mo.type.equals("player") && !mo.type.equals("enemy_")) {
+                        mapLevel.tiles[x][y] = mo;
+                    } else {
+                        // those MapObject are GameObject !
+                        createGameObject(mapLevel, y, x, mo);
                     }
+                } else {
+                    // no tile or object on tile place.
+                    mapLevel.tiles[x][y] = null;
                 }
             }
         }
         return mapLevel;
+    }
+
+    public static void createGameObject(MapLevel mapLevel, int y, int x, MapObject mo) {
+        GameObject go = null;
+        go = generateGameObject(mapLevel, mo, x, y);
+        switch (mo.type) {
+            case "player":
+                mapLevel.player = go;
+                break;
+            case "enemy_":
+                if (mapLevel.enemies == null) {
+                    mapLevel.enemies = new ArrayList<>();
+                }
+                mapLevel.enemies.add(go);
+                break;
+            default:
+                System.out.println(String.format("Unknown object type %s", mo.type));
+                break;
+        }
     }
 
     /**
@@ -133,7 +154,7 @@ public class MapReader {
         Class<?> class1 = Class.forName(mo.clazz);
 
         go = (GameObject) class1.newInstance();
-        go = populateGo(mapLevel, go, mo);
+        go = populateGameObjectAttributes(mapLevel, go, mo);
 
         go.layer = layer;
         go.priority = priority;
@@ -188,7 +209,7 @@ public class MapReader {
         return mapLevel;
     }
 
-    private static GameObject populateGo(MapLevel mapLevel, GameObject go, MapObject mo) {
+    private static GameObject populateGameObjectAttributes(MapLevel mapLevel, GameObject go, MapObject mo) {
         if (!mo.offset.equals("")) {
             String[] values = mo.offset.split(",");
             int ox = Integer.parseInt(values[1]);
