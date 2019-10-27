@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 @Slf4j
 public class StateManager extends AbstractSystem implements System {
 
+
     private Map<String, State> states = new HashMap<>();
 
     private State current;

@@ -32,6 +32,7 @@ import java.util.List;
 @Slf4j
 public class Renderer extends AbstractSystem implements System {
 
+
     private JFrame jf;
     private List<GameObject> renderingObjectPipeline = new ArrayList<>();
     private MapRenderer mapRenderer = new MapRenderer();
