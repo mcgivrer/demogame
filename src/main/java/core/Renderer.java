@@ -5,6 +5,9 @@ import core.map.MapObject;
 import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
+import core.system.AbstractSystem;
+import core.system.System;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,7 +29,9 @@ import java.util.List;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @year 2019
  */
-public class Renderer {
+@Slf4j
+public class Renderer extends AbstractSystem implements System {
+
 
     private JFrame jf;
     private List<GameObject> renderingObjectPipeline = new ArrayList<>();
@@ -42,6 +47,7 @@ public class Renderer {
      * @param dg the core.Game instance parent for this core.Renderer.
      */
     public Renderer(Game dg) {
+        super(dg);
         jf = createWindow(dg);
         screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
     }
@@ -118,7 +124,7 @@ public class Renderer {
         }
 
         // draw HUD
-        dg.stateManager.getCurrent().drawHUD(dg,this, g);
+        dg.stateManager.getCurrent().drawHUD(dg, this, g);
         g.dispose();
 
         // render image to real screen (applying scale factor)
@@ -216,7 +222,7 @@ public class Renderer {
                 }
             });
         } else {
-            System.out.println(String.format("Error : core.object.GameObject %s already exists in rendering pipeline.", go.name));
+            log.info(String.format("Error : core.object.GameObject %s already exists in rendering pipeline.", go.name));
         }
 
     }
@@ -251,5 +257,20 @@ public class Renderer {
 
     public void renderMapObject(Graphics2D g, MapObject mo, float x, float y) {
         g.drawImage(mo.imageBuffer, (int) x, (int) y, null);
+    }
+
+    @Override
+    public String getName() {
+        return Renderer.class.getCanonicalName();
+    }
+
+    @Override
+    public int initialize(Game game) {
+        return 0;
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }
