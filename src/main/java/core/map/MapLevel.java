@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapLevel extends GameObject{
+public class MapLevel extends GameObject {
     public String description;
 
     public String objects;

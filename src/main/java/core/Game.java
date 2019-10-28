@@ -1,6 +1,7 @@
 package core;
 
 import core.state.StateManager;
+import core.system.SystemManager;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,6 +20,8 @@ public class Game implements KeyListener {
     private String[] argc;
     public boolean[] keys = new boolean[65536];
     public boolean[] previousKeys = new boolean[65536];
+
+    public SystemManager sysMan;
 
     public Renderer renderer;
     public StateManager stateManager;
@@ -40,13 +43,18 @@ public class Game implements KeyListener {
         initialize();
         loop();
         System.out.println("Game stopped");
+        dispose();
         System.exit(0);
     }
 
     public void initialize() {
         ResourceManager.add("/res/game.json");
+        sysMan = SystemManager.initialize(this);
         renderer = new Renderer(this);
         stateManager = new StateManager(this);
+        sysMan.add(renderer);
+        sysMan.add(stateManager);
+
     }
 
     public void loop() {
@@ -75,6 +83,10 @@ public class Game implements KeyListener {
             }
             previousTime = startTime;
         }
+    }
+
+    public void dispose(){
+        sysMan.dispose();
     }
 
     public void input() {
