@@ -63,7 +63,7 @@ public class TestState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollidingService();
+        mapCollider = new MapCollidingService(g);
 
         ResourceManager.add(new String[]{
                 "/res/maps/map_test.json",

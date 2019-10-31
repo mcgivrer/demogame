@@ -1,6 +1,7 @@
 package core;
 
 import core.audio.SoundSystem;
+import core.map.MapCollidingService;
 import core.state.StateManager;
 import core.system.SystemManager;
 
@@ -27,6 +28,7 @@ public class Game implements KeyListener {
     public Renderer renderer;
     public StateManager stateManager;
     private SoundSystem soundSystem;
+    private MapCollidingService mapCollider;
 
 
     /**
@@ -56,10 +58,12 @@ public class Game implements KeyListener {
         renderer = new Renderer(this);
         stateManager = new StateManager(this);
         soundSystem = new SoundSystem(this);
+        mapCollider = new MapCollidingService(this);
 
         sysMan.add(renderer);
         sysMan.add(stateManager);
         sysMan.add(soundSystem);
+        sysMan.add(mapCollider);
 
     }
 

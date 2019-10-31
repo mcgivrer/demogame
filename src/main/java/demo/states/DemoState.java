@@ -41,7 +41,7 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollidingService();
+        mapCollider = g.sysMan.getSystem(MapCollidingService.class);
 
         if (mapLevel != null) {
             mapLevel.priority = 1;
