@@ -1,13 +1,16 @@
 package core.collision;
 
 import core.Game;
-import core.ResourceManager;
-import core.audio.SoundClip;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.object.GameObject;
 import core.system.AbstractSystem;
 import core.system.System;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static core.collision.CollisionEvent.CollisionType.COLLISION_MAP;
 
 /**
  * The MapColliding service is dedicated to check GameObject vs. MapObject from the map tiles.
@@ -17,11 +20,11 @@ import core.system.System;
  */
 public class MapCollidingService extends AbstractSystem implements System {
 
-    SoundClip playCoin;
+
+    Map<Class<?>, OnCollision> listeners = new HashMap<>();
 
     public MapCollidingService(Game g) {
         super(g);
-        playCoin = ResourceManager.getSoundClip("coin");
     }
 
     @Override
@@ -37,6 +40,12 @@ public class MapCollidingService extends AbstractSystem implements System {
     @Override
     public void dispose() {
 
+    }
+
+    public void addListener(Class<?> clazz, OnCollision oc) {
+        if (!listeners.containsKey(clazz)) {
+            listeners.put(clazz, oc);
+        }
     }
 
     /**
@@ -103,24 +112,7 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @param y   the vertical position in the tiles map
      */
     private void collide(GameObject go, MapLevel map, MapObject mo, int x, int y) {
-        if (mo.collectible && go.canCollect) {
-            switch (mo.type) {
-                case "object":
-                    if (mo.money > 0) {
-                        go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
-                        map.tiles[x][y] = null;
-                        playCoin.play();
-                    }
-                    break;
-                case "item":
-                    map.player.items.add(mo);
-                    map.tiles[x][y] = null;
-                    break;
-                default:
-                    break;
-            }
-        }
-
+        listeners.get(go.getClass()).collide(new CollisionEvent(COLLISION_MAP, go, null, mo, map, x, y));
     }
 
     /**

@@ -61,9 +61,9 @@ public class Game implements KeyListener {
         mapCollider = new MapCollidingService(this);
 
         sysMan.add(renderer);
-        sysMan.add(stateManager);
         sysMan.add(soundSystem);
         sysMan.add(mapCollider);
+        sysMan.add(stateManager);
 
     }
 

@@ -3,8 +3,12 @@ package demo.states;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
+import core.audio.SoundClip;
+import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
+import core.collision.OnCollision;
 import core.map.MapLevel;
+import core.map.MapObject;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
@@ -16,6 +20,9 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 public class DemoState extends AbstractState implements State {
+
+
+    SoundClip playCoin;
 
     public MapLevel mapLevel;
     public MapCollidingService mapCollider;
@@ -38,10 +45,43 @@ public class DemoState extends AbstractState implements State {
         super(g);
     }
 
-
     @Override
     public void initialize(Game g) {
+
         mapCollider = g.sysMan.getSystem(MapCollidingService.class);
+
+        mapCollider.addListener(GameObject.class, new OnCollision() {
+            public void collide(CollisionEvent e) {
+                if (e.m2.collectible && e.o1.canCollect) {
+                    switch (e.m2.type) {
+                        case "object":
+                            collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
+                            break;
+                        case "item":
+                            collectItem(e.map, e.m2, e.mapX, e.mapY);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            private void collectItem(MapLevel map, MapObject mo, int x, int y) {
+
+                map.player.items.add(mo);
+                map.tiles[x][y] = null;
+            }
+
+            private void collectCoin(MapLevel map, GameObject go, MapObject mo, int x, int y) {
+                if (mo.money > 0) {
+                    go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
+                    map.tiles[x][y] = null;
+                    if (playCoin != null) {
+                        playCoin.play();
+                    }
+                }
+            }
+        });
 
         if (mapLevel != null) {
             mapLevel.priority = 1;
