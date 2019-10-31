@@ -17,9 +17,9 @@ import core.system.System;
  */
 public class MapCollidingService extends AbstractSystem implements System {
 
-    SoundClip playCoin ;
+    SoundClip playCoin;
 
-    public MapCollidingService(Game g){
+    public MapCollidingService(Game g) {
         super(g);
         playCoin = ResourceManager.getSoundClip("coin");
     }
