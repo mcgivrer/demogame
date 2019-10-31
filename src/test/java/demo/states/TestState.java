@@ -3,7 +3,7 @@ package demo.states;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
-import core.map.MapCollidingService;
+import core.collision.MapCollidingService;
 import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
@@ -63,7 +63,7 @@ public class TestState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollidingService();
+        mapCollider = new MapCollidingService(g);
 
         ResourceManager.add(new String[]{
                 "/res/maps/map_test.json",

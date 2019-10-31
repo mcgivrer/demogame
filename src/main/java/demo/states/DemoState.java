@@ -3,7 +3,7 @@ package demo.states;
 import core.Game;
 import core.Renderer;
 import core.ResourceManager;
-import core.map.MapCollidingService;
+import core.collision.MapCollidingService;
 import core.map.MapLevel;
 import core.map.MapReader;
 import core.object.Camera;
@@ -41,7 +41,7 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollidingService();
+        mapCollider = g.sysMan.getSystem(MapCollidingService.class);
 
         if (mapLevel != null) {
             mapLevel.priority = 1;

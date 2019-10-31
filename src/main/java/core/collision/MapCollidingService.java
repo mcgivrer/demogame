@@ -1,7 +1,13 @@
-package core.map;
+package core.collision;
 
-import core.audio.SoundSystem;
+import core.Game;
+import core.ResourceManager;
+import core.audio.SoundClip;
+import core.map.MapLevel;
+import core.map.MapObject;
 import core.object.GameObject;
+import core.system.AbstractSystem;
+import core.system.System;
 
 /**
  * The MapColliding service is dedicated to check GameObject vs. MapObject from the map tiles.
@@ -9,7 +15,29 @@ import core.object.GameObject;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @since 2019
  */
-public class MapCollidingService {
+public class MapCollidingService extends AbstractSystem implements System {
+
+    SoundClip playCoin ;
+
+    public MapCollidingService(Game g){
+        super(g);
+        playCoin = ResourceManager.getSoundClip("coin");
+    }
+
+    @Override
+    public String getName() {
+        return MapCollidingService.class.getCanonicalName();
+    }
+
+    @Override
+    public int initialize(Game game) {
+        return 0;
+    }
+
+    @Override
+    public void dispose() {
+
+    }
 
     /**
      * Check the collision between the MapLevel tiles and a GameObject
@@ -36,7 +64,7 @@ public class MapCollidingService {
                         go.x = go.oldX;
                         break;
                     } else
-                        collect(go, map, mo, ox + ow, iy);
+                        collide(go, map, mo, ox + ow, iy);
                 }
             }
         }
@@ -52,7 +80,7 @@ public class MapCollidingService {
                         go.x = go.oldX;
                         break;
                     } else
-                        collect(go, map, mo, ox, iy);
+                        collide(go, map, mo, ox, iy);
                 }
             }
             if (go.dy > 0) {
@@ -74,13 +102,14 @@ public class MapCollidingService {
      * @param x   the horizontal position in the tiles map
      * @param y   the vertical position in the tiles map
      */
-    private void collect(GameObject go, MapLevel map, MapObject mo, int x, int y) {
+    private void collide(GameObject go, MapLevel map, MapObject mo, int x, int y) {
         if (mo.collectible && go.canCollect) {
             switch (mo.type) {
                 case "object":
                     if (mo.money > 0) {
                         go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
                         map.tiles[x][y] = null;
+                        playCoin.play();
                     }
                     break;
                 case "item":
