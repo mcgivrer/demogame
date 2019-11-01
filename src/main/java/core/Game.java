@@ -55,15 +55,15 @@ public class Game {
         sysMan = SystemManager.initialize(this);
 
         inputHandler = new KeyInputHandler(this);
-        renderer = new Renderer(this);
-        stateManager = new StateManager(this);
-        soundSystem = new SoundSystem(this);
-        mapCollider = new MapCollidingService(this);
-
         sysMan.add(inputHandler);
+        renderer = new Renderer(this);
         sysMan.add(renderer);
+        soundSystem = new SoundSystem(this);
         sysMan.add(soundSystem);
+        mapCollider = new MapCollidingService(this);
         sysMan.add(mapCollider);
+
+        stateManager = new StateManager(this);
 
         sysMan.add(stateManager);
 

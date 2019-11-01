@@ -69,8 +69,8 @@ public class Renderer extends AbstractSystem implements System {
         jf.setSize(dim);
         jf.setPreferredSize(dim);
         jf.pack();
-
-        jf.addKeyListener(dg.sysMan.getSystem(KeyInputHandler.class));
+        KeyInputHandler kih = dg.sysMan.getSystem(KeyInputHandler.class);
+        jf.addKeyListener(kih);
 
         jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);
