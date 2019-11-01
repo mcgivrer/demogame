@@ -1,6 +1,6 @@
 package core;
 
-import core.io.KeyInputHandler;
+import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.map.MapRenderer;
@@ -69,8 +69,9 @@ public class Renderer extends AbstractSystem implements System {
         jf.setSize(dim);
         jf.setPreferredSize(dim);
         jf.pack();
-        KeyInputHandler kih = dg.sysMan.getSystem(KeyInputHandler.class);
+        InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
         jf.addKeyListener(kih);
+        jf.setIconImage(ResourceManager.getImage("/res/bgf-icon.png"));
 
         jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);

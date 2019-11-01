@@ -28,9 +28,13 @@ public class MapRenderer {
         if (map.backgroundImage != null) {
             double bx = camera.x * map.backgroundImage.getWidth() / (mWidth * map.asset.tileWidth);
             double by = camera.y;
-
-            g.drawImage(map.backgroundImage, (int) bx, (int) by, null);
+            for (int x = (int) (bx - map.backgroundImage.getWidth());
+                 x <= (bx + map.backgroundImage.getWidth());
+                 x += map.backgroundImage.getWidth()) {
+                g.drawImage(map.backgroundImage, (int) x, (int) by, null);
+            }
         }
+
         for (int y = 0; y < mHeight; y++) {
             for (int x = 0; x < mWidth; x++) {
                 MapObject mo = getTile(map, x, y);

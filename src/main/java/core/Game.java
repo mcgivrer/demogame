@@ -2,11 +2,9 @@ package core;
 
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
-import core.io.KeyInputHandler;
+import core.io.InputHandler;
 import core.state.StateManager;
 import core.system.SystemManager;
-
-import java.awt.event.KeyEvent;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -23,7 +21,7 @@ public class Game {
 
     public SystemManager sysMan;
 
-    public KeyInputHandler inputHandler;
+    public InputHandler inputHandler;
     public Renderer renderer;
     public StateManager stateManager;
     private SoundSystem soundSystem;
@@ -50,11 +48,11 @@ public class Game {
     }
 
     public void initialize() {
-        ResourceManager.add("/res/game.json");
+        ResourceManager.add(new String[]{"/res/game.json", "/res/bgf-icon.png"});
 
         sysMan = SystemManager.initialize(this);
 
-        inputHandler = new KeyInputHandler(this);
+        inputHandler = new InputHandler(this);
         sysMan.add(inputHandler);
         renderer = new Renderer(this);
         sysMan.add(renderer);
@@ -99,33 +97,6 @@ public class Game {
 
     public void dispose(){
         sysMan.dispose();
-    }
-
-    /**
-     * Process some keypressed events.
-     *
-     * @param e
-     */
-    public void onKeyPressed(KeyEvent e) {
-
-    }
-
-    /**
-     * Process some KeyReleased events.
-     *
-     * @param e
-     */
-    public void onKeyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_D:
-                // roll the debug level.
-                config.debug = (config.debug < 6 ? config.debug + 1 : 0);
-                break;
-            case KeyEvent.VK_F3:
-                renderer.saveScreenshot(config);
-            default:
-                break;
-        }
     }
 
     /**
