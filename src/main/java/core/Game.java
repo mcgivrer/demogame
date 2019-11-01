@@ -2,11 +2,11 @@ package core;
 
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
+import core.io.KeyInputHandler;
 import core.state.StateManager;
 import core.system.SystemManager;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -14,22 +14,20 @@ import java.awt.event.KeyListener;
  * @author Frédéric Delorme
  * @since 2019
  */
-public class Game implements KeyListener {
+public class Game {
 
     public static long goIndex = 0;
     public Config config;
     public boolean exitRequest = false;
     private String[] argc;
-    public boolean[] keys = new boolean[65536];
-    public boolean[] previousKeys = new boolean[65536];
 
     public SystemManager sysMan;
 
+    public KeyInputHandler inputHandler;
     public Renderer renderer;
     public StateManager stateManager;
     private SoundSystem soundSystem;
     private MapCollidingService mapCollider;
-
 
     /**
      * Create the Game container.
@@ -53,16 +51,20 @@ public class Game implements KeyListener {
 
     public void initialize() {
         ResourceManager.add("/res/game.json");
+
         sysMan = SystemManager.initialize(this);
 
+        inputHandler = new KeyInputHandler(this);
         renderer = new Renderer(this);
         stateManager = new StateManager(this);
         soundSystem = new SoundSystem(this);
         mapCollider = new MapCollidingService(this);
 
+        sysMan.add(inputHandler);
         sysMan.add(renderer);
         sysMan.add(soundSystem);
         sysMan.add(mapCollider);
+
         sysMan.add(stateManager);
 
     }
@@ -97,35 +99,6 @@ public class Game implements KeyListener {
 
     public void dispose(){
         sysMan.dispose();
-    }
-
-    public void input() {
-
-    }
-
-    /**
-     * Update all the object according to elapsed time.
-     *
-     * @param elapsed
-     */
-    public void update(float elapsed) {
-
-    }
-
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-        this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
-        this.keys[e.getKeyCode()] = true;
-        onKeyPressed(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
-        this.keys[e.getKeyCode()] = false;
-        onKeyReleased(e);
     }
 
     /**

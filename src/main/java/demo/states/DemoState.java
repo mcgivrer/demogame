@@ -7,6 +7,7 @@ import core.audio.SoundClip;
 import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
 import core.collision.OnCollision;
+import core.io.KeyInputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.map.MapReader;
@@ -125,27 +126,28 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void input(Game g) {
-        if (g.keys[KeyEvent.VK_ESCAPE]) {
+        KeyInputHandler kih = g.sysMan.getSystem(KeyInputHandler.class);
+        if (kih.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
 
         mapLevel.player.setSpeed(0.0f, 0.0f);
 
-        if (g.keys[KeyEvent.VK_UP]) {
+        if (kih.keys[KeyEvent.VK_UP]) {
             mapLevel.player.dy = -0.2f;
         }
-        if (g.keys[KeyEvent.VK_DOWN]) {
+        if (kih.keys[KeyEvent.VK_DOWN]) {
             mapLevel.player.dy = 0.2f;
         }
-        if (g.keys[KeyEvent.VK_LEFT]) {
+        if (kih.keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
             mapLevel.player.direction = -1;
         }
-        if (g.keys[KeyEvent.VK_RIGHT]) {
+        if (kih.keys[KeyEvent.VK_RIGHT]) {
             mapLevel.player.dx = 0.2f;
             mapLevel.player.direction = 1;
         }
-        if (g.keys[KeyEvent.VK_SPACE]) {
+        if (kih.keys[KeyEvent.VK_SPACE]) {
             // Todo implement Jump
         }
     }
