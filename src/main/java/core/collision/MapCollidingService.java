@@ -4,6 +4,7 @@ import core.Game;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.object.GameObject;
+import core.object.GameObject.GameAction;
 import core.system.AbstractSystem;
 import core.system.System;
 
@@ -60,45 +61,43 @@ public class MapCollidingService extends AbstractSystem implements System {
         int oy = (int) (go.bbox.y / map.asset.tileHeight);
         int oh = (int) (go.bbox.height / map.asset.tileHeight);
 
-        MapObject mo;
-
         if (go.dx > 0) {
-            boolean blocking = false;
-            for (int iy = oy; iy < oy + oh; iy++) {
-                mo = map.tiles[ox + ow][iy];
-                mo = getTileInMap(map, ox + ow, iy);
-                if (mo != null) {
-                    if (mo.block) {
-                        go.dx = 0.0f;
-                        go.x = go.oldX;
-                        break;
-                    } else
-                        collide(go, map, mo, ox + ow, iy);
-                }
-            }
+            testMoveRight(map, go, ox, ow, oy, oh);
         }
-
         if (go.dx < 0) {
-            boolean blocking = false;
-            for (int iy = oy; iy < oy + oh; iy++) {
-                mo = getTileInMap(map, ox, iy);
-                if (mo != null) {
+            testMoveLeft(map, go, ox, oy, oh);
+        }
+        testIfFall(map, go, ox, oy+oh);
+    }
 
-                    if (mo.block) {
-                        go.dx = 0.0f;
-                        go.x = go.oldX;
-                        break;
-                    } else
-                        collide(go, map, mo, ox, iy);
-                }
-            }
-            if (go.dy > 0) {
-
-            }
-            if (go.dy < 0) {
-
+    public void testIfFall(MapLevel map, GameObject go, int ox, int oy) {
+        MapObject mo = getTileInMap(map, ox, oy);
+        if (mo == null) {
+            go.action = GameAction.FALL;
+        } else {
+            if (mo.block && go.action == GameAction.FALL) {
+                go.action = GameAction.IDLE;
             }
         }
+    }
+
+    public void testMoveLeft(MapLevel map, GameObject go, int ox, int oy, int oh) {
+        MapObject mo;
+        for (int iy = oy; iy < oy + oh; iy++) {
+            mo = getTileInMap(map, ox, iy);
+            if (mo != null) {
+                if (mo.block) {
+                    go.dx = 0.0f;
+                    go.x = go.oldX;
+                    break;
+                } else
+                    collide(go, map, mo, ox, iy);
+            }
+        }
+    }
+
+    public void testMoveRight(MapLevel map, GameObject go, int ox, int ow, int oy, int oh) {
+        testMoveLeft(map, go, ox + ow, oy, oh);
     }
 
     /**
@@ -125,7 +124,7 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @return
      */
     private MapObject getTileInMap(MapLevel map, int x, int y) {
-        if (x < 0 || y < 0 || x > map.tiles.length || y > map.tiles[0].length) {
+        if (x < 0 || y < 0 || x > map.tiles.length - 1 || y > map.tiles[0].length - 1) {
             return null;
         }
         return map.tiles[x][y];

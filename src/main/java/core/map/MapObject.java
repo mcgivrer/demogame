@@ -29,6 +29,7 @@ public class MapObject {
     public boolean block;
     public boolean canCollect;
     public boolean can;
+    public boolean climbable;
 
     public int money;
     public int damage;

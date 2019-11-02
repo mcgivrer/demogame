@@ -13,6 +13,7 @@ import core.map.MapObject;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
+import core.object.GameObject.GameAction;
 import core.state.AbstractState;
 import core.state.State;
 
@@ -131,11 +132,14 @@ public class DemoState extends AbstractState implements State {
         if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
-
-        mapLevel.player.setSpeed(0.0f, 0.0f);
-
+        // reset horizontal speed if falling.
+        if(mapLevel.player.action!=GameAction.FALL){
+            mapLevel.player.dx=0.0f;
+            mapLevel.player.action = GameAction.IDLE;
+        }
         if (inputHandler.keys[KeyEvent.VK_UP]) {
             mapLevel.player.dy = -0.2f;
+            mapLevel.player.action = GameAction.JUMP;
         }
         if (inputHandler.keys[KeyEvent.VK_DOWN]) {
             mapLevel.player.dy = 0.2f;
@@ -143,13 +147,12 @@ public class DemoState extends AbstractState implements State {
         if (inputHandler.keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
             mapLevel.player.direction = -1;
+            mapLevel.player.action = GameAction.WALK;
         }
         if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
             mapLevel.player.dx = 0.2f;
             mapLevel.player.direction = 1;
-        }
-        if (inputHandler.keys[KeyEvent.VK_SPACE]) {
-            // Todo implement Jump
+            mapLevel.player.action = GameAction.WALK;
         }
     }
 

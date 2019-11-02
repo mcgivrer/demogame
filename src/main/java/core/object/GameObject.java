@@ -14,6 +14,20 @@ import java.util.Map;
  * Any object displayed by the game.
  */
 public class GameObject {
+
+    public enum GameAction {
+        IDLE,
+        IDLE2,
+        WALK,
+        RUN,
+        FALL,
+        JUMP,
+        UP,
+        DOWN,
+        DEAD1,
+        DEAD2;
+    }
+
     private static int goIndex = 0;
     private final int id = (int) goIndex++;
 
@@ -30,6 +44,7 @@ public class GameObject {
     public float dx = 0, dy = 0;
 
     public int direction = 1;
+    public GameAction action = GameAction.IDLE;
 
     public int layer = 0;
     public int priority = 0;
@@ -86,8 +101,27 @@ public class GameObject {
     public void update(Game dg, float elapsed) {
         oldX = x;
         oldY = y;
-        x += (dx * elapsed);
-        y += (dy * elapsed);
+        switch (action) {
+            case IDLE:
+            case IDLE2:
+                dy = 0.0f;
+                dx = 0.0f;
+            case WALK:
+                x += (dx * elapsed);
+                break;
+            case RUN:
+                x += (dx * 2.0f * elapsed);
+                break;
+            case FALL:
+                y += (0.2f * elapsed);
+                break;
+            case DOWN:
+                y += (dy * elapsed);
+                break;
+            case JUMP:
+                y += dy*elapsed;
+                break;
+        }
         bbox.x = x;
         bbox.y = y;
     }
@@ -101,21 +135,22 @@ public class GameObject {
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
-        case RECTANGLE:
-            g.setColor(this.foregroundColor);
-            g.fillRect((int) x, (int) y, (int) width, (int) height);
-            break;
-        case CIRCLE:
-            g.setColor(this.foregroundColor);
-            g.fillOval((int) x, (int) y, (int) width, (int) height);
-            break;
-        case IMAGE:
-            if (direction < 0) {
-                g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
-            } else {
-                g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
-            }
-            break;
+            case RECTANGLE:
+                g.setColor(this.foregroundColor);
+                g.fillRect((int) x, (int) y, (int) width, (int) height);
+                break;
+            case CIRCLE:
+                g.setColor(this.foregroundColor);
+                g.fillOval((int) x, (int) y, (int) width, (int) height);
+                break;
+            case IMAGE:
+                if (direction < 0) {
+                    g.drawImage(image, (int) (x + width)-4, (int) y, (int) (-width), (int) height, null);
+                } else {
+                    g.drawImage(image, (int) x-4, (int) y, (int) width, (int) height, null);
+                }
+                break;
+
         }
     }
 

@@ -124,13 +124,15 @@
       "type": "tile",
       "id": "H",
       "block": false,
-      "offset": "13,6"
+      "offset": "13,6",
+      "climbable": true
     },
     "h": {
       "type": "tile",
       "id": "h",
       "block": false,
-      "offset": "19,5"
+      "offset": "19,5",
+      "climbable": true
     },
     "T": {
       "type": "tile",
