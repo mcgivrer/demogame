@@ -5,19 +5,21 @@ import core.Renderer;
 import core.object.Camera;
 import core.object.GameObject;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractState implements State {
+public abstract class AbstractState implements State, KeyListener {
 
     private Game game;
-    protected  String name;
+    protected String name;
     public Camera camera;
     public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 
-    public AbstractState(){
+    public AbstractState() {
 
     }
 
@@ -80,7 +82,8 @@ public abstract class AbstractState implements State {
             removeObject(go);
         }
     }
-    public void removeAllObjects(List<GameObject> objectsToBeRemoved){
+
+    public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
         game.renderer.removeAll(objectsToBeRemoved);
         objects.values().removeAll(objectsToBeRemoved);
     }
@@ -106,7 +109,47 @@ public abstract class AbstractState implements State {
         return objects;
     }
 
-    public void setGame(Game g){
+    public void setGame(Game g) {
         this.game = g;
+    }
+
+    /**
+     * A Unicode key has been pressed.
+     *
+     * @param e
+     */
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    /**
+     * Process some keypressed events.
+     *
+     * @param e
+     */
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    /**
+     * Process some KeyReleased events.
+     *
+     * @param e
+     */
+    @Override
+    public void keyReleased(KeyEvent e) {
+        Renderer r = game.sysMan.getSystem(Renderer.class);
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_D:
+                // roll the debug level.
+                game.config.debug = (game.config.debug < 6 ? game.config.debug + 1 : 0);
+                break;
+            case KeyEvent.VK_F3:
+                r.saveScreenshot(game.config);
+            default:
+                break;
+        }
     }
 }

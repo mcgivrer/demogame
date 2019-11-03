@@ -1,5 +1,6 @@
 package core;
 
+import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.map.MapRenderer;
@@ -68,8 +69,9 @@ public class Renderer extends AbstractSystem implements System {
         jf.setSize(dim);
         jf.setPreferredSize(dim);
         jf.pack();
-
-        jf.addKeyListener(dg);
+        InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
+        jf.addKeyListener(kih);
+        jf.setIconImage(ResourceManager.getImage("/res/bgf-icon.png"));
 
         jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);
@@ -113,6 +115,22 @@ public class Renderer extends AbstractSystem implements System {
                 } else if (go instanceof GameObject) {
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     go.render(dg, g);
+                    if(dg.config.debug>2){
+                        int ox = (int) (go.bbox.x / 16);
+                        int ow = (int) (go.bbox.width / 16);
+                        int oy = (int) (go.bbox.y / 16);
+                        int oh = (int) (go.bbox.height / 16);
+                        // draw GameObject in the Map Tiles coordinates
+                        g.setColor(Color.ORANGE);
+                        g.drawRect(ox*16,oy*16,ow*16,oh*16);
+                        // draw the bounding box
+                        g.setColor(Color.RED);
+                        g.drawRect((int)go.bbox.x,(int)go.bbox.y,(int)go.bbox.width,(int)go.bbox.height);
+                        // draw the tested Tiles to detect Fall action.
+                        g.setColor(Color.BLUE);
+                        g.drawRect(ox*16,(oy+oh)*16,16,16);
+
+                    }
 
                 }
             }
@@ -187,7 +205,10 @@ public class Renderer extends AbstractSystem implements System {
                     String.format("debug:%d",
                             dg.config.debug),
                     (offsetX) * sX, (offsetY + 30) * sY);
-        }
+            g.drawString(
+                    String.format("action:%s",
+                            go.action.toString()),
+                    (offsetX) * sX, (offsetY + 40) * sY);        }
     }
 
 
