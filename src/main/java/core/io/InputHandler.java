@@ -44,11 +44,22 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
     }
 
 
+    /**
+     * retrieve name fo this system.
+     *
+     * @return
+     */
     @Override
     public String getName() {
         return InputHandler.class.getCanonicalName();
     }
 
+    /**
+     * Initialize the system for the <code>game</code> !
+     *
+     * @param game
+     * @return
+     */
     @Override
     public int initialize(Game game) {
         return 0;
@@ -59,10 +70,16 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
 
     }
 
+    /**
+     * @see java.awt.event.KeyListener#keyTyped(KeyEvent)
+     */
     @Override
     public void keyTyped(KeyEvent e) {
     }
 
+    /**
+     * @see java.awt.event.KeyListener#keyPressed(KeyEvent)
+     */
     @Override
     public void keyPressed(KeyEvent e) {
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
@@ -73,6 +90,9 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         }
     }
 
+    /**
+     * @see java.awt.event.KeyListener#keyReleased(KeyEvent)
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];

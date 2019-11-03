@@ -61,6 +61,8 @@ public class MapCollidingService extends AbstractSystem implements System {
         int oy = (int) (go.bbox.y / map.asset.tileHeight);
         int oh = (int) (go.bbox.height / map.asset.tileHeight);
 
+
+
         if (go.dx > 0) {
             testMoveRight(map, go, ox, ow, oy, oh);
         }

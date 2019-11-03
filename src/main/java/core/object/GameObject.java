@@ -12,6 +12,13 @@ import java.util.Map;
 
 /**
  * Any object displayed by the game.
+ * the GameObject will provide most operations of the game loop steps:
+ * <ul>
+ *     <li><code>update(Game,float)</code> will update the Object status</li>
+ *     <li><code>render(Game,Graphics2D)</code> draw all about this GameObject</li>
+ * </ul>
+ *
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class GameObject {
 
@@ -119,7 +126,7 @@ public class GameObject {
                 y += (dy * elapsed);
                 break;
             case JUMP:
-                y += dy*elapsed;
+                y += dy * elapsed;
                 break;
         }
         bbox.x = x;
@@ -128,10 +135,11 @@ public class GameObject {
 
     /**
      * Rendering of the object (will be delegated to another component in a next
-     * version.
+     * version. this method will be called by the Renderer.
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
+     * @see core.Renderer#render(Game) 
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
@@ -145,9 +153,9 @@ public class GameObject {
                 break;
             case IMAGE:
                 if (direction < 0) {
-                    g.drawImage(image, (int) (x + width)-4, (int) y, (int) (-width), (int) height, null);
+                    g.drawImage(image, (int) (x + width) - 4, (int) y, (int) (-width), (int) height, null);
                 } else {
-                    g.drawImage(image, (int) x-4, (int) y, (int) width, (int) height, null);
+                    g.drawImage(image, (int) x - 4, (int) y, (int) width, (int) height, null);
                 }
                 break;
 

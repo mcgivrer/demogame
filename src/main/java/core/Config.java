@@ -1,7 +1,13 @@
 package core;
 
 /**
- * A configuration component to manage and use easily parameters.
+ * <p>A configuration component to manage and use easily parameters.
+ * This simple POJO class will support all command line parameter values
+ * and there default values.</p>
+ * <p>It parses the argc arguments list directly coming from Java main method.</p>
+ * <p><strong>Note:</strong> Not the sexiest way to maintain thing, but surely one of the easiest.</p>
+ *
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class Config {
     public int screenWidth;
@@ -25,6 +31,13 @@ public class Config {
         this.statesPath = "/res/game.json";
     }
 
+    /**
+     * Parse all arguments form the main methods,and set the corresponding values.
+     * if no attribute is set, it uses a default value.
+     *
+     * @param argc list of arguments from command line.
+     * @return the Config object initialized with right values.
+     */
     public static Config analyzeArgc(String[] argc) {
         Config config = new Config();
         config.title = "DemoGame";

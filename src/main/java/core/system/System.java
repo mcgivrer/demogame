@@ -4,6 +4,9 @@ import core.Game;
 
 /**
  * Interface to define and manage a new System for the game.
+ *
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
+ * @see core.system.SystemManager
  */
 public interface System {
     /**
