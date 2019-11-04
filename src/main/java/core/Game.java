@@ -1,10 +1,11 @@
 package core;
 
+import core.audio.SoundSystem;
+import core.collision.MapCollidingService;
+import core.io.InputHandler;
 import core.state.StateManager;
 import core.system.SystemManager;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * An extra class to demonstrate some basics to create a simple java game.
@@ -12,20 +13,23 @@ import java.awt.event.KeyListener;
  * @author Frédéric Delorme
  * @since 2019
  */
-public class Game implements KeyListener {
+@Slf4j
+public class Game {
 
     public static long goIndex = 0;
     public Config config;
     public boolean exitRequest = false;
     private String[] argc;
-    public boolean[] keys = new boolean[65536];
-    public boolean[] previousKeys = new boolean[65536];
 
+    /**
+     * System Manager and Systems.
+     */
     public SystemManager sysMan;
-
+    public InputHandler inputHandler;
     public Renderer renderer;
     public StateManager stateManager;
-
+    private SoundSystem soundSystem;
+    private MapCollidingService mapCollider;
 
     /**
      * Create the Game container.
@@ -38,26 +42,51 @@ public class Game implements KeyListener {
         config = Config.analyzeArgc(argc);
     }
 
+    /**
+     * Start the Game and proceed all initialization.
+     */
     public void run() {
-        System.out.println("Run game");
+        log.info("Run game");
         initialize();
         loop();
-        System.out.println("Game stopped");
+        log.info("Game stopped");
         dispose();
         System.exit(0);
     }
 
+    /**
+     * Initialization of the game.
+     */
     public void initialize() {
-        ResourceManager.add("/res/game.json");
-        sysMan = SystemManager.initialize(this);
-        renderer = new Renderer(this);
-        stateManager = new StateManager(this);
-        sysMan.add(renderer);
-        sysMan.add(stateManager);
+        ResourceManager.add(
+                new String[]{
+                        "/res/game.json",
+                        "/res/bgf-icon.png"
+                });
 
+        // start System Manager
+        sysMan = SystemManager.initialize(this);
+
+        // add basic systems
+        inputHandler = new InputHandler(this);
+        sysMan.add(inputHandler);
+        renderer = new Renderer(this);
+        sysMan.add(renderer);
+        soundSystem = new SoundSystem(this);
+        sysMan.add(soundSystem);
+        // Start some more advanced systems.
+        mapCollider = new MapCollidingService(this);
+        sysMan.add(mapCollider);
+
+        // start State manager system
+        stateManager = new StateManager(this);
+        sysMan.add(stateManager);
     }
 
-    public void loop() {
+    /**
+     * Main loop for the game.
+     */
+    private void loop() {
         stateManager.initialize(this);
 
         long startTime = System.currentTimeMillis();
@@ -78,71 +107,18 @@ public class Game implements KeyListener {
                 try {
                     Thread.sleep((int) wait);
                 } catch (InterruptedException e) {
-                    System.out.println(String.format("Unable to wait %d wait ms", wait));
+                    log.error("Unable to wait {} wait ms", wait, e);
                 }
             }
             previousTime = startTime;
         }
     }
 
-    public void dispose(){
+    /**
+     * Dispose all systems.
+     */
+    private void dispose() {
         sysMan.dispose();
-    }
-
-    public void input() {
-
-    }
-
-    /**
-     * Update all the object according to elapsed time.
-     *
-     * @param elapsed
-     */
-    public void update(float elapsed) {
-
-    }
-
-
-    public void keyTyped(KeyEvent e) {
-    }
-
-    public void keyPressed(KeyEvent e) {
-        this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
-        this.keys[e.getKeyCode()] = true;
-        onKeyPressed(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
-        this.keys[e.getKeyCode()] = false;
-        onKeyReleased(e);
-    }
-
-    /**
-     * Process some keypressed events.
-     *
-     * @param e
-     */
-    public void onKeyPressed(KeyEvent e) {
-
-    }
-
-    /**
-     * Process some KeyReleased events.
-     *
-     * @param e
-     */
-    public void onKeyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_D:
-                // roll the debug level.
-                config.debug = (config.debug < 6 ? config.debug + 1 : 0);
-                break;
-            case KeyEvent.VK_F3:
-                renderer.saveScreenshot(config);
-            default:
-                break;
-        }
     }
 
     /**

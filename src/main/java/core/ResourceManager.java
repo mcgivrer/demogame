@@ -1,5 +1,6 @@
 package core;
 
+import core.audio.SoundClip;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,16 +39,38 @@ public class ResourceManager implements System {
     private static ResourceManager instance = new ResourceManager();
 
     public Map<String, Object> resources = new ConcurrentHashMap<>();
+    private List<ProgressListener> listeners = new ArrayList<>();
 
+    /**
+     * retrieve a resource as a BufferedImage
+     *
+     * @param path
+     * @return
+     */
     public static BufferedImage getImage(String path) {
         return (BufferedImage) instance.resources.get(path);
     }
 
+    /**
+     * Retrieve a resource as a String.
+     *
+     * @param path
+     * @return
+     */
     public static String getString(String path) {
         return (String) instance.resources.get(path);
     }
 
-    private List<ProgressListener> listeners = new ArrayList<>();
+    /**
+     * Retrieve a resource as a SoundClip.
+     *
+     * @param path
+     * @return
+     */
+    public static SoundClip getSoundClip(String path) {
+        return (SoundClip) instance.resources.get(path);
+    }
+
 
     /**
      * Load a list of resources
@@ -99,6 +122,13 @@ public class ResourceManager implements System {
                     instance.resources.put(path, json);
                 }
                 log.debug("'{}' added as a JSON resource", path);
+            }
+            if (path.contains(".wav") || path.contains(".mp3")) {
+                InputStream sndStream = ResourceManager.class.getResourceAsStream(path);
+                SoundClip sc = new SoundClip(path, sndStream);
+                if (sc != null) {
+                    instance.resources.put(path, sc);
+                }
             }
         } catch (IOException e) {
             log.error("Unable to read the resource : '{}'", path, e);

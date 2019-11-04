@@ -16,9 +16,9 @@ public class BBox {
     }
 
     public void fromGameObject(GameObject g) {
-        this.x = g.x;
+        this.x = g.x + 4;
         this.y = g.y;
-        this.width = g.width;
+        this.width = g.width - 8;
         this.height = g.height;
         update();
     }
@@ -26,8 +26,8 @@ public class BBox {
     public void update() {
         this.top = y + height;
         this.bottom = y;
-        this.left = x;
-        this.right = x + width;
+        this.left = x + 4;
+        this.right = x + width - 8;
     }
 
     public boolean intersect(BBox other) {

@@ -21,15 +21,20 @@ import java.util.Map;
  * service to the game. It would extends the <code>AbstractSystem</code> and
  * extends the <code>System</code> interface.
  *
- * @author Frédéric Delorme
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @see System
  * @see @AbstractSystem
  */
 @Slf4j
 public class SystemManager {
+    /**
+     * list of systems to be managed.
+     */
     private static Map<Class<?>, AbstractSystem> systems = new HashMap<>();
-
-    Game game;
+    /**
+     * the parent game.
+     */
+    private Game game;
 
     /**
      * Start the Game System Manager.
@@ -68,10 +73,13 @@ public class SystemManager {
      * @param s the system to be managed.
      */
     public void add(AbstractSystem s) {
-        Class<? extends AbstractSystem> systemtype = s.getClass();
-        systems.put(systemtype, s);
-        s.initialize(game);
-        log.debug("Add system {}", s.getName());
+        if (s != null) {
+            Class<? extends AbstractSystem> systemType = s.getClass();
+            systems.put(systemType, s);
+            log.debug("Add system {}", s.getName());
+            s.initialize(game);
+            log.debug("System {} initialized.", s.getName());
+        }
     }
 
     /**
@@ -83,11 +91,13 @@ public class SystemManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends AbstractSystem> T getSystem(Class<T> systemName) {
+        log.debug("retrieve system {}", systemName.getCanonicalName());
         return (T) systems.get(systemName);
     }
 
     public void dispose() {
-        for(System s : systems.values()){
+        for (System s : systems.values()) {
+            log.debug("disposing system {}", s.getName());
             s.dispose();
         }
     }

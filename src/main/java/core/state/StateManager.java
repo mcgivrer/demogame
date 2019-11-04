@@ -12,20 +12,42 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * The class StateManager manege all states for the parent game.
+ *
+ * @author Frédéric Delorme<fredeic.delorme@gmail.com>
+ * @see State
+ * @see AbstractState
+ */
 @Slf4j
 public class StateManager extends AbstractSystem implements System {
 
-
+    /**
+     * List of all states managed for the game.
+     */
     private Map<String, State> states = new HashMap<>();
 
+    /**
+     * Current active State.
+     */
     private State current;
 
-
+    /**
+     * Create the StateManager for the Game.
+     *
+     * @param g the parent game.
+     */
     public StateManager(Game g) {
         super(g);
         load(g.config.statesPath);
     }
 
+
+    /**
+     * Load all states configurationand defnition from <code>game.json</code> file.
+     *
+     * @param path path to the game configuration JSON file.
+     */
     public void load(String path) {
         try {
             String gameStates = ResourceManager.getString("/res/game.json");

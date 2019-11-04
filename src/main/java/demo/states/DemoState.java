@@ -4,11 +4,17 @@ import core.Game;
 import core.ProgressListener;
 import core.Renderer;
 import core.ResourceManager;
-import core.map.MapCollidingService;
+import core.audio.SoundClip;
+import core.collision.CollisionEvent;
+import core.collision.MapCollidingService;
+import core.collision.OnCollision;
+import core.io.InputHandler;
 import core.map.MapLevel;
+import core.map.MapObject;
 import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
+import core.object.GameObject.GameAction;
 import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +26,9 @@ import java.awt.image.BufferedImage;
 
 @Slf4j
 public class DemoState extends AbstractState implements State {
+
+
+    SoundClip playCoin;
 
     public MapLevel mapLevel;
     public MapCollidingService mapCollider;
@@ -33,6 +42,7 @@ public class DemoState extends AbstractState implements State {
     private BufferedImage coinsImg;
     private BufferedImage lifeImg;
     private BufferedImage itemHolderImg;
+    private InputHandler inputHandler;
 
     Font scoreFont;
     Font infoFont;
@@ -45,10 +55,44 @@ public class DemoState extends AbstractState implements State {
         super(g);
     }
 
-
     @Override
     public void initialize(Game g) {
-        mapCollider = new MapCollidingService();
+        inputHandler = g.sysMan.getSystem(InputHandler.class);
+        inputHandler.addListener(this);
+        mapCollider = g.sysMan.getSystem(MapCollidingService.class);
+
+        mapCollider.addListener(GameObject.class, new OnCollision() {
+            public void collide(CollisionEvent e) {
+                if (e.m2.collectible && e.o1.canCollect) {
+                    switch (e.m2.type) {
+                        case "object":
+                            collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
+                            break;
+                        case "item":
+                            collectItem(e.map, e.m2, e.mapX, e.mapY);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            private void collectItem(MapLevel map, MapObject mo, int x, int y) {
+
+                map.player.items.add(mo);
+                map.tiles[x][y] = null;
+            }
+
+            private void collectCoin(MapLevel map, GameObject go, MapObject mo, int x, int y) {
+                if (mo.money > 0) {
+                    go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
+                    map.tiles[x][y] = null;
+                    if (playCoin != null) {
+                        playCoin.play();
+                    }
+                }
+            }
+        });
 
         if (mapLevel != null) {
             mapLevel.priority = 1;
@@ -78,7 +122,8 @@ public class DemoState extends AbstractState implements State {
                 "/res/maps/map_1.json",
                 "/res/assets/asset-1.json",
                 "/res/images/background-1.jpg",
-                "/res/images/tileset-1.png"});
+                "/res/images/tileset-1.png",
+                "/res/audio/sounds/collect-coin.wav"});
 
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
 
@@ -89,8 +134,6 @@ public class DemoState extends AbstractState implements State {
         lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
         coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
         itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
-
-
     }
 
     @Override
@@ -100,28 +143,30 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void input(Game g) {
-        if (g.keys[KeyEvent.VK_ESCAPE]) {
+        if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
-
-        mapLevel.player.setSpeed(0.0f, 0.0f);
-
-        if (g.keys[KeyEvent.VK_UP]) {
-            mapLevel.player.dy = -0.2f;
+        // reset horizontal speed if falling.
+        if (mapLevel.player.action != GameAction.FALL) {
+            mapLevel.player.dx = 0.0f;
+            mapLevel.player.action = GameAction.IDLE;
         }
-        if (g.keys[KeyEvent.VK_DOWN]) {
+        if (inputHandler.keys[KeyEvent.VK_UP]) {
+            mapLevel.player.dy = -0.2f;
+            mapLevel.player.action = GameAction.JUMP;
+        }
+        if (inputHandler.keys[KeyEvent.VK_DOWN]) {
             mapLevel.player.dy = 0.2f;
         }
-        if (g.keys[KeyEvent.VK_LEFT]) {
+        if (inputHandler.keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
             mapLevel.player.direction = -1;
+            mapLevel.player.action = GameAction.WALK;
         }
-        if (g.keys[KeyEvent.VK_RIGHT]) {
+        if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
             mapLevel.player.dx = 0.2f;
             mapLevel.player.direction = 1;
-        }
-        if (g.keys[KeyEvent.VK_SPACE]) {
-            // Todo implement Jump
+            mapLevel.player.action = GameAction.WALK;
         }
     }
 

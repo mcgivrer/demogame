@@ -22,6 +22,11 @@ public abstract class AbstractSystem implements System {
      */
     protected Game game;
 
+    /**
+     * Build the system attached to the parent game.
+     *
+     * @param game the parent game for this system.
+     */
     protected AbstractSystem(Game game) {
         this.game = game;
     }

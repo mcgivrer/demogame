@@ -75,6 +75,7 @@ public class SoundClip {
         InputStream bufferedIn = new BufferedInputStream(audioSrc);
         AudioInputStream ais = AudioSystem.getAudioInputStream(bufferedIn);
         AudioFormat baseFormat = ais.getFormat();
+        System.out.print(baseFormat);
 
         AudioFormat decodeFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16,
                 baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
@@ -92,7 +93,9 @@ public class SoundClip {
                 clip.close();
             }
         });
-        clip.open(dais);
+        if (!clip.isActive() && !clip.isRunning()) {
+            clip.open(dais);
+        }
 
         if (clip.isControlSupported(FloatControl.Type.BALANCE)) {
             balanceControl = (FloatControl) clip.getControl(FloatControl.Type.BALANCE);

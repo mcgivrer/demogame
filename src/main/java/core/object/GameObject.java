@@ -12,8 +12,18 @@ import java.util.Map;
 
 /**
  * Any object displayed by the game.
+ * the GameObject will provide most operations of the game loop steps:
+ * <ul>
+ *     <li><code>update(Game,float)</code> will update the Object status</li>
+ *     <li><code>render(Game,Graphics2D)</code> draw all about this GameObject</li>
+ * </ul>
+ *
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
 public class GameObject {
+
+    public GameAction action = GameAction.IDLE;
+
     private static int goIndex = 0;
     private final int id = (int) goIndex++;
 
@@ -30,6 +40,40 @@ public class GameObject {
     public float dx = 0, dy = 0;
 
     public int direction = 1;
+
+    /**
+     * update the object (on all its characteristics, not only position if needed)
+     *
+     * @param dg      the core.Game containing the object.
+     * @param elapsed the elapsed time since previous call.
+     */
+    public void update(Game dg, float elapsed) {
+        oldX = x;
+        oldY = y;
+        switch (action) {
+            case IDLE:
+            case IDLE2:
+                dy = 0.0f;
+                dx = 0.0f;
+            case WALK:
+                x += (dx * elapsed);
+                break;
+            case RUN:
+                x += (dx * 2.0f * elapsed);
+                break;
+            case FALL:
+                y += (0.2f * elapsed);
+                break;
+            case DOWN:
+                y += (dy * elapsed);
+                break;
+            case JUMP:
+                y += dy * elapsed;
+                break;
+        }
+        bbox.x = x;
+        bbox.y = y;
+    }
 
     public int layer = 0;
     public int priority = 0;
@@ -78,45 +122,45 @@ public class GameObject {
     }
 
     /**
-     * update the object (on all its characteristics, not only position if needed)
-     *
-     * @param dg      the core.Game containing the object.
-     * @param elapsed the elapsed time since previous call.
-     */
-    public void update(Game dg, float elapsed) {
-        oldX = x;
-        oldY = y;
-        x += (dx * elapsed);
-        y += (dy * elapsed);
-        bbox.x = x;
-        bbox.y = y;
-    }
-
-    /**
      * Rendering of the object (will be delegated to another component in a next
-     * version.
+     * version. this method will be called by the Renderer.
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
+     * @see core.Renderer#render(Game)
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
-        case RECTANGLE:
-            g.setColor(this.foregroundColor);
-            g.fillRect((int) x, (int) y, (int) width, (int) height);
-            break;
-        case CIRCLE:
-            g.setColor(this.foregroundColor);
-            g.fillOval((int) x, (int) y, (int) width, (int) height);
-            break;
-        case IMAGE:
-            if (direction < 0) {
-                g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
-            } else {
-                g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
-            }
-            break;
+            case RECTANGLE:
+                g.setColor(this.foregroundColor);
+                g.fillRect((int) x, (int) y, (int) width, (int) height);
+                break;
+            case CIRCLE:
+                g.setColor(this.foregroundColor);
+                g.fillOval((int) x, (int) y, (int) width, (int) height);
+                break;
+            case IMAGE:
+                if (direction < 0) {
+                    g.drawImage(image, (int) (x + width) - 4, (int) y, (int) (-width), (int) height, null);
+                } else {
+                    g.drawImage(image, (int) x - 4, (int) y, (int) width, (int) height, null);
+                }
+                break;
+
         }
+    }
+
+    public enum GameAction {
+        IDLE,
+        IDLE2,
+        WALK,
+        RUN,
+        FALL,
+        JUMP,
+        UP,
+        DOWN,
+        DEAD1,
+        DEAD2;
     }
 
     /*------- Setters ---------------*/
