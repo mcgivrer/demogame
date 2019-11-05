@@ -24,7 +24,12 @@
       "attributes": {
         "energy": 100.0,
         "damage": 10.0,
-        "coins": 5
+        "coins": 5,
+        "behaviors": [
+          {
+            "lua": "lua/enemy_track.lua"
+          }
+        ]
       }
     },
     "P": {

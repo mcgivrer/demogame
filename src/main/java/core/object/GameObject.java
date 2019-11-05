@@ -1,6 +1,7 @@
 package core.object;
 
 import core.Game;
+import core.behaviors.scripts.Behavior;
 import core.collision.MapTileCollision;
 import core.map.MapObject;
 
@@ -26,7 +27,7 @@ public class GameObject {
     public GameAction action = GameAction.IDLE;
 
     private static int goIndex = 0;
-    private final int id = (int) goIndex++;
+    private final int id = goIndex++;
 
     public String name = "noname_" + id;
 
@@ -56,6 +57,7 @@ public class GameObject {
     public Color foregroundColor = Color.RED;
     public Color backgroundColor = Color.BLACK;
 
+    public List<Behavior> behaviors = new ArrayList<>();
     public Map<String, Object> attributes = new HashMap<>();
     public List<MapObject> items = new ArrayList<>();
 
@@ -162,7 +164,7 @@ public class GameObject {
         UP,
         DOWN,
         DEAD1,
-        DEAD2;
+        DEAD2
     }
 
     /*------- Setters ---------------*/

@@ -3,6 +3,7 @@ package core;
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
 import core.io.InputHandler;
+import core.object.GameObjectManager;
 import core.state.StateManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class Game {
     public StateManager stateManager;
     private SoundSystem soundSystem;
     private MapCollidingService mapCollider;
+    private GameObjectManager goManager;
 
     /**
      * Create the Game container.
@@ -74,6 +76,9 @@ public class Game {
         sysMan.add(renderer);
         soundSystem = new SoundSystem(this);
         sysMan.add(soundSystem);
+        goManager = new GameObjectManager(this);
+        sysMan.add(goManager);
+
         // Start some more advanced systems.
         mapCollider = new MapCollidingService(this);
         sysMan.add(mapCollider);
