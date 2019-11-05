@@ -16,25 +16,17 @@ public class BBox {
     }
 
     public void fromGameObject(GameObject g) {
-        this.x = g.x+4;
-        this.y = g.y;
-        this.width = g.width-8;
-        this.height = g.height;
-        update();
-    }
-
-    public void update() {
-        this.top = y + height;
-        this.bottom = y;
-        this.left = x+4;
-        this.right = x + width -8;
+        this.x = g.x + left;
+        this.y = g.y + top;
+        this.width = g.width - (left + right);
+        this.height = g.height - (top + bottom);
     }
 
     public boolean intersect(BBox other) {
         return other != null
-                && this.right >= other.left
-                && this.left <= other.right
-                && this.top >= other.bottom
-                && this.bottom <= other.top;
+                && this.x + this.right >= other.x + other.left
+                && this.x + this.left <= other.x + other.right
+                && this.y + this.top >= other.y + other.bottom
+                && this.y + this.bottom <= other.y + other.top;
     }
 }

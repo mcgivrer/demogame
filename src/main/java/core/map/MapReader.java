@@ -118,10 +118,10 @@ public class MapReader {
         try {
             switch (mo.type) {
                 case "player":
-                    go = createObjectFromClass(mapLevel, mo, x, y, 2, 1);
+                    go = createObjectFromClass(mapLevel, mo, x, y);
                     break;
                 case "enemy_":
-                    go = createObjectFromClass(mapLevel, mo, x, y, 2, 10);
+                    go = createObjectFromClass(mapLevel, mo, x, y);
                     break;
                 default:
                     break;
@@ -140,15 +140,12 @@ public class MapReader {
      * @param mo       the MapObject to be interpreted to create a GameObject
      * @param x        the horizontal position
      * @param y        the vertical position
-     * @param priority the priority to render the object
-     * @param layer    the layer where to create the object.
      * @return an initialized GameObject
      * @throws ClassNotFoundException
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private static GameObject createObjectFromClass(MapLevel mapLevel, MapObject mo, int x, int y, int priority,
-                                                    int layer) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    private static GameObject createObjectFromClass(MapLevel mapLevel, MapObject mo, int x, int y) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 
         GameObject go;
         Class<?> class1 = Class.forName(mo.clazz);
@@ -156,12 +153,8 @@ public class MapReader {
         go = (GameObject) class1.newInstance();
         go = populateGameObjectAttributes(mapLevel, go, mo);
 
-        go.layer = layer;
-        go.priority = priority;
-
         go.x = (x - 1) * mapLevel.asset.tileWidth;
         go.y = (y - 1) * mapLevel.asset.tileHeight;
-
         go.bbox.fromGameObject(go);
         return go;
     }
@@ -218,10 +211,14 @@ public class MapReader {
             values = mo.size.split(",");
             go.width = Integer.parseInt(values[0]);
             go.height = Integer.parseInt(values[1]);
+            go.priority = mo.priority;
+            go.layer = mo.layer;
             // get image
             go.image = mapLevel.asset.imageBuffer.getSubimage((ox - 1) * mapLevel.asset.tileWidth,
                     (oy - 1) * mapLevel.asset.tileHeight, (int) go.width, (int) go.height);
             go.type = GameObjectType.IMAGE;
+            go.bbox = mo.bbox;
+            go.bbox.fromGameObject(go);
         }
 
         // the GameObject can collect items (or not !)

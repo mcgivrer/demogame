@@ -1,6 +1,7 @@
 package demo.states;
 
 import core.Game;
+import core.ProgressListener;
 import core.Renderer;
 import core.ResourceManager;
 import core.audio.SoundClip;
@@ -16,11 +17,14 @@ import core.object.GameObject;
 import core.object.GameObject.GameAction;
 import core.state.AbstractState;
 import core.state.State;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+@Slf4j
 public class DemoState extends AbstractState implements State {
 
 
@@ -39,6 +43,9 @@ public class DemoState extends AbstractState implements State {
     private BufferedImage lifeImg;
     private BufferedImage itemHolderImg;
     private InputHandler inputHandler;
+
+    Font scoreFont;
+    Font infoFont;
 
     public DemoState() {
         this.name = "DemoState";
@@ -96,13 +103,22 @@ public class DemoState extends AbstractState implements State {
 
             // Create camera
             Camera cam = new Camera("camera", mapLevel.player, 0.017f,
-                    new Dimension((int) mapLevel.width, (int) mapLevel.height));
+                    new Dimension(
+                            (int) g.config.screenWidth,
+                            (int) g.config.screenHeight));
             addObject(cam);
         }
     }
 
     @Override
     public void load(Game g) {
+
+        ResourceManager.addListener(new ProgressListener() {
+            @Override
+            public void update(float value, String path) {
+                log.info("reading resources: {} : {}", value * 100.0f, path);
+            }
+        });
 
         ResourceManager.add(new String[]{
                 "/res/maps/map_1.json",
@@ -132,18 +148,23 @@ public class DemoState extends AbstractState implements State {
         if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
+
+        mapLevel.player.setSpeed(0.0f, 0.0f);
+
         // reset horizontal speed if falling.
-        if(mapLevel.player.action!=GameAction.FALL){
-            mapLevel.player.dx=0.0f;
-            mapLevel.player.action = GameAction.IDLE;
+        if (mapLevel.player.action == GameAction.FALL) {
+            mapLevel.player.dx = 0.0f;
+            mapLevel.player.dy = 0.25f;
         }
         if (inputHandler.keys[KeyEvent.VK_UP]) {
             mapLevel.player.dy = -0.2f;
             mapLevel.player.action = GameAction.JUMP;
         }
         if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-            mapLevel.player.dy = 0.2f;
+            mapLevel.player.dy = 0.1f;
+            mapLevel.player.action = GameAction.DOWN;
         }
+
         if (inputHandler.keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
             mapLevel.player.direction = -1;
@@ -163,8 +184,8 @@ public class DemoState extends AbstractState implements State {
         for (GameObject go : objects.values()) {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(g, elapsed);
-                mapLevel.constrainToMapLevel(go);
                 mapCollider.checkCollision(mapLevel, go);
+                mapLevel.constrainToMapLevel(go);
             }
         }
         // active core.object.Camera update
@@ -186,23 +207,33 @@ public class DemoState extends AbstractState implements State {
 
     public void drawHUD(Game ga, Renderer r, Graphics2D g) {
         int offsetX = 12, offsetY = 30;
-        Font f = g.getFont();
-        g.setFont(f.deriveFont(12.0f));
+        // prepare font.
+        if (scoreFont == null) {
+            infoFont = g.getFont().deriveFont(10.0f);
+            scoreFont = infoFont.deriveFont(AffineTransform.getScaleInstance(1.4, 2.0));
+        }
+
         // draw Score
-        r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY, Color.WHITE, Color.BLACK);
+        g.setFont(scoreFont);
+        r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY + 8, Color.WHITE, Color.BLACK);
+
+
         // draw Life
         g.drawImage(lifeImg, offsetX, offsetY - 16, null);
-        g.setFont(f.deriveFont(10.0f));
+        g.setFont(infoFont);
         r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK);
+
         // draw Coins
         g.drawImage(coinsImg, offsetX, offsetY, null);
-        g.setFont(f.deriveFont(10.0f));
+        g.setFont(infoFont);
         double coins = (double) (mapLevel.player.attributes.get("coins"));
         r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK);
+
         // draw Mana
         float nrjRatio = (energyImg.getWidth() / 100.0f);
         double nrj = nrjRatio * ((double) (mapLevel.player.attributes.get("energy")));
         g.drawImage(energyImg, offsetX + 24, offsetY - 8, (int) nrj, energyImg.getHeight(), null);
+
         // draw Energy
         float manaRatio = (manaImg.getWidth() / 100.0f);
         double mana = manaRatio * ((double) (mapLevel.player.attributes.get("mana")));
@@ -225,6 +256,5 @@ public class DemoState extends AbstractState implements State {
                 );
             }
         }
-        g.setFont(f);
     }
 }

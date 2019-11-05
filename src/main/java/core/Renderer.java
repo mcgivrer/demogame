@@ -1,5 +1,6 @@
 package core;
 
+import core.collision.MapTileCollision;
 import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
@@ -13,16 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.*;
 
 /**
  * This Renderer class is the main rendering component for all objects managed by its parent core.Game instance.
@@ -72,7 +73,19 @@ public class Renderer extends AbstractSystem implements System {
         InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
         jf.addKeyListener(kih);
         jf.setIconImage(ResourceManager.getImage("/res/bgf-icon.png"));
-
+        jf.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent componentEvent) {
+                float ratio = (float) dg.config.screenWidth / (float) dg.config.screenHeight;
+                float w = componentEvent.getComponent().getWidth();
+                Dimension d = new Dimension((int) w, (int) (w / ratio));
+                jf.setSize(dim);
+                jf.setMaximumSize(dim);
+                jf.setMinimumSize(dim);
+                jf.setPreferredSize(dim);
+                jf.pack();
+            }
+        });
+        jf.setIgnoreRepaint(true);
         jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);
         jf.setVisible(true);
@@ -111,18 +124,16 @@ public class Renderer extends AbstractSystem implements System {
                         g.setColor(Color.BLUE);
                         g.fillRect(0, 0, (int) go.width, (int) go.height);
                     }
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     mapRenderer.render(dg, g, (MapLevel) go, camera);
-
                 } else if (go instanceof GameObject) {
 
                     if (dg.config.debug > 2) {
                         displayLiveDebug(g, go);
                     }
                     // if standard GameObject,  render with the embedded render method.
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     go.render(dg, g);
-
                 }
             }
         }
@@ -140,6 +151,33 @@ public class Renderer extends AbstractSystem implements System {
         renderToScreen(dg);
     }
 
+    /**
+     * Rendering of the object (will be delegated to another component in a next
+     * version.
+     *
+     * @param dg the core.Game containing the object.
+     * @param g  the graphics API.
+     */
+    public void renderObject(Game dg, GameObject go, Graphics2D g) {
+        switch (go.type) {
+            case RECTANGLE:
+                g.setColor(go.foregroundColor);
+                g.fillRect((int) go.x, (int) go.y, (int) go.width, (int) go.height);
+                break;
+            case CIRCLE:
+                g.setColor(go.foregroundColor);
+                g.fillOval((int) go.x, (int) go.y, (int) go.width, (int) go.height);
+                break;
+            case IMAGE:
+                if (go.direction < 0) {
+                    g.drawImage(go.image, (int) (go.x + go.width), (int) go.y, (int) (-go.width), (int) go.height, null);
+                } else {
+                    g.drawImage(go.image, (int) go.x, (int) go.y, (int) go.width, (int) go.height, null);
+                }
+                break;
+        }
+    }
+
     private void displayLiveDebug(Graphics2D g, GameObject go) {
         int ox = (int) (go.bbox.x / 16);
         int ow = (int) (go.bbox.width / 16);
@@ -150,12 +188,41 @@ public class Renderer extends AbstractSystem implements System {
         g.drawRect(ox * 16, oy * 16, ow * 16, oh * 16);
         // draw the bounding box
         g.setColor(Color.RED);
-        g.drawRect((int) go.bbox.x, (int) go.bbox.y, (int) go.bbox.width, (int) go.bbox.height);
+        g.drawRect(
+                (int) (go.bbox.x + go.bbox.left),
+                (int) (go.bbox.y + go.bbox.top),
+                (int) (go.bbox.width - go.bbox.left - go.bbox.right),
+                (int) (go.bbox.height - go.bbox.top - go.bbox.bottom));
         // draw the tested Tiles to detect Fall action.
         g.setColor(Color.BLUE);
-        g.drawRect(ox * 16, (oy + oh) * 16, 16, 16);
+        if (!go.collidingZone.isEmpty()) {
+            for (MapTileCollision mo : go.collidingZone) {
+                if (mo.mo != null) {
+                    Font d = g.getFont();
+                    g.setFont(d.deriveFont(9.5f));
+                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                    g.setColor(Color.WHITE);
+                    g.drawString(mo.mo.type, mo.rX + 2, mo.rY + (mo.h / 2) + 4);
+                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    g.setFont(d);
+                    switch (mo.mo.type) {
+                        case "tile":
+                            g.setColor(Color.ORANGE);
+                            break;
+                        case "object":
+                            g.setColor(Color.YELLOW);
+                            break;
+                        default:
+                            g.setColor(Color.GREEN);
+                            break;
+                    }
+                } else {
+                    g.setColor(Color.BLUE);
+                }
+                g.drawRect(mo.rX, mo.rY, mo.w, mo.h);
+            }
+        }
     }
-
 
     public void renderToScreen(Game dg) {
         Camera camera = dg.stateManager.getCurrent().getActiveCamera();
@@ -212,10 +279,21 @@ public class Renderer extends AbstractSystem implements System {
                     String.format("debug:%d",
                             dg.config.debug),
                     (offsetX) * sX, (offsetY + 30) * sY);
+
             g.drawString(
                     String.format("action:%s",
                             go.action.toString()),
                     (offsetX) * sX, (offsetY + 40) * sY);
+            // display Attributes
+            int i = 1;
+            for (Map.Entry<String, Object> e : go.attributes.entrySet()) {
+                g.drawString(
+                        String.format("%s:%s",
+                                e.getKey(), e.getValue().toString()),
+                        (offsetX) * sX, (offsetY + 40 + (i * 10) * sY));
+                i++;
+            }
+
         }
     }
 

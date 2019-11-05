@@ -5,14 +5,7 @@ import core.map.MapObject;
 import core.object.GameObject;
 
 public class CollisionEvent {
-    public enum CollisionType {
-        COLLISION_MAP,
-        COLLISION_OBJECT,
-        COLLISION_ITEM;
-    }
-
     public MapLevel map;
-
     public CollisionType type;
     public GameObject o1;
     public GameObject o2;
@@ -27,5 +20,11 @@ public class CollisionEvent {
         this.map = map;
         this.mapX = x;
         this.mapY = y;
+    }
+
+    public enum CollisionType {
+        COLLISION_MAP,
+        COLLISION_OBJECT,
+        COLLISION_ITEM;
     }
 }

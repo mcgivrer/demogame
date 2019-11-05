@@ -1,6 +1,7 @@
 package core.object;
 
 import core.Game;
+import core.collision.MapTileCollision;
 import core.map.MapObject;
 
 import java.awt.*;
@@ -22,18 +23,7 @@ import java.util.Map;
  */
 public class GameObject {
 
-    public enum GameAction {
-        IDLE,
-        IDLE2,
-        WALK,
-        RUN,
-        FALL,
-        JUMP,
-        UP,
-        DOWN,
-        DEAD1,
-        DEAD2;
-    }
+    public GameAction action = GameAction.IDLE;
 
     private static int goIndex = 0;
     private final int id = (int) goIndex++;
@@ -51,7 +41,6 @@ public class GameObject {
     public float dx = 0, dy = 0;
 
     public int direction = 1;
-    public GameAction action = GameAction.IDLE;
 
     public int layer = 0;
     public int priority = 0;
@@ -69,6 +58,41 @@ public class GameObject {
 
     public Map<String, Object> attributes = new HashMap<>();
     public List<MapObject> items = new ArrayList<>();
+
+    public List<MapTileCollision> collidingZone = new ArrayList<>();
+
+
+    /**
+     * update the object (on all its characteristics, not only position if needed)
+     *
+     * @param dg      the core.Game containing the object.
+     * @param elapsed the elapsed time since previous call.
+     */
+    public void update(Game dg, float elapsed) {
+        oldX = x;
+        oldY = y;
+        switch (action) {
+            case IDLE:
+            case IDLE2:
+                dy = 0.0f;
+                dx = 0.0f;
+            case WALK:
+                x += (dx * elapsed);
+                break;
+            case RUN:
+                x += (dx * 2.0f * elapsed);
+                break;
+            case FALL:
+            case DOWN:
+                y += (dy * elapsed);
+                break;
+            case JUMP:
+                y += (dy * elapsed);
+                break;
+        }
+        bbox.fromGameObject(this);
+    }
+
 
     public GameObject() {
         this.name = "gameObjectName";
@@ -100,46 +124,12 @@ public class GameObject {
     }
 
     /**
-     * update the object (on all its characteristics, not only position if needed)
-     *
-     * @param dg      the core.Game containing the object.
-     * @param elapsed the elapsed time since previous call.
-     */
-    public void update(Game dg, float elapsed) {
-        oldX = x;
-        oldY = y;
-        switch (action) {
-            case IDLE:
-            case IDLE2:
-                dy = 0.0f;
-                dx = 0.0f;
-            case WALK:
-                x += (dx * elapsed);
-                break;
-            case RUN:
-                x += (dx * 2.0f * elapsed);
-                break;
-            case FALL:
-                y += (0.2f * elapsed);
-                break;
-            case DOWN:
-                y += (dy * elapsed);
-                break;
-            case JUMP:
-                y += dy * elapsed;
-                break;
-        }
-        bbox.x = x;
-        bbox.y = y;
-    }
-
-    /**
      * Rendering of the object (will be delegated to another component in a next
      * version. this method will be called by the Renderer.
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
-     * @see core.Renderer#render(Game) 
+     * @see core.Renderer#render(Game)
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
@@ -160,6 +150,19 @@ public class GameObject {
                 break;
 
         }
+    }
+
+    public enum GameAction {
+        IDLE,
+        IDLE2,
+        WALK,
+        RUN,
+        FALL,
+        JUMP,
+        UP,
+        DOWN,
+        DEAD1,
+        DEAD2;
     }
 
     /*------- Setters ---------------*/

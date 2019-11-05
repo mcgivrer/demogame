@@ -93,7 +93,7 @@ public class SoundClip {
                 clip.close();
             }
         });
-        if(!clip.isActive() && !clip.isRunning()) {
+        if (!clip.isActive() && !clip.isRunning()) {
             clip.open(dais);
         }
 
