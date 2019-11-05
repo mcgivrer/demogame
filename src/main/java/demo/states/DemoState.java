@@ -103,7 +103,9 @@ public class DemoState extends AbstractState implements State {
 
             // Create camera
             Camera cam = new Camera("camera", mapLevel.player, 0.017f,
-                    new Dimension((int) mapLevel.width, (int) mapLevel.height));
+                    new Dimension(
+                            (int) g.config.screenWidth,
+                            (int) g.config.screenHeight));
             addObject(cam);
         }
     }
@@ -146,18 +148,23 @@ public class DemoState extends AbstractState implements State {
         if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
+
+        mapLevel.player.setSpeed(0.0f, 0.0f);
+
         // reset horizontal speed if falling.
-        if (mapLevel.player.action != GameAction.FALL) {
+        if (mapLevel.player.action == GameAction.FALL) {
             mapLevel.player.dx = 0.0f;
-            mapLevel.player.action = GameAction.IDLE;
+            mapLevel.player.dy = 0.25f;
         }
         if (inputHandler.keys[KeyEvent.VK_UP]) {
             mapLevel.player.dy = -0.2f;
             mapLevel.player.action = GameAction.JUMP;
         }
         if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-            mapLevel.player.dy = 0.2f;
+            mapLevel.player.dy = 0.1f;
+            mapLevel.player.action = GameAction.DOWN;
         }
+
         if (inputHandler.keys[KeyEvent.VK_LEFT]) {
             mapLevel.player.dx = -0.2f;
             mapLevel.player.direction = -1;
@@ -177,8 +184,8 @@ public class DemoState extends AbstractState implements State {
         for (GameObject go : objects.values()) {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 go.update(g, elapsed);
-                mapLevel.constrainToMapLevel(go);
                 mapCollider.checkCollision(mapLevel, go);
+                mapLevel.constrainToMapLevel(go);
             }
         }
         // active core.object.Camera update

@@ -58,34 +58,82 @@ public class MapCollidingService extends AbstractSystem implements System {
     public void checkCollision(MapLevel map, GameObject go) {
         int ox = (int) (go.bbox.x / map.asset.tileWidth);
         int ow = (int) (go.bbox.width / map.asset.tileWidth);
-        int oy = (int) (go.bbox.y / map.asset.tileHeight);
+        int oy = (int) ((go.oldY + go.bbox.height) / map.asset.tileHeight);
+        int oy2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileHeight);
         int oh = (int) (go.bbox.height / map.asset.tileHeight);
 
+        go.collidingZone.clear();
 
         if (go.dx > 0) {
-            testMoveRight(map, go, ox, ow, oy, oh);
+            testMoveRight(map, go, ox, ow, oy - 1, oh);
         }
         if (go.dx < 0) {
-            testMoveLeft(map, go, ox, oy, oh);
+            testMoveLeft(map, go, ox, oy - 1, oh);
         }
-        testIfFall(map, go, ox, oy + oh);
+        if (go.dy < 0) {
+            testMoveUp(map, go);
+        } else {
+            testIfFall(map, go, true);
+            testIfMoveDown(map, go);
+        }
     }
 
-    public void testIfFall(MapLevel map, GameObject go, int ox, int oy) {
-        MapObject mo = getTileInMap(map, ox, oy);
-        if (mo == null) {
-            go.action = GameAction.FALL;
-        } else {
-            if (mo.block && go.action == GameAction.FALL) {
+    private void testIfMoveDown(MapLevel map, GameObject go) {
+        testIfFall(map, go, false);
+    }
+
+    public void testIfFall(MapLevel map, GameObject go, boolean falling) {
+        int dy = 0;
+
+        int y0 = (int) ((go.oldY + go.bbox.height) / map.asset.tileWidth) + dy;
+        int x1 = (int) (go.bbox.x / map.asset.tileWidth);
+        int y1 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
+        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
+        int y2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
+
+        for (int y = y0; y <= y1; y += 1) {
+            MapObject m1 = getTileInMap(map, x1, y);
+            MapObject m2 = getTileInMap(map, x2, y);
+            if (((m1 != null && m1.block) || (m2 != null && m2.block)) && go.action == GameAction.FALL) {
                 go.action = GameAction.IDLE;
+                //go.y =(int)(go.y/map.asset.tileHeight)*map.asset.tileHeight;
+                break;
             }
+            if (m1 == null && m2 == null && falling) {
+                go.action = GameAction.FALL;
+            }
+            createDebugInfo(go, map, m1, x1, y);
+            createDebugInfo(go, map, m2, x2, y);
         }
     }
+
+    public void testMoveUp(MapLevel map, GameObject go) {
+        int x1 = (int) (go.bbox.x / map.asset.tileWidth);
+        int y1 = (int) ((go.bbox.y) / map.asset.tileWidth);
+        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
+        int y2 = (int) ((go.bbox.y) / map.asset.tileWidth);
+        MapObject m1 = getTileInMap(map, x1, y1);
+        MapObject m2 = getTileInMap(map, x2, y2);
+
+
+        if (go.action == GameAction.JUMP
+                && ((m1 != null && m1.block)
+                || (m2 != null && m2.block)
+        )
+        ) {
+            go.y = go.oldY;
+            createDebugInfo(go, map, m1, x1, y1);
+        }
+        createDebugInfo(go, map, m1, x1, y1);
+        createDebugInfo(go, map, m2, x2, y2);
+    }
+
 
     public void testMoveLeft(MapLevel map, GameObject go, int ox, int oy, int oh) {
         MapObject mo;
         for (int iy = oy; iy < oy + oh; iy++) {
             mo = getTileInMap(map, ox, iy);
+            createDebugInfo(go, map, mo, ox, iy);
             if (mo != null) {
                 if (mo.block) {
                     go.dx = 0.0f;
@@ -94,6 +142,30 @@ public class MapCollidingService extends AbstractSystem implements System {
                 } else
                     collide(go, map, mo, ox, iy);
             }
+        }
+    }
+
+
+    /**
+     * Add debug information (if debug mode activated)
+     *
+     * @param go
+     * @param map
+     * @param m1
+     * @param ox
+     * @param oy
+     */
+    private void createDebugInfo(GameObject go, MapLevel map, MapObject m1, int ox, int oy) {
+        if (game.config.debug > 3) {
+            MapTileCollision mtc = new MapTileCollision();
+            mtc.x = ox;
+            mtc.y = oy;
+            mtc.w = map.asset.tileWidth;
+            mtc.h = map.asset.tileHeight;
+            mtc.rX = mtc.x * mtc.w;
+            mtc.rY = mtc.y * mtc.h;
+            mtc.mo = m1;
+            go.collidingZone.add(mtc);
         }
     }
 

@@ -11,12 +11,20 @@
       "image": "todo",
       "offset": "6,1",
       "size": "32,32",
+      "priority": 2,
+      "layer": 1,
+      "bbox": {
+        "top": 8.0,
+        "bottom": 0.0,
+        "left": 4.0,
+        "right": 4.0
+      },
       "color": "RED",
       "canCollect": false,
       "attributes": {
         "energy": 100.0,
         "damage": 10.0,
-        "coins":5
+        "coins": 5
       }
     },
     "P": {
@@ -26,6 +34,14 @@
       "image": "todo",
       "offset": "4,1",
       "size": "32,32",
+      "priority": 10,
+      "layer": 2,
+      "bbox": {
+        "top": 8.0,
+        "bottom": 0.0,
+        "left": 4.0,
+        "right": 4.0
+      },
       "color": "BLUE",
       "canCollect": true,
       "attributes": {

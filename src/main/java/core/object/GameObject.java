@@ -1,6 +1,7 @@
 package core.object;
 
 import core.Game;
+import core.collision.MapTileCollision;
 import core.map.MapObject;
 
 import java.awt.*;
@@ -41,6 +42,26 @@ public class GameObject {
 
     public int direction = 1;
 
+    public int layer = 0;
+    public int priority = 0;
+
+    public int debugLevel = 0;
+
+    public boolean canCollect;
+
+    public GameObjectType type;
+
+    public BBox bbox;
+
+    public Color foregroundColor = Color.RED;
+    public Color backgroundColor = Color.BLACK;
+
+    public Map<String, Object> attributes = new HashMap<>();
+    public List<MapObject> items = new ArrayList<>();
+
+    public List<MapTileCollision> collidingZone = new ArrayList<>();
+
+
     /**
      * update the object (on all its characteristics, not only position if needed)
      *
@@ -62,35 +83,16 @@ public class GameObject {
                 x += (dx * 2.0f * elapsed);
                 break;
             case FALL:
-                y += (0.2f * elapsed);
-                break;
             case DOWN:
                 y += (dy * elapsed);
                 break;
             case JUMP:
-                y += dy * elapsed;
+                y += (dy * elapsed);
                 break;
         }
-        bbox.x = x;
-        bbox.y = y;
+        bbox.fromGameObject(this);
     }
 
-    public int layer = 0;
-    public int priority = 0;
-
-    public int debugLevel = 0;
-
-    public boolean canCollect;
-
-    public GameObjectType type;
-
-    public BBox bbox;
-
-    public Color foregroundColor = Color.RED;
-    public Color backgroundColor = Color.BLACK;
-
-    public Map<String, Object> attributes = new HashMap<>();
-    public List<MapObject> items = new ArrayList<>();
 
     public GameObject() {
         this.name = "gameObjectName";

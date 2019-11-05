@@ -15,6 +15,12 @@ public class MapObject {
 
     public String offset;
     public String size;
+    public int priority;
+    public int layer;
+
+    public int mapX, mapY;
+
+    public BBox bbox;
 
     public String description;
     public String usage;
@@ -39,5 +45,4 @@ public class MapObject {
 
     public boolean levelOutput;
     public String nextLevel;
-    public BBox bbox;
 }
