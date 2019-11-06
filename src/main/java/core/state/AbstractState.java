@@ -8,6 +8,7 @@ import core.object.GameObject;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +71,13 @@ public abstract class AbstractState implements State, KeyListener {
             addObject(o);
         }
     }
+
+    public void addAllObject(Collection<GameObject> objects) {
+        for (GameObject o : objects) {
+            addObject(o);
+        }
+    }
+
 
     public void removeObject(GameObject go) {
         objects.remove(go.name);

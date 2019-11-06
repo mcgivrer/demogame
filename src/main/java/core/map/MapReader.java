@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +22,9 @@ import java.util.Map;
  */
 @Slf4j
 public class MapReader {
-    private static int idxEnemy = 0;
+    public static final String SUFFIX = "_#";
+    private static int idxMapEntity = 0;
+    private static Map<String, Integer> itemCounters = new HashMap<>();
 
     /**
      * Read the json file fileMap to renegare al tiles and object for a level map.
@@ -55,9 +57,16 @@ public class MapReader {
                 mapLevel = generateTilesAndObject(mapLevel);
             }
         }
+        mapLevel.counters = itemCounters;
         return mapLevel;
     }
 
+    /**
+     * Parse all map lines and create corresponding MapObject entries in the tiles attribute.
+     *
+     * @param mapLevel the MapLevel to be parsed and fill with tiles and objects.
+     * @return
+     */
     public static MapLevel generateTilesAndObject(MapLevel mapLevel) {
         mapLevel.tiles = new MapObject[(int) mapLevel.width][(int) mapLevel.height];
         // generate all objects.
@@ -69,12 +78,20 @@ public class MapReader {
                 String code = "" + line.charAt(x);
                 if (mapLevel.asset.objects.containsKey(code)) {
                     MapObject mo = mapLevel.asset.objects.get(code);
-                    // those MapObject is tile
-                    if (!mo.type.equals("player") && !mo.type.equals("enemy_")) {
-                        mapLevel.tiles[x][y] = mo;
-                    } else {
-                        // those MapObject are GameObject !
-                        createGameObject(mapLevel, y, x, mo);
+                    updateCounterForObjectType(mo);
+                    switch (mo.type) {
+                        // those MapObject is tile
+                        case "item":
+                        case "object":
+                        case "tile":
+                            mapLevel.tiles[x][y] = mo;
+                            break;
+                        // those MapObject is an Entity
+                        case "entity":
+                            createGameObject(mapLevel, y, x, mo);
+                            break;
+                        default:
+                            break;
                     }
                 } else {
                     // no tile or object on tile place.
@@ -85,23 +102,50 @@ public class MapReader {
         return mapLevel;
     }
 
-    public static void createGameObject(MapLevel mapLevel, int y, int x, MapObject mo) {
-        GameObject go = null;
-        go = generateGameObject(mapLevel, mo, x, y);
-        switch (mo.type) {
-            case "player":
-                mapLevel.player = go;
-                break;
-            case "enemy_":
-                if (mapLevel.enemies == null) {
-                    mapLevel.enemies = new ArrayList<>();
-                }
-                mapLevel.enemies.add(go);
-                break;
-            default:
-                System.out.println(String.format("Unknown object type %s", mo.type));
-                break;
+    /**
+     * Update counter statistics for map elements.
+     *
+     * @param mo the MapObject to be added to statistic computation.
+     */
+    private static void updateCounterForObjectType(MapObject mo) {
+        if (!itemCounters.containsKey(mo.type)) {
+            itemCounters.put(mo.type, new Integer(0));
         }
+        int i = itemCounters.get(mo.type);
+        i++;
+        itemCounters.put(mo.type, i);
+    }
+
+    /**
+     * Based on described MapObject, create an Entity GameObject in the MapLevel.mapObjects map.
+     *
+     * @param mapLevel the MapLevel to be parsed and fill with tiles and objects.
+     * @param y        map vertical position
+     * @param x        map horizontal position
+     * @param mo       the MapObject to be converted to GameObject.
+     */
+    public static void createGameObject(MapLevel mapLevel, int y, int x, MapObject mo) {
+        generateGameObject(mapLevel, mo, x, y);
+    }
+
+    /**
+     * <p>Add a GameObject to the MapLevel.mapObjects</p>
+     * <p>The name of the game object is generated according to its suffix.</p>
+     * <p>If the suffix format <code>xxxxx_#</code>, a new name will be generated as <code>xxxxx_9999</code> where
+     * <code>9999</code> is an internal auto-incremented counter.</p>
+     *
+     * @param mapLevel
+     * @param go
+     * @return the modified GameObject.
+     */
+    private static GameObject addObjectToMap(MapLevel mapLevel, GameObject go) {
+        if (go.name.endsWith(SUFFIX)) {
+            idxMapEntity++;
+            String suffix = String.format("_%04d", idxMapEntity);
+            go.name = go.name.replace(SUFFIX, suffix);
+        }
+        mapLevel.mapObjects.put(go.name, go);
+        return go;
     }
 
     /**
@@ -116,16 +160,9 @@ public class MapReader {
     private static GameObject generateGameObject(MapLevel mapLevel, MapObject mo, int x, int y) {
         GameObject go = null;
         try {
-            switch (mo.type) {
-                case "player":
-                    go = createObjectFromClass(mapLevel, mo, x, y);
-                    break;
-                case "enemy_":
-                    go = createObjectFromClass(mapLevel, mo, x, y);
-                    break;
-                default:
-                    break;
-            }
+            go = createObjectFromClass(mapLevel, mo, x, y);
+            go = addObjectToMap(mapLevel, go);
+
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
             System.out.println("Unable to instantiate the " + mo.clazz + " object.");
         }
@@ -197,12 +234,21 @@ public class MapReader {
                 }
             }
         } catch (IOException e) {
-            System.out.println("unable to intantiate " + e.getMessage() + "Stack:" + e.getStackTrace());
+            System.out.println("unable to instantiate " + e.getMessage() + "Stack:" + e.getStackTrace());
         }
         return mapLevel;
     }
 
+    /**
+     * Copy MapObject attribute to the GameObject with some translation.
+     *
+     * @param mapLevel
+     * @param go       the destination GameObject
+     * @param mo       the source MapObject
+     * @return the updated GameObject
+     */
     private static GameObject populateGameObjectAttributes(MapLevel mapLevel, GameObject go, MapObject mo) {
+        go.name = mo.name;
         if (!mo.offset.equals("")) {
             String[] values = mo.offset.split(",");
             int ox = Integer.parseInt(values[1]);
@@ -238,7 +284,6 @@ public class MapReader {
 
             }
         }
-        go.name = mo.type.replace("_", "_" + (++idxEnemy));
         // initialize attributes
         go.attributes.putAll(mo.attributes);
         return go;

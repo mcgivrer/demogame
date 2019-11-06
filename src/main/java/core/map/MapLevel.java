@@ -4,7 +4,10 @@ import core.object.GameObject;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MapLevel extends GameObject {
     public String description;
@@ -19,8 +22,8 @@ public class MapLevel extends GameObject {
     public MapObject[][] tiles;
 
     public String nextLevel;
-    public GameObject player;
-    public List<GameObject> enemies = new ArrayList<>();
+    public Map<String, GameObject> mapObjects = new ConcurrentHashMap<>();
+    public Map<String, Integer> counters = new HashMap<>();
 
     public void constrainToMapLevel(GameObject go) {
         if (go.x + go.width > width * asset.tileWidth) {

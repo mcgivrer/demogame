@@ -6,7 +6,8 @@
   "objects": {
     "E": {
       "id": "E",
-      "type": "enemy_",
+      "type": "entity",
+      "name": "enemy_#",
       "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "6,1",
@@ -34,7 +35,8 @@
     },
     "P": {
       "id": "P",
-      "type": "player",
+      "type": "entity",
+      "name": "player",
       "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "4,1",

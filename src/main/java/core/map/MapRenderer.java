@@ -27,16 +27,16 @@ public class MapRenderer {
         int mHeight = map.map.size();
         int mWidth = map.map.get(0).length();
 
-        int cw = (int) (camera.viewport.width / map.asset.tileWidth) + 2;
-        int ch = (int) (camera.viewport.height / map.asset.tileHeight) + 2;
+        int cw = (camera.viewport.width / map.asset.tileWidth) + 2;
+        int ch = (camera.viewport.height / map.asset.tileHeight) + 2;
         int cx = (int) (camera.x / map.asset.tileWidth) - 1;
         int cy = (int) (camera.y / map.asset.tileHeight) - 1;
 
         if (map.backgroundImage != null) {
             double bx = camera.x * map.backgroundImage.getWidth() / (mWidth * map.asset.tileWidth);
             double by = camera.y;
-            for (int x = (int) (bx - (1 * map.backgroundImage.getWidth())); x <= (bx + (2 * map.backgroundImage.getWidth())); x += map.backgroundImage.getWidth()) {
-                g.drawImage(map.backgroundImage, (int) x, (int) by, null);
+            for (int x = -1; x <= 2; x += 1) {
+                g.drawImage(map.backgroundImage, (int) (bx + (map.backgroundImage.getWidth() * x)), (int) by, null);
             }
         }
 
@@ -54,7 +54,7 @@ public class MapRenderer {
                     } else {
                         g.setColor(Color.BLUE);
                     }
-                    g.drawRect((int) x * map.asset.tileWidth, (int) y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
+                    g.drawRect(x * map.asset.tileWidth, y * map.asset.tileHeight, map.asset.tileWidth, map.asset.tileHeight);
                 }
             }
         }

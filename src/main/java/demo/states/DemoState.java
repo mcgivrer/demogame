@@ -78,8 +78,8 @@ public class DemoState extends AbstractState implements State {
             }
 
             private void collectItem(MapLevel map, MapObject mo, int x, int y) {
-
-                map.player.items.add(mo);
+                GameObject player = map.mapObjects.get("player");
+                player.items.add(mo);
                 map.tiles[x][y] = null;
             }
 
@@ -98,14 +98,13 @@ public class DemoState extends AbstractState implements State {
             mapLevel.priority = 1;
             mapLevel.layer = 3;
             addObject(mapLevel);
-            addObject(mapLevel.player);
-            addAllObject(mapLevel.enemies);
+            addAllObject(mapLevel.mapObjects.values());
 
             // Create camera
-            Camera cam = new Camera("camera", mapLevel.player, 0.017f,
+            Camera cam = new Camera("camera", mapLevel.mapObjects.get("player"), 0.017f,
                     new Dimension(
-                            (int) g.config.screenWidth,
-                            (int) g.config.screenHeight));
+                            g.config.screenWidth,
+                            g.config.screenHeight));
             addObject(cam);
         }
     }
@@ -148,32 +147,33 @@ public class DemoState extends AbstractState implements State {
         if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
+        GameObject player = mapLevel.mapObjects.get("player");
 
-        mapLevel.player.setSpeed(0.0f, 0.0f);
+        player.setSpeed(0.0f, 0.0f);
 
         // reset horizontal speed if falling.
-        if (mapLevel.player.action == GameAction.FALL) {
-            mapLevel.player.dx = 0.0f;
-            mapLevel.player.dy = 0.25f;
+        if (player.action == GameAction.FALL) {
+            player.dx = 0.0f;
+            player.dy = 0.25f;
         }
         if (inputHandler.keys[KeyEvent.VK_UP]) {
-            mapLevel.player.dy = -0.2f;
-            mapLevel.player.action = GameAction.JUMP;
+            player.dy = -0.2f;
+            player.action = GameAction.JUMP;
         }
         if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-            mapLevel.player.dy = 0.1f;
-            mapLevel.player.action = GameAction.DOWN;
+            player.dy = 0.1f;
+            player.action = GameAction.DOWN;
         }
 
         if (inputHandler.keys[KeyEvent.VK_LEFT]) {
-            mapLevel.player.dx = -0.2f;
-            mapLevel.player.direction = -1;
-            mapLevel.player.action = GameAction.WALK;
+            player.dx = -0.2f;
+            player.direction = -1;
+            player.action = GameAction.WALK;
         }
         if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
-            mapLevel.player.dx = 0.2f;
-            mapLevel.player.direction = 1;
-            mapLevel.player.action = GameAction.WALK;
+            player.dx = 0.2f;
+            player.direction = 1;
+            player.action = GameAction.WALK;
         }
     }
 
@@ -223,20 +223,22 @@ public class DemoState extends AbstractState implements State {
         g.setFont(infoFont);
         r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK);
 
+        GameObject player = mapLevel.mapObjects.get("player");
+
         // draw Coins
         g.drawImage(coinsImg, offsetX, offsetY, null);
         g.setFont(infoFont);
-        double coins = (double) (mapLevel.player.attributes.get("coins"));
+        double coins = (double) (player.attributes.get("coins"));
         r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK);
 
         // draw Mana
         float nrjRatio = (energyImg.getWidth() / 100.0f);
-        double nrj = nrjRatio * ((double) (mapLevel.player.attributes.get("energy")));
+        double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
         g.drawImage(energyImg, offsetX + 24, offsetY - 8, (int) nrj, energyImg.getHeight(), null);
 
         // draw Energy
         float manaRatio = (manaImg.getWidth() / 100.0f);
-        double mana = manaRatio * ((double) (mapLevel.player.attributes.get("mana")));
+        double mana = manaRatio * ((double) (player.attributes.get("mana")));
         g.drawImage(manaImg, offsetX + 24, offsetY + 2, (int) mana, manaImg.getHeight(), null);
 
         // draw Items
@@ -247,10 +249,10 @@ public class DemoState extends AbstractState implements State {
                     itemHolderImg.getWidth(),
                     itemHolderImg.getHeight(),
                     null);
-            if (itmNb - 1 < mapLevel.player.items.size()
-                    && mapLevel.player.items.get(itmNb - 1) != null) {
+            if (itmNb - 1 < player.items.size()
+                    && player.items.get(itmNb - 1) != null) {
                 r.renderMapObject(g,
-                        mapLevel.player.items.get(itmNb - 1),
+                        player.items.get(itmNb - 1),
                         ga.config.screenWidth - offsetX - (itmNb * (itemHolderImg.getWidth() - 1)),
                         ga.config.screenHeight - (itemHolderImg.getHeight() + 12)
                 );

@@ -10,6 +10,7 @@ public class MapObject {
     public String id;
     public String image;
     public String type;
+    public String name;
     public String clazz;
     public String color;
 

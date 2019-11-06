@@ -3,19 +3,19 @@ Feature: manage GameObject
   The DemoGame will offer capability to add and remove one or more GameObject(s).
 
   Scenario: Add an object
-    Given DemoGame instance is created
+    Given Game instance is created
     When I Add a new GameObject named "player1" at (160,100) with size (16,16)
     Then the GameObject "player1" exists in the DemoGame objects map.
 
   Scenario: Remove an object
-    Given DemoGame instance is created
+    Given Game instance is created
     When I Add a new GameObject named "player2" at (160,100) with size (16,16)
     Then the GameObject "player2" exists in the DemoGame objects map.
     And I Remove the GameObject named "player2"
     Then the GameObject "player2" does not exist in the DemoGame objects map.
 
   Scenario Outline: Add collection of object
-    Given DemoGame instance is created
+    Given Game instance is created
     When I Add a new GameObject named "<name>" at (<x>,<y>) with size (<width>,<height>)
     Then the GameObject "<name>" exists in the DemoGame objects map.
 
@@ -27,7 +27,7 @@ Feature: manage GameObject
       | enem_3  | 42 | 180 | 16    | 16     |
 
   Scenario: Remove filtered name objects
-    Given DemoGame instance is created
+    Given Game instance is created
     When I removed all objects based name "enem_"
     Then the GameObject "enem_1" does not exist in the DemoGame objects map.
     Then the GameObject "enem_2" does not exist in the DemoGame objects map.
