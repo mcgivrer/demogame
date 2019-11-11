@@ -65,10 +65,10 @@ public class MapCollidingService extends AbstractSystem implements System {
         go.collidingZone.clear();
 
         if (go.dx > 0) {
-            testMoveRight(map, go, ox, ow, oy - 1, oh);
+            testMoveRight(map, go, ox, ow, oy, oh);
         }
         if (go.dx < 0) {
-            testMoveLeft(map, go, ox, oy - 1, oh);
+            testMoveLeft(map, go, ox, oy, oh);
         }
         if (go.dy < 0) {
             testMoveUp(map, go);
@@ -83,10 +83,11 @@ public class MapCollidingService extends AbstractSystem implements System {
     }
 
     public void testIfFall(MapLevel map, GameObject go, boolean falling) {
-        int dy = 0;
+        int dy = +1;
 
         int y0 = (int) ((go.oldY + go.bbox.height) / map.asset.tileWidth) + dy;
         int x1 = (int) (go.bbox.x / map.asset.tileWidth);
+
         int y1 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
         int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
         int y2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
@@ -99,7 +100,7 @@ public class MapCollidingService extends AbstractSystem implements System {
                 //go.y =(int)(go.y/map.asset.tileHeight)*map.asset.tileHeight;
                 break;
             }
-            if (m1 == null && m2 == null && falling) {
+            if (m1 == null && m2 == null) {
                 go.action = GameAction.FALL;
             }
             createDebugInfo(go, map, m1, x1, y);
@@ -118,9 +119,7 @@ public class MapCollidingService extends AbstractSystem implements System {
 
         if (go.action == GameAction.JUMP
                 && ((m1 != null && m1.block)
-                || (m2 != null && m2.block)
-        )
-        ) {
+                || (m2 != null && m2.block))) {
             go.y = go.oldY;
             createDebugInfo(go, map, m1, x1, y1);
         }
