@@ -32,7 +32,7 @@ cache:
 .verify: &verify
   stage: test
   script:
-    - 'mvn $MAVEN_CLI_OPTS verify'
+    - 'mvn $MAVEN_CLI_OPTS verify -Djava.awt.headless=true'
   except:
     - master
 
@@ -53,3 +53,7 @@ deploy:jdk8:
     - 'mvn $MAVEN_CLI_OPTS deploy -s ci_settings.xml'
   only:
     - master
+
+before_script:
+  - "Xvfb :99 &"
+  - "export DISPLAY=:99"
