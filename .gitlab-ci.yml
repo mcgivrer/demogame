@@ -55,5 +55,7 @@ deploy:jdk8:
     - master
 
 before_script:
-  - "Xvfb :99 &"
+  - sleep 3
   - "export DISPLAY=:99"
+  - "export AUDIODEV=null"
+  - "Xvfb :99 &"
