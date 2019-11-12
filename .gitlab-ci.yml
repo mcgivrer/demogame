@@ -32,7 +32,7 @@ cache:
 .verify: &verify
   stage: test
   script:
-    - 'mvn $MAVEN_CLI_OPTS verify -Djava.awt.headless=true'
+    - 'mvn $MAVEN_CLI_OPTS verify'
   except:
     - master
 
