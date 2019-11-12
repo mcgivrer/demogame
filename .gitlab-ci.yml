@@ -55,6 +55,6 @@ deploy:jdk8:
     - master
 
 before_script:
-  - "yum install -y xvfb"
+  - "yum install -y xorg-x11-server-Xvfb"
   - "Xvfb :99 &"
   - "export DISPLAY=:99"
