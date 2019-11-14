@@ -82,8 +82,13 @@ public class StateManager extends AbstractSystem implements System {
     }
 
     public int initialize(Game g) {
-        current.initialize(g);
         return 0;
+    }
+
+    public void startState(Game g) {
+        if (current != null && current.isLoaded()) {
+            current.initialize(g);
+        }
     }
 
     @Override

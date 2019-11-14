@@ -9,6 +9,7 @@ package core.audio;
 
 import com.google.gson.Gson;
 import core.Game;
+import core.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +58,6 @@ public class SoundSystem extends AbstractSystem implements System {
      * @param filename file name of the sound to be loaded to the
      *                 <code>soundBank</code>.
      * @return filename if file has been loaded into the sound bank or null.
-     * @deprecated prefere using the ResourceMnagaer loader and add the sound to the
      * {@link SoundSystem}
      * <p>
      * SoundClip coinClip =
@@ -66,10 +66,9 @@ public class SoundSystem extends AbstractSystem implements System {
      * </p>
      * .
      */
-    @Deprecated
     public String load(String code, String filename) {
         if (!soundBank.containsKey(code)) {
-            SoundClip sc = new SoundClip(filename);
+            SoundClip sc = ResourceManager.getSoundClip(filename);
             if (sc != null) {
                 soundBank.put(code, sc);
                 log.debug("Load sound {} to sound bank with code {}", filename, code);
@@ -144,12 +143,15 @@ public class SoundSystem extends AbstractSystem implements System {
      * @param pan    the pan for the sound to be played.
      */
 
-    public void play(String code, float volume, float pan) {
+    public void play(String code, float volume, float pan, boolean loop) {
         if (!mute) {
 
             if (soundBank.containsKey(code)) {
                 SoundClip sc = soundBank.get(code);
                 sc.play(pan, volume);
+                if (loop) {
+                    sc.loop();
+                }
                 log.debug("Play sound {} with volume {} and pan {}", code, volume, pan);
             } else {
                 log.error("unable to find the sound {} in the SoundBank !", code);
@@ -158,6 +160,15 @@ public class SoundSystem extends AbstractSystem implements System {
             log.debug("Mute mode activated, {} not played", code);
         }
     }
+
+    public void play(String code, float volume, float pan) {
+        play(code, volume, pan, false);
+    }
+
+    public void loop(String code, float volume) {
+        play(code, volume, 0.5f, true);
+    }
+
 
     /**
      * Is the sound code playing right now ?

@@ -5,6 +5,7 @@ import core.ProgressListener;
 import core.Renderer;
 import core.ResourceManager;
 import core.audio.SoundClip;
+import core.audio.SoundSystem;
 import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
 import core.collision.OnCollision;
@@ -27,9 +28,6 @@ import java.awt.image.BufferedImage;
 @Slf4j
 public class DemoState extends AbstractState implements State {
 
-
-    SoundClip playCoin;
-
     public MapLevel mapLevel;
     public MapCollidingService mapCollider;
 
@@ -43,6 +41,7 @@ public class DemoState extends AbstractState implements State {
     private BufferedImage lifeImg;
     private BufferedImage itemHolderImg;
     private InputHandler inputHandler;
+    private SoundSystem soundSystem;
 
     Font scoreFont;
     Font infoFont;
@@ -60,6 +59,11 @@ public class DemoState extends AbstractState implements State {
         inputHandler = g.sysMan.getSystem(InputHandler.class);
         inputHandler.addListener(this);
         mapCollider = g.sysMan.getSystem(MapCollidingService.class);
+        soundSystem = g.sysMan.getSystem(SoundSystem.class);
+        soundSystem.load("coins","/res/audio/sounds/collect-coin.wav");
+        soundSystem.load("music","/res/audio/musics/once-around-the-kingdom.mp3");
+
+        soundSystem.setMute(false);
 
         mapCollider.addListener(GameObject.class, new OnCollision() {
             public void collide(CollisionEvent e) {
@@ -87,9 +91,7 @@ public class DemoState extends AbstractState implements State {
                 if (mo.money > 0) {
                     go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
                     map.tiles[x][y] = null;
-                    if (playCoin != null) {
-                        playCoin.play();
-                    }
+                    soundSystem.play("coins",1.0f);
                 }
             }
         });
@@ -107,6 +109,10 @@ public class DemoState extends AbstractState implements State {
                             (int) g.config.screenWidth,
                             (int) g.config.screenHeight));
             addObject(cam);
+
+            // start game music background
+            soundSystem.loop("music",0.4f);
+
         }
     }
 
@@ -125,7 +131,8 @@ public class DemoState extends AbstractState implements State {
                 "/res/assets/asset-1.json",
                 "/res/images/background-1.jpg",
                 "/res/images/tileset-1.png",
-                "/res/audio/sounds/collect-coin.wav"});
+                "/res/audio/sounds/collect-coin.wav",
+                "/res/audio/musics/once-around-the-kingdom.mp3"});
 
         mapLevel = MapReader.readFromFile("/res/maps/map_1.json");
 

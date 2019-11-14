@@ -87,7 +87,7 @@ public class Game {
      * Main loop for the game.
      */
     private void loop() {
-        stateManager.initialize(this);
+        stateManager.startState(this);
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;

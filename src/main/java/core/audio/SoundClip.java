@@ -44,7 +44,7 @@ public class SoundClip {
     public SoundClip(String code, InputStream is) {
         this.code = code;
         try {
-            loadFromStream(is);
+            loadFromStream(code, is);
         } catch (Exception e) {
             log.error("unable to load sound file {}", code, e);
         }
@@ -61,7 +61,7 @@ public class SoundClip {
             if (audioSrc == null) {
                 log.error("unable to read the sound file {}", path);
             } else {
-                loadFromStream(audioSrc);
+                loadFromStream(path, audioSrc);
             }
         } catch (Exception e) {
             log.error("unable to play the sound file {}", path, e);
@@ -69,13 +69,13 @@ public class SoundClip {
 
     }
 
-    public void loadFromStream(InputStream audioSrc)
+    public void loadFromStream(String path, InputStream audioSrc)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
         InputStream bufferedIn = new BufferedInputStream(audioSrc);
         AudioInputStream ais = AudioSystem.getAudioInputStream(bufferedIn);
         AudioFormat baseFormat = ais.getFormat();
-        System.out.print(baseFormat);
+        log.error("SoundClip '{}' with Base format: [{}]", path, baseFormat);
 
         AudioFormat decodeFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16,
                 baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
@@ -122,42 +122,31 @@ public class SoundClip {
         if (clip == null) {
             return;
         } else {
-            stop();
-            clip.setFramePosition(0);
-            while (!clip.isRunning()) {
-                clip.start();
+            while (clip.isActive()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                clip.flush();
+                clip.stop();
             }
+            clip.setFramePosition(0);
+            clip.start();
         }
-
     }
 
     public void play(float pan, float volume) {
-        if (clip == null) {
-            return;
-        } else {
-            stop();
-            clip.setFramePosition(0);
-            while (!clip.isRunning()) {
-                clip.start();
-            }
-        }
         setPan(pan);
         setVolume(volume);
+        play();
     }
 
     public void play(float pan, float volume, float balance) {
-        if (clip == null) {
-            return;
-        } else {
-            stop();
-            clip.setFramePosition(0);
-            while (!clip.isRunning()) {
-                clip.start();
-            }
-        }
         setPan(pan);
         setBalance(balance);
         setVolume(volume);
+        play();
     }
 
     /**
