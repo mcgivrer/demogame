@@ -20,6 +20,7 @@ public class MapLevel extends GameObject {
 
     public String nextLevel;
     public GameObject player;
+    public float playerInitialX=0,playerInitialY=0;
     public List<GameObject> enemies = new ArrayList<>();
 
     public void constrainToMapLevel(GameObject go) {

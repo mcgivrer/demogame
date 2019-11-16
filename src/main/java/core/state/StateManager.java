@@ -69,11 +69,15 @@ public class StateManager extends AbstractSystem implements System {
 
 
     public void activate(String s) {
+        if(current!=null){
+            current.focusLost(game);
+        }
         current = states.get(s);
         if (!current.isLoaded()) {
             current.load(game);
             log.debug("activate state {}", s);
         }
+        current.onFocus(game);
     }
 
     @Override
@@ -82,12 +86,14 @@ public class StateManager extends AbstractSystem implements System {
     }
 
     public int initialize(Game g) {
+        log.debug("StateManager system initialized");
         return 0;
     }
 
     public void startState(Game g) {
         if (current != null && current.isLoaded()) {
             current.initialize(g);
+            log.debug("{} state started", this.current.getName());
         }
     }
 

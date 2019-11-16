@@ -19,6 +19,9 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
      * The current key states
      */
     public boolean[] keys = new boolean[65536];
+
+
+    public boolean control,shift,alt,altGr;
     /**
      * The previous state of each keys.
      */
@@ -85,6 +88,11 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
         this.keys[e.getKeyCode()] = true;
 
+        control = e.getModifiersEx()==KeyEvent.CTRL_DOWN_MASK;
+        shift = e.getModifiersEx()==KeyEvent.SHIFT_DOWN_MASK;
+        alt = e.getModifiersEx()==KeyEvent.ALT_DOWN_MASK;
+        altGr = e.getModifiersEx()==KeyEvent.ALT_GRAPH_DOWN_MASK;
+
         for (KeyListener kl : listeners) {
             kl.keyPressed(e);
         }
@@ -97,6 +105,12 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
     public void keyReleased(KeyEvent e) {
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
         this.keys[e.getKeyCode()] = false;
+
+        control = e.getModifiersEx()==KeyEvent.CTRL_DOWN_MASK;
+        shift = e.getModifiersEx()==KeyEvent.SHIFT_DOWN_MASK;
+        alt = e.getModifiersEx()==KeyEvent.ALT_DOWN_MASK;
+        altGr = e.getModifiersEx()==KeyEvent.ALT_GRAPH_DOWN_MASK;
+
         for (KeyListener kl : listeners) {
             kl.keyReleased(e);
         }

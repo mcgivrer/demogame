@@ -45,6 +45,10 @@ public interface State {
 
     void dispose(Game g);
 
+    void onFocus(Game g);
+
+    void focusLost(Game g);
+
     Camera getActiveCamera();
 
     public Map<String, GameObject> getObjects();

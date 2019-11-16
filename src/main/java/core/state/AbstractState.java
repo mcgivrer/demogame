@@ -4,17 +4,21 @@ import core.Game;
 import core.Renderer;
 import core.object.Camera;
 import core.object.GameObject;
+import lombok.extern.slf4j.Slf4j;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
+@Slf4j
 public abstract class AbstractState implements State, KeyListener {
 
-    private Game game;
+    protected Game game;
     protected String name;
     public Camera camera;
     public Map<String, GameObject> objects = new ConcurrentHashMap<>();
@@ -42,6 +46,15 @@ public abstract class AbstractState implements State, KeyListener {
 
     public abstract void render(Game g, Renderer r);
 
+    @Override
+    public void onFocus(Game g) {
+        log.debug("{} state get focus", this.getName());
+    }
+
+    @Override
+    public void focusLost(Game g) {
+        log.debug("{} state lost focus", this.getName());
+    }
 
     /**
      * Add a Game object to the managed objects list.

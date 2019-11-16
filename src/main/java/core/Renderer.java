@@ -43,6 +43,8 @@ public class Renderer extends AbstractSystem implements System {
 
     private static int screenShotIndex = 0;
 
+    private boolean renderingPause = false;
+
     /**
      * Create the Game renderer.
      *
@@ -86,6 +88,7 @@ public class Renderer extends AbstractSystem implements System {
             }
         });
         jf.setIgnoreRepaint(true);
+        jf.enableInputMethods(true);
         jf.setLocationByPlatform(true);
         jf.setLocationRelativeTo(null);
         jf.setVisible(true);
@@ -96,59 +99,61 @@ public class Renderer extends AbstractSystem implements System {
      * Render all objects !
      */
     public void render(Game dg) {
-        Graphics2D g = screenBuffer.createGraphics();
+        if (!renderingPause) {
+            Graphics2D g = screenBuffer.createGraphics();
 
-        Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+            Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 
-        // activate Antialiasing for image and text rendering.
+            // activate Antialiasing for image and text rendering.
 
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
-        // clear image
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
+            // clear image
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
 
-        // if a camera is set, use it.
-        if (camera != null) {
-            g.translate(-camera.x, -camera.y);
-        }
+            // if a camera is set, use it.
+            if (camera != null) {
+                g.translate(-camera.x, -camera.y);
+            }
 
-        // draw all objects
-        for (GameObject go : renderingObjectPipeline) {
-            if (go.enable) {
+            // draw all objects
+            for (GameObject go : renderingObjectPipeline) {
+                if (go.enable) {
 
-                if (go instanceof MapLevel) {
+                    if (go instanceof MapLevel) {
 
-                    // if MapLevel, delegates rendering operation to the MapRenderer.
-                    if (dg.config.debug > 2) {
-                        g.setColor(Color.BLUE);
-                        g.fillRect(0, 0, (int) go.width, (int) go.height);
+                        // if MapLevel, delegates rendering operation to the MapRenderer.
+                        if (dg.config.debug > 2) {
+                            g.setColor(Color.BLUE);
+                            g.fillRect(0, 0, (int) go.width, (int) go.height);
+                        }
+                        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        mapRenderer.render(dg, g, (MapLevel) go, camera);
+                    } else if (go instanceof GameObject) {
+
+                        if (dg.config.debug > 2) {
+                            displayLiveDebug(g, go);
+                        }
+                        // if standard GameObject,  render with the embedded render method.
+                        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        go.render(dg, g);
                     }
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    mapRenderer.render(dg, g, (MapLevel) go, camera);
-                } else if (go instanceof GameObject) {
-
-                    if (dg.config.debug > 2) {
-                        displayLiveDebug(g, go);
-                    }
-                    // if standard GameObject,  render with the embedded render method.
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    go.render(dg, g);
                 }
             }
+
+            // if a camera is set, use it.
+            if (camera != null) {
+                g.translate(camera.x, camera.y);
+            }
+
+            // draw HUD
+            dg.stateManager.getCurrent().drawHUD(dg, this, g);
+            g.dispose();
+
+            // render image to real screen (applying scale factor)
+            renderToScreen(dg);
         }
-
-        // if a camera is set, use it.
-        if (camera != null) {
-            g.translate(camera.x, camera.y);
-        }
-
-        // draw HUD
-        dg.stateManager.getCurrent().drawHUD(dg, this, g);
-        g.dispose();
-
-        // render image to real screen (applying scale factor)
-        renderToScreen(dg);
     }
 
     /**
@@ -254,43 +259,52 @@ public class Renderer extends AbstractSystem implements System {
                 }
                 g.dispose();
             }
+            if(jf.isDoubleBuffered()){
+                jf.getBufferStrategy().show();
+            }
         }
     }
 
     public void displayDebugInfo(Game dg, Graphics2D g, GameObject go, Camera cam, float sX, float sY) {
-        Font debugFont = g.getFont().deriveFont(5.0f);
+
         if (dg.config.debug > 1) {
+            Font debugFont = g.getFont().deriveFont(10.0f);
+            FontMetrics fm = g.getFontMetrics(debugFont);
+
+            int fontHeight = fm.getHeight()/2;
+
             float offsetX = go.x + go.width + 2 - cam.x;
             float offsetY = go.y - cam.y;
 
-            g.setColor(Color.LIGHT_GRAY);
+            g.setFont(debugFont);
+            g.setColor(Color.WHITE);
             g.drawString(
                     String.format("name:%s", go.name),
                     (offsetX * sX), offsetY * sY);
             g.drawString(
                     String.format("pos:(%03.1f,%03.1f)",
                             go.x, go.y),
-                    (offsetX * sX), (offsetY + 10) * sY);
+                    (offsetX * sX), (offsetY + fontHeight) * sY);
             g.drawString(
                     String.format("vel:(%03.1f,%03.1f)",
                             go.dx, go.dy),
-                    (offsetX * sX), (offsetY + 20) * sY);
+                    (offsetX * sX), (offsetY + 2*fontHeight) * sY);
             g.drawString(
                     String.format("debug:%d",
                             dg.config.debug),
-                    (offsetX) * sX, (offsetY + 30) * sY);
+                    (offsetX) * sX, (offsetY + 3*fontHeight) * sY);
 
             g.drawString(
                     String.format("action:%s",
                             go.action.toString()),
-                    (offsetX) * sX, (offsetY + 40) * sY);
+                    (offsetX) * sX, (offsetY + 4*fontHeight) * sY);
             // display Attributes
-            int i = 1;
+            int i = 0;
             for (Map.Entry<String, Object> e : go.attributes.entrySet()) {
                 g.drawString(
                         String.format("%s:%s",
                                 e.getKey(), e.getValue().toString()),
-                        (offsetX) * sX, (offsetY + 40 + (i * 10) * sY));
+                        ((offsetX) * sX)+100, (offsetY + (i * fontHeight)) * sY);
                 i++;
             }
 
@@ -356,7 +370,9 @@ public class Renderer extends AbstractSystem implements System {
                 Files.createDirectory(targetDir);
             }
             File out = new File(filename);
+            renderingPause = true;
             ImageIO.write(screenBuffer, "PNG", out);
+            renderingPause = false;
         } catch (IOException e) {
             java.lang.System.err.println("Unable to write screenshot to " + filename + ":" + e.getMessage());
         }

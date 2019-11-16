@@ -119,6 +119,8 @@ public class MapReader {
             switch (mo.type) {
                 case "player":
                     go = createObjectFromClass(mapLevel, mo, x, y);
+                    mapLevel.playerInitialX = go.x;
+                    mapLevel.playerInitialY = go.y;
                     break;
                 case "enemy_":
                     go = createObjectFromClass(mapLevel, mo, x, y);
@@ -234,6 +236,15 @@ public class MapReader {
                     break;
                 case "GREEN":
                     go.foregroundColor = Color.GREEN;
+                    break;
+                case "WHITE":
+                    go.foregroundColor = Color.WHITE;
+                    break;
+                case "BLACK":
+                    go.foregroundColor = Color.BLACK;
+                    break;
+                default:
+                    go.foregroundColor = null;
                     break;
 
             }

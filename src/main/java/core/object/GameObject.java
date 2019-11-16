@@ -49,6 +49,8 @@ public class GameObject {
 
     public boolean canCollect;
 
+    public boolean fixed = false;
+
     public GameObjectType type;
 
     public BBox bbox;
@@ -58,6 +60,7 @@ public class GameObject {
 
     public Map<String, Object> attributes = new HashMap<>();
     public List<MapObject> items = new ArrayList<>();
+
 
     public List<MapTileCollision> collidingZone = new ArrayList<>();
 
@@ -76,6 +79,7 @@ public class GameObject {
             case IDLE2:
                 dy = 0.0f;
                 dx = 0.0f;
+                break;
             case WALK:
                 x += (dx * elapsed);
                 break;

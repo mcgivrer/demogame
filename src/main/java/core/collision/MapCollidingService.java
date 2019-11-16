@@ -72,10 +72,11 @@ public class MapCollidingService extends AbstractSystem implements System {
         }
         if (go.dy < 0) {
             testMoveUp(map, go);
-        } else {
-            testIfFall(map, go, true);
+        }
+        if (go.dy > 0) {
             testIfMoveDown(map, go);
         }
+        testIfFall(map, go, true);
     }
 
     private void testIfMoveDown(MapLevel map, GameObject go) {
@@ -85,6 +86,9 @@ public class MapCollidingService extends AbstractSystem implements System {
     public void testIfFall(MapLevel map, GameObject go, boolean falling) {
         int dy = +1;
 
+        /**
+         * Compute bottom coordinate of bottom corners tiles.
+         */
         int y0 = (int) ((go.oldY + go.bbox.height) / map.asset.tileWidth) + dy;
         int x1 = (int) (go.bbox.x / map.asset.tileWidth);
 
@@ -92,19 +96,31 @@ public class MapCollidingService extends AbstractSystem implements System {
         int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
         int y2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
 
+        // test all tiles from old to new position
         for (int y = y0; y <= y1; y += 1) {
+            // get Tile at bottom corners
             MapObject m1 = getTileInMap(map, x1, y);
             MapObject m2 = getTileInMap(map, x2, y);
+            // if those are not null and are blocking ones tiles, let's stop move on Y.
             if (((m1 != null && m1.block) || (m2 != null && m2.block)) && go.action == GameAction.FALL) {
-                go.action = GameAction.IDLE;
-                //go.y =(int)(go.y/map.asset.tileHeight)*map.asset.tileHeight;
+                //go.action = GameAction.IDLE;
+                go.y = (int) (go.y / map.asset.tileHeight) * map.asset.tileHeight;
+                go.bbox.fromGameObject(go);
                 break;
             }
+            // if no tile on both bottom corners, fall !
             if (m1 == null && m2 == null) {
                 go.action = GameAction.FALL;
             }
+            // add some debugging information on detected tiles
             createDebugInfo(go, map, m1, x1, y);
             createDebugInfo(go, map, m2, x2, y);
+        }
+        // if Go is not falling and not on a tile, recompute right Y value according to tile height.
+        if (go.action != GameAction.FALL
+                && (go.y % map.asset.tileHeight) > 0) {
+            go.y = (int) (go.y / map.asset.tileHeight) * map.asset.tileHeight;
+            go.bbox.fromGameObject(go);
         }
     }
 
