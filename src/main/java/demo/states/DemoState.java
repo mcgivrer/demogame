@@ -42,14 +42,14 @@ public class DemoState extends AbstractState implements State {
     private InputHandler inputHandler;
     private SoundSystem soundSystem;
 
-    static int lastIdleChange = 0;
-    static int lastIdleChangePace = 120;
-    static GameAction idleAction = GameAction.IDLE;
+    private static int lastIdleChange = 0;
+    private static int lastIdleChangePace = 120;
+    private static GameAction idleAction = GameAction.IDLE;
 
-    TextObject scoreObject;
+    private TextObject scoreObject;
 
-    Font scoreFont;
-    Font infoFont;
+    private Font scoreFont;
+    private Font infoFont;
 
     public DemoState() {
         this.name = "DemoState";
@@ -274,7 +274,8 @@ public class DemoState extends AbstractState implements State {
     public void drawHUD(Game ga, Renderer r, Graphics2D g) {
         //super.drawHUD(ga, r, g);
 
-        int offsetX = 24, offsetY = 30;
+        int offsetX = 24;
+        int offsetY = 30;
         // prepare font.
         if (scoreFont == null) {
             infoFont = g.getFont().deriveFont(10.0f);

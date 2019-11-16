@@ -34,11 +34,15 @@ public class GameObject {
 
     public boolean enable = true;
 
-    public float x, y;
-    public float oldX, oldY;
-    public float width, height;
+    public float x;
+    public float  y;
+    public float oldX;
+    public float oldY;
+    public float width;
+    public float height;
 
-    public float dx = 0, dy = 0;
+    public float dx = 0;
+    public float dy = 0;
 
     public int direction = 1;
 

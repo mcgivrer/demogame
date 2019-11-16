@@ -6,44 +6,68 @@ import core.object.Camera;
 import core.object.GameObject;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
+/**
+ * the AbstractState is the default implementation for a State interface.
+ * It will provide all necessary default behaviors and processing for a State.
+ * All specifics would be implemented in the inheriting class.
+ *
+ * @author Frédéric Delorme <frederic.delorme@gmail.com>
+ * @see core.state.State
+ * @since 2019
+ */
 @Slf4j
 public abstract class AbstractState implements State, KeyListener {
 
+    // the parent game.
     protected Game game;
+    // the name fo this state.
     protected String name;
+    // a State must have a Camera.
     public Camera camera;
+    // all objects to be managed and rendered by this state.
     public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 
+    /**
+     * the default constructor.
+     */
     public AbstractState() {
 
     }
 
+    /**
+     * Initialize the AbstractState with the parent game
+     *
+     * @param g the parent game.
+     */
     public AbstractState(Game g) {
         this.game = g;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
-
+    @Override
     public abstract void input(Game g);
 
+    @Override
     public abstract void initialize(Game g);
 
+    @Override
     public abstract void load(Game g);
 
+    @Override
     public abstract void update(Game g, float elapsed);
 
+    @Override
     public abstract void render(Game g, Renderer r);
 
     @Override
@@ -114,14 +138,29 @@ public abstract class AbstractState implements State, KeyListener {
         }
     }
 
+    /**
+     * return the current active camera.
+     *
+     * @return
+     */
     public Camera getActiveCamera() {
         return camera;
     }
 
+    /**
+     * return all the objects of the state.
+     *
+     * @return
+     */
     public Map<String, GameObject> getObjects() {
         return objects;
     }
 
+    /**
+     * Define the parent Game.
+     *
+     * @param g the parent game for this state.
+     */
     public void setGame(Game g) {
         this.game = g;
     }
