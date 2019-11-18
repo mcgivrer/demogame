@@ -16,5 +16,6 @@ jobs:
     - name: Build Maven with Xvfb
       run: sudo apt-get install xvfb
     - run: export DISPLAY=':99.0'
+    - run: export AUDIODEV=null
     - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     - run: mvn -B package --file pom.xml
