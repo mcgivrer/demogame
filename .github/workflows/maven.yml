@@ -14,8 +14,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build Maven with Xvfb
-      uses: run-with-xvfb
-      with:
-        run: mvn -B package --file pom.xml
-      env:
-        CI: true
+      run: sudo apt-get install xvfb
+    - run: export DISPLAY=':99.0'
+    - run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+    - run: mvn -B package --file pom.xml
