@@ -52,7 +52,8 @@
         "items": [
           "sword-15",
           "nrj+10"
-        ]
+        ],
+        "maxItems": 3
       }
     },
     "1": {

@@ -152,6 +152,13 @@ public class ResourceManager implements System {
         }
     }
 
+    public static void clear(){
+        if (instance != null) {
+            instance.dispose();
+        }
+
+    }
+
     /**
      * get the name of this service.
      *
@@ -170,6 +177,12 @@ public class ResourceManager implements System {
      */
     @Override
     public int initialize(Game game) {
+
+
+        instance = new ResourceManager();
+
+        resources = new ConcurrentHashMap<>();
+        listeners = new ArrayList<>();
         return 0;
     }
 
@@ -178,5 +191,8 @@ public class ResourceManager implements System {
      */
     public void dispose() {
         instance.resources.clear();
+        log.debug("All resources have been removed.");
     }
+
+
 }

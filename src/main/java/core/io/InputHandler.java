@@ -12,6 +12,9 @@ import java.util.List;
 /**
  * InputHandler gaols consists in managing all input from any connected devices.
  * First is keyboard.
+ *
+ * @author Frédéric Delorme <frederic.delorme@gmail.com>
+ * @since 2019
  */
 public class InputHandler extends AbstractSystem implements KeyListener, System {
 
@@ -19,6 +22,16 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
      * The current key states
      */
     public boolean[] keys = new boolean[65536];
+
+    // flag to represent state f the CTRL key
+    public boolean control;
+    // flag to represent state f the SHIFT key
+    public boolean shift;
+    // flag to represent state f the ALT key
+    public boolean alt;
+    // flag to represent state f the ALTGr key
+    public boolean altGr;
+
     /**
      * The previous state of each keys.
      */
@@ -85,6 +98,11 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
         this.keys[e.getKeyCode()] = true;
 
+        control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
+        shift = e.getModifiersEx() == KeyEvent.SHIFT_DOWN_MASK;
+        alt = e.getModifiersEx() == KeyEvent.ALT_DOWN_MASK;
+        altGr = e.getModifiersEx() == KeyEvent.ALT_GRAPH_DOWN_MASK;
+
         for (KeyListener kl : listeners) {
             kl.keyPressed(e);
         }
@@ -97,6 +115,12 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
     public void keyReleased(KeyEvent e) {
         this.previousKeys[e.getKeyCode()] = this.keys[e.getKeyCode()];
         this.keys[e.getKeyCode()] = false;
+
+        control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
+        shift = e.getModifiersEx() == KeyEvent.SHIFT_DOWN_MASK;
+        alt = e.getModifiersEx() == KeyEvent.ALT_DOWN_MASK;
+        altGr = e.getModifiersEx() == KeyEvent.ALT_GRAPH_DOWN_MASK;
+
         for (KeyListener kl : listeners) {
             kl.keyReleased(e);
         }

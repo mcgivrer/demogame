@@ -45,7 +45,7 @@ public class Config {
         config.screenHeight = 200;
         config.screenScale = 2.0f;
         config.debug = 0;
-        config.fps = 30;
+        config.fps = 60;
 
         for (String arg : argc) {
             System.out.println(String.format("arg: %s", arg));

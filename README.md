@@ -45,4 +45,8 @@ Or after a build, just execute:
 
 *figure 2 - the latest version with a HUD*
 
+![Tilemap debugging activated](src/docs/images/screen-3.png "Tilemap debugging activated")
+
+*figure 3 - the same display with tilemap debug activated*
+
 McG.

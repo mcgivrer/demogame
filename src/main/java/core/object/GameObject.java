@@ -34,11 +34,15 @@ public class GameObject {
 
     public boolean enable = true;
 
-    public float x, y;
-    public float oldX, oldY;
-    public float width, height;
+    public float x;
+    public float  y;
+    public float oldX;
+    public float oldY;
+    public float width;
+    public float height;
 
-    public float dx = 0, dy = 0;
+    public float dx = 0;
+    public float dy = 0;
 
     public int direction = 1;
 
@@ -49,6 +53,8 @@ public class GameObject {
 
     public boolean canCollect;
 
+    public boolean fixed = false;
+
     public GameObjectType type;
 
     public BBox bbox;
@@ -58,6 +64,7 @@ public class GameObject {
 
     public Map<String, Object> attributes = new HashMap<>();
     public List<MapObject> items = new ArrayList<>();
+
 
     public List<MapTileCollision> collidingZone = new ArrayList<>();
 
@@ -76,6 +83,7 @@ public class GameObject {
             case IDLE2:
                 dy = 0.0f;
                 dx = 0.0f;
+                break;
             case WALK:
                 x += (dx * elapsed);
                 break;
