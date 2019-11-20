@@ -4,6 +4,7 @@ import core.Game;
 import core.Renderer;
 import core.object.Camera;
 import core.object.GameObject;
+import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.event.KeyEvent;
@@ -87,12 +88,15 @@ public abstract class AbstractState implements State, KeyListener {
      * @param go the core.object.GameObject to be added to the core.Game#objects list.
      */
     public void addObject(GameObject go) {
+
+        Renderer r = SystemManager.get(Renderer.class);
+
         if (go instanceof Camera) {
             this.camera = (Camera) go;
         } else if (objects != null && !objects.containsKey(go.name)) {
 
             objects.put(go.name, go);
-            game.renderer.add(go);
+            r.add(go);
 
         }
     }
@@ -110,7 +114,7 @@ public abstract class AbstractState implements State, KeyListener {
 
     public void removeObject(GameObject go) {
         objects.remove(go.name);
-        game.renderer.remove(go);
+        SystemManager.get(Renderer.class).remove(go);
     }
 
     public void removeObject(String name) {
@@ -121,7 +125,7 @@ public abstract class AbstractState implements State, KeyListener {
     }
 
     public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
-        game.renderer.removeAll(objectsToBeRemoved);
+        SystemManager.get(Renderer.class).removeAll(objectsToBeRemoved);
         objects.values().removeAll(objectsToBeRemoved);
     }
 

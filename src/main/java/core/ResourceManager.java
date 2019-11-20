@@ -5,6 +5,7 @@ import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,11 +67,23 @@ public class ResourceManager implements System {
      *
      * @param path
      * @return
+     * @see SoundClip
      */
     public static SoundClip getSoundClip(String path) {
         return (SoundClip) instance.resources.get(path);
     }
 
+
+    /**
+     * Retrieve a resource as a Font.
+     *
+     * @param path
+     * @return
+     * @see Font
+     */
+    public static Font getFont(String path) {
+        return (Font) instance.resources.get(path);
+    }
 
     /**
      * Load a list of resources
@@ -87,7 +100,7 @@ public class ResourceManager implements System {
                     && instance.listeners != null
                     && !instance.listeners.isEmpty()) {
                 for (ProgressListener pl : instance.listeners) {
-                    pl.update((float) (index / nbResources), path);
+                    pl.update(index / nbResources, path);
                 }
             }
         }
@@ -130,6 +143,18 @@ public class ResourceManager implements System {
                     instance.resources.put(path, sc);
                 }
             }
+            if (path.contains(".ttf")) {
+                try {
+                    InputStream stream = ResourceManager.class.getResourceAsStream(path);
+                    Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+                    if (font != null) {
+                        instance.resources.put(path, font);
+                    }
+                } catch (FontFormatException | IOException e) {
+                    log.error("Unable to read font from " + path);
+                }
+            }
+
         } catch (IOException e) {
             log.error("Unable to read the resource : '{}'", path, e);
         }
@@ -141,9 +166,7 @@ public class ResourceManager implements System {
      * @param path the resource to be removed.
      */
     public static void remove(String path) {
-        if (instance.resources.containsKey(path)) {
-            instance.resources.remove(path);
-        }
+        instance.resources.remove(path);
     }
 
     public static void addListener(ProgressListener pl) {
@@ -152,12 +175,13 @@ public class ResourceManager implements System {
         }
     }
 
-    public static void clear(){
+    public static void clear() {
         if (instance != null) {
             instance.dispose();
         }
 
     }
+
 
     /**
      * get the name of this service.

@@ -19,17 +19,11 @@ public class Game {
     public static long goIndex = 0;
     public Config config;
     public boolean exitRequest = false;
-    private String[] argc;
 
     /**
      * System Manager and Systems.
      */
     public SystemManager sysMan;
-    public InputHandler inputHandler;
-    public Renderer renderer;
-    public StateManager stateManager;
-    private SoundSystem soundSystem;
-    private MapCollidingService mapCollider;
 
     /**
      * Create the Game container.
@@ -68,26 +62,22 @@ public class Game {
         sysMan = SystemManager.initialize(this);
 
         // add basic systems
-        inputHandler = new InputHandler(this);
-        sysMan.add(inputHandler);
-        renderer = new Renderer(this);
-        sysMan.add(renderer);
-        soundSystem = new SoundSystem(this);
-        sysMan.add(soundSystem);
-        // Start some more advanced systems.
-        mapCollider = new MapCollidingService(this);
-        sysMan.add(mapCollider);
-
-        // start State manager system
-        stateManager = new StateManager(this);
-        sysMan.add(stateManager);
+        sysMan.add(new InputHandler(this));
+        sysMan.add(new Renderer(this));
+        sysMan.add(new SoundSystem(this));
+        sysMan.add(new MapCollidingService(this));
+        sysMan.add(new StateManager(this));
     }
 
     /**
      * Main loop for the game.
      */
     private void loop() {
-        stateManager.startState(this);
+
+        StateManager stm = sysMan.getSystem(StateManager.class);
+        Renderer r = sysMan.getSystem(Renderer.class);
+
+        stm.startState(this);
 
         long startTime = System.currentTimeMillis();
         long previousTime = startTime;
@@ -97,9 +87,9 @@ public class Game {
 
             float elapsed = startTime - previousTime;
 
-            stateManager.input(this);
-            stateManager.update(this, elapsed);
-            stateManager.render(this, renderer);
+            stm.input(this);
+            stm.update(this, elapsed);
+            stm.render(this, r);
 
             float wait = ((config.fps * 0.001f));
 

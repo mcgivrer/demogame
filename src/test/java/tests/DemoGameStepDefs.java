@@ -1,6 +1,8 @@
 package tests;
 
 import core.Game;
+import core.Renderer;
+import core.system.SystemManager;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -11,35 +13,36 @@ public class DemoGameStepDefs {
     Game dg;
     String[] argc;
 
-    @Given("^DemoGame is instantiated with \"([^\"]*)\"$")
-    public void demoGameIsInstantiatedWith(String arguments) throws Throwable {
+    @Given("^Game is instantiated with \"([^\"]*)\"$")
+    public void gameIsInstantiatedWith(String arguments) throws Throwable {
         argc = arguments.split(" ");
         dg = new Game(argc);
     }
 
-    @And("^the DemoGame config has width=(\\d+)$")
-    public void theDemoGameInstanceHasWidth(int width) {
+    @And("^the Game config has width=(\\d+)$")
+    public void theGameInstanceHasWidth(int width) {
         assertTrue("The width is not correctly set", dg.config.screenWidth == width);
     }
 
-    @And("^the DemoGame config has height=(\\d+)$")
-    public void theDemoGameInstanceHasHeight(int height) {
+    @And("^the Game config has height=(\\d+)$")
+    public void theGameInstanceHasHeight(int height) {
         assertTrue("The height is not correctly set", dg.config.screenHeight == height);
     }
 
-    @And("^the DemoGame config has scale=(\\d+)$")
-    public void theDemoGameInstanceHasScale(int scale) {
+    @And("^the Game config has scale=(\\d+)$")
+    public void theGameInstanceHasScale(int scale) {
         assertTrue("The scale is not correctly set", dg.config.screenScale == scale);
     }
 
-    @Then("^the DemoGame instance initialized$")
-    public void theDemoGameInstanceInitialized() {
+    @Then("^the Game instance initialized$")
+    public void theGameInstanceInitialized() {
         dg.initialize();
     }
 
-    @And("^the DemoGame screenBuffer is width=(\\d+) and height=(\\d+)$")
-    public void theDemoGameScreenBufferIsWidthAndHeight(int width, int height) {
-        assertTrue("screenBuffer width has not been set correctly to " + width, dg.renderer.screenBuffer.getWidth() == width);
-        assertTrue("screenBuffer height has not been set correctly to " + height, dg.renderer.screenBuffer.getHeight() == height);
+    @And("^the Game screenBuffer is width=(\\d+) and height=(\\d+)$")
+    public void theGameScreenBufferIsWidthAndHeight(int width, int height) {
+        Renderer renderer = SystemManager.get(Renderer.class);
+        assertTrue("screenBuffer width has not been set correctly to " + width, renderer.screenBuffer.getWidth() == width);
+        assertTrue("screenBuffer height has not been set correctly to " + height, renderer.screenBuffer.getHeight() == height);
     }
 }

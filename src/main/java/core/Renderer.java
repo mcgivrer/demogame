@@ -7,8 +7,10 @@ import core.map.MapObject;
 import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
+import core.state.StateManager;
 import core.system.AbstractSystem;
 import core.system.System;
+import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
@@ -45,6 +47,8 @@ public class Renderer extends AbstractSystem implements System {
 
     private boolean renderingPause = false;
 
+    private StateManager stm;
+
     /**
      * Create the Game renderer.
      *
@@ -54,6 +58,7 @@ public class Renderer extends AbstractSystem implements System {
         super(dg);
         jf = createWindow(dg);
         screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
+        stm = SystemManager.get(StateManager.class);
     }
 
     /**
@@ -102,7 +107,7 @@ public class Renderer extends AbstractSystem implements System {
         if (!renderingPause) {
             Graphics2D g = screenBuffer.createGraphics();
 
-            Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+            Camera camera = stm.getCurrent().getActiveCamera();
 
             // activate Antialiasing for image and text rendering.
 
@@ -148,7 +153,7 @@ public class Renderer extends AbstractSystem implements System {
             }
 
             // draw HUD
-            dg.stateManager.getCurrent().drawHUD(dg, this, g);
+            stm.getCurrent().drawHUD(dg, this, g);
             g.dispose();
 
             // render image to real screen (applying scale factor)
@@ -230,7 +235,7 @@ public class Renderer extends AbstractSystem implements System {
     }
 
     public void renderToScreen(Game dg) {
-        Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+        Camera camera = stm.getCurrent().getActiveCamera();
         if (jf != null) {
             Graphics2D g = (Graphics2D) jf.getGraphics();
             float sX = jf.getWidth() / dg.config.screenWidth;

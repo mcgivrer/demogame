@@ -18,6 +18,7 @@ import core.object.GameObject.GameAction;
 import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
+import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
@@ -51,8 +52,11 @@ public class DemoState extends AbstractState implements State {
     private Font scoreFont;
     private Font infoFont;
 
+    private Renderer renderer;
+
     public DemoState() {
         this.name = "DemoState";
+        renderer = SystemManager.get(Renderer.class);
     }
 
     public DemoState(Game g) {
@@ -157,8 +161,8 @@ public class DemoState extends AbstractState implements State {
             // Create camera
             Camera cam = new Camera("camera", mapLevel.player, 0.017f,
                     new Dimension(
-                            (int) g.config.screenWidth,
-                            (int) g.config.screenHeight));
+                            g.config.screenWidth,
+                            g.config.screenHeight));
             addObject(cam);
 
 
@@ -262,8 +266,7 @@ public class DemoState extends AbstractState implements State {
 
     @Override
     public void render(Game g, Renderer r) {
-
-        g.renderer.render(g);
+        renderer.render(g);
     }
 
     @Override

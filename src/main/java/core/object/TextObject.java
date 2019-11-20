@@ -22,6 +22,17 @@ public class TextObject extends GameObject {
     // border color
     public Color borderColor;
 
+    public TextObject(String name, String text, float x, float y,
+                      Font f,
+                      Color shadowColor,
+                      Color borderColor,
+                      Color foregroundColor) {
+        super(name, x, y, 0, 0);
+        this.font = f;
+        this.shadowColor = shadowColor;
+        this.borderColor = borderColor;
+        this.foregroundColor = foregroundColor;
+    }
 
     /**
      * recompute text to be displayed on each frame.

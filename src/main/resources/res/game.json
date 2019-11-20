@@ -1,6 +1,7 @@
 {
-  "defaultState": "game",
+  "defaultState": "title",
   "states": {
+    "title": "demo.states.TitleState",
     "game": "demo.states.DemoState"
   }
 }
