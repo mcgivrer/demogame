@@ -1,13 +1,12 @@
 package core.state;
 
 import core.Game;
-import core.Renderer;
+import core.gfx.Renderer;
 import core.object.Camera;
 import core.object.GameObject;
 
 import java.awt.*;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 
