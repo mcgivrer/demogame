@@ -64,6 +64,8 @@ public class GameObject {
 
     public Map<String, Object> attributes = new HashMap<>();
     public List<MapObject> items = new ArrayList<>();
+    
+    public Map<String,GameObject> child = new HashMap<>();
 
 
     public List<MapTileCollision> collidingZone = new ArrayList<>();

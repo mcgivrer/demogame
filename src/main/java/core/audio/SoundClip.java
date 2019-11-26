@@ -69,13 +69,13 @@ public class SoundClip {
 
     }
 
-    public void loadFromStream(String path, InputStream audioSrc)
+    private void loadFromStream(String path, InputStream audioSrc)
             throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
         InputStream bufferedIn = new BufferedInputStream(audioSrc);
         AudioInputStream ais = AudioSystem.getAudioInputStream(bufferedIn);
         AudioFormat baseFormat = ais.getFormat();
-        log.error("SoundClip '{}' with Base format: [{}]", path, baseFormat);
+        log.debug("SoundClip '{}' with Base format: [{}]", path, baseFormat);
 
         AudioFormat decodeFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16,
                 baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
