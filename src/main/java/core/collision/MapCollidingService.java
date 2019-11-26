@@ -1,8 +1,10 @@
 package core.collision;
 
 import core.Game;
+import core.map.MapLayer;
 import core.map.MapLevel;
 import core.map.MapObject;
+import core.map.MapObjectAsset;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
 import core.system.AbstractSystem;
@@ -55,56 +57,57 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @param map the map to check against
      * @param go  the GameObject to be verified.
      */
-    public void checkCollision(MapLevel map, GameObject go) {
-        int ox = (int) (go.bbox.x / map.asset.tileWidth);
-        int ow = (int) (go.bbox.width / map.asset.tileWidth);
-        int oy = (int) ((go.oldY + go.bbox.height) / map.asset.tileHeight);
-        int oy2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileHeight);
-        int oh = (int) (go.bbox.height / map.asset.tileHeight);
+    public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
+    	MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
+        int ox = (int) (go.bbox.x / asset.tileWidth);
+        int ow = (int) (go.bbox.width / asset.tileWidth);
+        int oy = (int) ((go.oldY + go.bbox.height) / asset.tileHeight);
+        int oy2 = (int) ((go.bbox.y + go.bbox.height) / asset.tileHeight);
+        int oh = (int) (go.bbox.height / asset.tileHeight);
 
         go.collidingZone.clear();
 
         if (go.dx > 0) {
-            testMoveRight(map, go, ox, ow, oy, oh);
+            testMoveRight(frontLayer, go, ox, ow, oy, oh);
         }
         if (go.dx < 0) {
-            testMoveLeft(map, go, ox, oy, oh);
+            testMoveLeft(frontLayer, go, ox, oy, oh);
         }
         if (go.dy < 0) {
-            testMoveUp(map, go);
+            testMoveUp(frontLayer, go);
         }
         if (go.dy > 0) {
-            testIfMoveDown(map, go);
+            testIfMoveDown(frontLayer, go);
         }
-        testIfFall(map, go, true);
+        testIfFall(frontLayer, go, true);
     }
 
-    private void testIfMoveDown(MapLevel map, GameObject go) {
-        testIfFall(map, go, false);
+    private void testIfMoveDown(MapLayer layer, GameObject go) {
+        testIfFall(layer, go, false);
     }
 
-    public void testIfFall(MapLevel map, GameObject go, boolean falling) {
+    public void testIfFall(MapLayer layer, GameObject go, boolean falling) {
         int dy = +1;
 
         /**
          * Compute bottom coordinate of bottom corners tiles.
          */
-        int y0 = (int) ((go.oldY + go.bbox.height) / map.asset.tileWidth) + dy;
-        int x1 = (int) (go.bbox.x / map.asset.tileWidth);
+        int y0 = (int) ((go.oldY + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
+        int x1 = (int) (go.bbox.x / layer.assetsObjects.get(0).tileWidth);
 
-        int y1 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
-        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
-        int y2 = (int) ((go.bbox.y + go.bbox.height) / map.asset.tileWidth) + dy;
+        int y1 = (int) ((go.bbox.y + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
+        int x2 = (int) ((go.bbox.x + go.bbox.width) / layer.assetsObjects.get(0).tileWidth);
+        int y2 = (int) ((go.bbox.y + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
 
         // test all tiles from old to new position
         for (int y = y0; y <= y1; y += 1) {
             // get Tile at bottom corners
-            MapObject m1 = getTileInMap(map, x1, y);
-            MapObject m2 = getTileInMap(map, x2, y);
+            MapObject m1 = getTileInMap(layer, x1, y);
+            MapObject m2 = getTileInMap(layer, x2, y);
             // if those are not null and are blocking ones tiles, let's stop move on Y.
             if (((m1 != null && m1.block) || (m2 != null && m2.block)) && go.action == GameAction.FALL) {
                 //go.action = GameAction.IDLE;
-                go.y = (int) (go.y / map.asset.tileHeight) * map.asset.tileHeight;
+                go.y = (int) (go.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
                 go.bbox.fromGameObject(go);
                 break;
             }
@@ -113,22 +116,22 @@ public class MapCollidingService extends AbstractSystem implements System {
                 go.action = GameAction.FALL;
             }
             // add some debugging information on detected tiles
-            createDebugInfo(go, map, m1, x1, y);
-            createDebugInfo(go, map, m2, x2, y);
+            createDebugInfo(go, layer, m1, x1, y);
+            createDebugInfo(go, layer, m2, x2, y);
         }
         // if Go is not falling and not on a tile, recompute right Y value according to tile height.
         if (go.action != GameAction.FALL
-                && (go.y % map.asset.tileHeight) > 0) {
-            go.y = (int) (go.y / map.asset.tileHeight) * map.asset.tileHeight;
+                && (go.y % layer.assetsObjects.get(0).tileHeight) > 0) {
+            go.y = (int) (go.y / layer.assetsObjects.get(0).tileHeight) *layer.assetsObjects.get(0).tileHeight;
             go.bbox.fromGameObject(go);
         }
     }
 
-    public void testMoveUp(MapLevel map, GameObject go) {
-        int x1 = (int) (go.bbox.x / map.asset.tileWidth);
-        int y1 = (int) ((go.bbox.y) / map.asset.tileWidth);
-        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.asset.tileWidth);
-        int y2 = (int) ((go.bbox.y) / map.asset.tileWidth);
+    public void testMoveUp(MapLayer map, GameObject go) {
+        int x1 = (int) (go.bbox.x / map.assetsObjects.get(0).tileWidth);
+        int y1 = (int) ((go.bbox.y) / map.assetsObjects.get(0).tileWidth);
+        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.assetsObjects.get(0).tileWidth);
+        int y2 = (int) ((go.bbox.y) / map.assetsObjects.get(0).tileWidth);
         MapObject m1 = getTileInMap(map, x1, y1);
         MapObject m2 = getTileInMap(map, x2, y2);
 
@@ -144,7 +147,7 @@ public class MapCollidingService extends AbstractSystem implements System {
     }
 
 
-    public void testMoveLeft(MapLevel map, GameObject go, int ox, int oy, int oh) {
+    public void testMoveLeft(MapLayer map, GameObject go, int ox, int oy, int oh) {
         MapObject mo;
         for (int iy = oy; iy < oy + oh; iy++) {
             mo = getTileInMap(map, ox, iy);
@@ -170,13 +173,13 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @param ox
      * @param oy
      */
-    private void createDebugInfo(GameObject go, MapLevel map, MapObject m1, int ox, int oy) {
+    private void createDebugInfo(GameObject go, MapLayer map, MapObject m1, int ox, int oy) {
         if (game.config.debug > 3) {
             MapTileCollision mtc = new MapTileCollision();
             mtc.x = ox;
             mtc.y = oy;
-            mtc.w = map.asset.tileWidth;
-            mtc.h = map.asset.tileHeight;
+            mtc.w = map.assetsObjects.get(0).tileWidth;
+            mtc.h = map.assetsObjects.get(0).tileHeight;
             mtc.rX = mtc.x * mtc.w;
             mtc.rY = mtc.y * mtc.h;
             mtc.mo = m1;
@@ -184,7 +187,7 @@ public class MapCollidingService extends AbstractSystem implements System {
         }
     }
 
-    public void testMoveRight(MapLevel map, GameObject go, int ox, int ow, int oy, int oh) {
+    public void testMoveRight(MapLayer map, GameObject go, int ox, int ow, int oy, int oh) {
         testMoveLeft(map, go, ox + ow, oy, oh);
     }
 
@@ -198,7 +201,7 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @param x   the horizontal position in the tiles map
      * @param y   the vertical position in the tiles map
      */
-    private void collide(GameObject go, MapLevel map, MapObject mo, int x, int y) {
+    private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y) {
         listeners.get(go.getClass()).collide(new CollisionEvent(COLLISION_MAP, go, null, mo, map, x, y));
     }
 
@@ -211,7 +214,7 @@ public class MapCollidingService extends AbstractSystem implements System {
      * @param y   the vertical position to test
      * @return
      */
-    private MapObject getTileInMap(MapLevel map, int x, int y) {
+    private MapObject getTileInMap(MapLayer map, int x, int y) {
         if (x < 0 || y < 0 || x > map.tiles.length - 1 || y > map.tiles[0].length - 1) {
             return null;
         }

@@ -6,6 +6,7 @@ import core.object.Camera;
 import core.object.GameObject;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public interface State {
 
     void addObject(GameObject go);
 
-    void addAllObject(List<GameObject> objects);
+    void addAllObject(Collection<GameObject> objects);
 
     void removeObject(GameObject go);
 
