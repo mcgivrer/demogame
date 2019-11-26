@@ -4,6 +4,14 @@ import core.map.MapLayer;
 import core.map.MapObject;
 import core.object.GameObject;
 
+/**
+ * The ColisionEvent is raised by the MapCollidingService. It will be managed by
+ * a OnCollision interface implementation in your game.
+ * 
+ * 
+ * @author Frédéric Delorme <frederic.delorme@gmail.com>
+ * @since 2019
+ */
 public class CollisionEvent {
 	public MapLayer map;
 	public CollisionType type;

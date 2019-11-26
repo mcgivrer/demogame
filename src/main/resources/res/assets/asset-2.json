@@ -6,13 +6,14 @@
   "objects": {
     "E": {
       "id": "E",
-      "type": "enemy_",
+      "type": "enemy",
+      "name": "enemy_#",
       "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "6,1",
       "size": "32,32",
       "priority": 2,
-      "layer": 1,
+      "layer": 2,
       "bbox": {
         "top": 8.0,
         "bottom": 0.0,
@@ -30,12 +31,13 @@
     "P": {
       "id": "P",
       "type": "player",
+      "name":"player",
       "clazz": "core.object.GameObject",
       "image": "todo",
       "offset": "4,1",
       "size": "32,32",
       "priority": 10,
-      "layer": 1,
+      "layer": 3,
       "bbox": {
         "top": 8.0,
         "bottom": 0.0,
@@ -58,6 +60,7 @@
     },
     "1": {
       "type": "item",
+      "name":"sword",
       "id": "1",
       "description": "sword-1",
       "usage": "weapon",
@@ -67,6 +70,7 @@
     },
     "2": {
       "type": "item",
+      "name":"boost-energy",
       "id": "2",
       "description": "nrj-10",
       "usage": "health",
@@ -76,6 +80,7 @@
     },
     "3": {
       "type": "item",
+      "name":"arc",
       "id": "3",
       "description": "arc-10",
       "usage": "weapon",

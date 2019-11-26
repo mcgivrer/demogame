@@ -85,11 +85,11 @@ public class MapReader {
 				if (ml.assetsObjects.get(0).objects.containsKey(code)) {
 					MapObject mo = ml.assetsObjects.get(0).objects.get(code);
 					// those MapObject is tile
-					if (!mo.type.equals("player") && !mo.type.equals("enemy_")) {
-						ml.tiles[x][y] = mo;
-					} else {
+					if ("player,enemy".contains(mo.type)) {
 						// those MapObject are GameObject !
 						createGameObject(mapLevel, ml, y, x, mo);
+					} else {
+						ml.tiles[x][y] = mo;
 					}
 				} else {
 					// no tile or object on tile place.
@@ -107,7 +107,7 @@ public class MapReader {
 		case "player":
 			mapLevel.player = go;
 			break;
-		case "enemy_":
+		case "enemy":
 			if (mapLevel.enemies == null) {
 				mapLevel.enemies = new ArrayList<>();
 			}
@@ -116,6 +116,9 @@ public class MapReader {
 		default:
 			System.out.println(String.format("Unknown object type %s", mo.type));
 			break;
+		}
+		if(go!=null) {
+			mapLevel.child.put(go.name,go);
 		}
 	}
 
@@ -138,7 +141,7 @@ public class MapReader {
 				mapLevel.playerInitialX = go.x;
 				mapLevel.playerInitialY = go.y;
 				break;
-			case "enemy_":
+			case "enemy":
 				go = createObjectFromClass(mapLevel, layer, mo, x, y);
 				break;
 			default:
@@ -267,7 +270,9 @@ public class MapReader {
 
 			}
 		}
-		go.name = mo.type.replace("_", "_" + (++idxEnemy));
+		if(mo.name!=null && !mo.name.equals("")) {
+			go.name = mo.name.replace("#", ""+(++idxEnemy));			
+		}
 		// initialize attributes
 		go.attributes.putAll(mo.attributes);
 		return go;

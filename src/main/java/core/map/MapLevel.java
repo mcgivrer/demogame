@@ -1,12 +1,12 @@
 package core.map;
 
-import core.object.GameObject;
-
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import core.object.GameObject;
+import lombok.ToString;
 
 /**
  * A AmpLevel is a full Tilemap level loaded through the MapReader where all
@@ -20,6 +20,7 @@ import java.util.Map;
  * @see MapRenderer
  * @since 2019
  */
+@ToString
 public class MapLevel extends GameObject {
 	public String description;
 
@@ -28,9 +29,6 @@ public class MapLevel extends GameObject {
 
 	// name of the output level
 	public String nextLevel;
-
-	// GameObject in the level.
-	public Map<String, GameObject> gameObjects = new HashMap<>();
 
 	// the player
 	public GameObject player;
@@ -46,13 +44,13 @@ public class MapLevel extends GameObject {
 	 *
 	 * @param go the GameObject to be evaluated and constrained if necessary.
 	 */
-	public void constrainToMapLevel(MapLayer ml, int index , GameObject go) {
-		if (go.x + go.width > width * ml.assetsObjects.get(index).tileWidth) {
-			go.x = width * ml.assetsObjects.get(index).tileWidth - go.width;
+	public void constrainToMapLevel(MapLayer ml, int index, GameObject go) {
+		if (go.x + go.width > ml.width * ml.assetsObjects.get(index).tileWidth) {
+			go.x = ml.width * ml.assetsObjects.get(index).tileWidth - go.width;
 			go.dx = -go.dx;
 		}
-		if (go.y + go.height > height * ml.assetsObjects.get(index).tileHeight) {
-			go.y = height * ml.assetsObjects.get(index).tileHeight - go.height;
+		if (go.y + go.height > ml.height * ml.assetsObjects.get(index).tileHeight) {
+			go.y = ml.height * ml.assetsObjects.get(index).tileHeight - go.height;
 			go.dy = -go.dy;
 		}
 

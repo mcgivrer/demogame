@@ -9,7 +9,7 @@ import java.awt.*;
  * A core.Renderer for the core.map.MapLevel.
  *
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
- * @year 2019
+ * @since 2019
  */
 public class MapRenderer {
 	Color backTransparent = new Color(0.0f, 0.0f, 0.0f, 0.0f);

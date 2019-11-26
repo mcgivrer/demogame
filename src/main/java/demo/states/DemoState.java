@@ -29,6 +29,16 @@ import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * The <code>DemoState</code> is an implementation for a Game <code>State<code>
+ * to demonstrate how to use this small framework to produce a PLatform 2D game.
+ * 
+ * @author Frédéric Delorme <frederic.delorme@gmail.com>
+ * @since 2019
+ * 
+ * @see State
+ * @see AbstractState
+ */
 @Slf4j
 public class DemoState extends AbstractState implements State {
 
@@ -73,12 +83,8 @@ public class DemoState extends AbstractState implements State {
 				log.info("reading resources: {} : {}", value * 100.0f, path);
 			}
 		});
-		ResourceManager.add(new String[] { 
-				"/res/maps/map_2.json",
-				"/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", 
-				"/res/images/tileset-1.png", 
-				"/res/audio/sounds/collect-coin.wav"
+		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
+				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav"
 				// , "/res/audio/musics/once-around-the-kingdom.mp3"
 		});
 
@@ -96,16 +102,24 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void initialize(Game g) {
+		// prepare user input handler
 		inputHandler = g.sysMan.getSystem(InputHandler.class);
 		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingService.class);
+		// load Sounds
 		soundSystem = g.sysMan.getSystem(SoundSystem.class);
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
 
 		soundSystem.setMute(false);
 
+		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
+			/**
+			 * Collision Listener
+			 * 
+			 * @param e Collision Event to manage.
+			 */
 			public void collide(CollisionEvent e) {
 				if (e.m2.collectible && e.o1.canCollect) {
 					switch (e.m2.type) {
@@ -113,7 +127,7 @@ public class DemoState extends AbstractState implements State {
 						collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
 						break;
 					case "item":
-						collectItem(e.map, e.m2, e.mapX, e.mapY);
+						collectItem(e.map, e.o1, e.m2, e.mapX, e.mapY);
 						break;
 					default:
 						break;
@@ -121,15 +135,34 @@ public class DemoState extends AbstractState implements State {
 				}
 			}
 
-			private void collectItem(MapLayer map, MapObject mo, int x, int y) {
-
-				double maxItems = (double) mapLevel.player.attributes.get("maxItems");
-				if (mapLevel.player.items.size() <= maxItems) {
-					mapLevel.player.items.add(mo);
-					map.tiles[x][y] = null;
+			/**
+			 * A GameObject <code>go</code> collects a MapObject <code>mo</code> item
+			 * 
+			 * @param map the MapLayer where the GameObject is moving
+			 * @param go  the GameObject having collision
+			 * @param mo  the Item to be collected by the GameObject
+			 * @param x   tilemap horizontal position
+			 * @param y   tilemap vertical position
+			 */
+			private void collectItem(MapLayer map, GameObject go, MapObject mo, int x, int y) {
+				if (go.attributes.containsKey("maxItems")) {
+					double maxItems = (Double) go.attributes.get("maxItems");
+					if (go.items.size() <= maxItems) {
+						go.items.add(mo);
+						map.tiles[x][y] = null;
+					}
 				}
 			}
 
+			/**
+			 * A GameObject <code>go</code> collect a MapObject <code>mo</code> as Coins.
+			 * 
+			 * @param map the MapLayer where the GameObject is moving
+			 * @param go  the GameObject having collision
+			 * @param mo  the coins to be collected by the GameObject
+			 * @param x   tilemap horizontal position
+			 * @param y   tilemap vertical position
+			 */
 			private void collectCoin(MapLayer map, GameObject go, MapObject mo, int x, int y) {
 
 				if (mo.money > 0) {
@@ -143,24 +176,20 @@ public class DemoState extends AbstractState implements State {
 		if (mapLevel != null) {
 			// add the MapLevel
 			mapLevel.priority = 1;
-			mapLevel.layer = 0;
+			mapLevel.layer = 1;
+			// MapLevel and all its child GameObjects will be added.
 			addObject(mapLevel);
-			addObject(mapLevel.player);
-			addAllObject(mapLevel.enemies);
 
 			// Add Score text on H.U.D. (fixed = true)
-			
-			/* TODO add score TextObject
-			scoreObject = new TextObject();
-			scoreObject.name = "score";
-			scoreObject.fixed = true;
-			scoreObject.layer = 4;
-			scoreObject.foregroundColor = Color.WHITE;
-			scoreObject.shadowColor = Color.BLACK;
-			scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-			scoreObject.setPosition((g.config.screenWidth / 6) * 5, 24);
-			addObject(scoreObject);
-			*/
+
+			/*
+			 * TODO add score TextObject scoreObject = new TextObject(); scoreObject.name =
+			 * "score"; scoreObject.fixed = true; scoreObject.layer = 4;
+			 * scoreObject.foregroundColor = Color.WHITE; scoreObject.shadowColor =
+			 * Color.BLACK; scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+			 * scoreObject.setPosition((g.config.screenWidth / 6) * 5, 24);
+			 * addObject(scoreObject);
+			 */
 			// Create camera
 			Camera cam = new Camera("camera", mapLevel.player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
@@ -182,46 +211,51 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void input(Game g) {
+
+		GameObject player = objects.get("player");
+
 		if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
 		}
 
 		mapLevel.player.setSpeed(0.0f, 0.0f);
-		if (mapLevel.player.action == GameAction.FALL) {
-			mapLevel.player.dx = 0.0f;
-			mapLevel.player.dy = 0.25f;
+		if (player.action == GameAction.FALL) {
+			player.dx = 0.0f;
+			player.dy = 0.25f;
 		} else {
-			mapLevel.player.action = idleAction;
+			player.action = idleAction;
 			randomNextIdleAction();
 		}
 
 		// reset horizontal speed if falling.
 		if (inputHandler.keys[KeyEvent.VK_UP]) {
-			mapLevel.player.dy = -0.2f;
-			mapLevel.player.action = GameAction.JUMP;
+			player.dy = -0.2f;
+			player.action = GameAction.JUMP;
 		}
 		if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-			mapLevel.player.dy = 0.1f;
-			mapLevel.player.action = GameAction.DOWN;
+			player.dy = 0.1f;
+			player.action = GameAction.DOWN;
 		}
 
 		if (inputHandler.keys[KeyEvent.VK_LEFT]) {
-			mapLevel.player.dx = -0.2f;
-			mapLevel.player.direction = -1;
-			mapLevel.player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
+			player.dx = -0.2f;
+			player.direction = -1;
+			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
 		} else if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
-			mapLevel.player.dx = 0.2f;
-			mapLevel.player.direction = 1;
-			mapLevel.player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
+			player.dx = 0.2f;
+			player.direction = 1;
+			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
 		}
 	}
 
 	private void randomNextIdleAction() {
+
+		GameObject player = objects.get("player");
 		// compute next value for Idle
 		lastIdleChange++;
 		if (lastIdleChange > lastIdleChangePace) {
 			double rndAction = (Math.random() * 1.0) + 0.5;
-			idleAction = mapLevel.player.action = (rndAction > 1.0 ? GameAction.IDLE : GameAction.IDLE2);
+			idleAction = player.action = (rndAction > 1.0 ? GameAction.IDLE : GameAction.IDLE2);
 			lastIdleChange = 0;
 			lastIdleChangePace = (int) ((Math.random() * 100.0) + 100.0);
 		}
@@ -234,9 +268,11 @@ public class DemoState extends AbstractState implements State {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_R:
 			if (control) {
-				mapLevel.player.action = GameAction.IDLE2;
-				mapLevel.player.setSpeed(0.0f, 0.0f);
-				mapLevel.player.setPosition(mapLevel.playerInitialX, mapLevel.playerInitialY);
+
+				GameObject player = objects.get("player");
+				player.action = GameAction.IDLE2;
+				player.setSpeed(0.0f, 0.0f);
+				player.setPosition(mapLevel.playerInitialX, mapLevel.playerInitialY);
 			}
 			break;
 		default:
@@ -246,12 +282,11 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void update(Game g, float elapsed) {
-		
+
 		// TODO activate score TextObject update
-		//scoreObject.text = String.format("%05d", this.score);
-		
-		
-		MapLayer frontLayer = mapLevel.layers.get("front"); 
+		// scoreObject.text = String.format("%05d", this.score);
+
+		MapLayer frontLayer = mapLevel.layers.get("front");
 		// update all objects
 		for (GameObject go : objects.values()) {
 			if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
@@ -320,12 +355,17 @@ public class DemoState extends AbstractState implements State {
 
 			int posX = (int) (maxItems - itmNb) * (itemHolderImg.getWidth() - 1);
 
-			g.drawImage(itemHolderImg, ga.config.screenWidth - offsetX - posX,
-					ga.config.screenHeight - (itemHolderImg.getHeight() + 12), itemHolderImg.getWidth(),
+			g.drawImage(
+					itemHolderImg, 
+					ga.config.screenWidth - offsetX - posX,
+					ga.config.screenHeight - (itemHolderImg.getHeight() + 12), 
+					itemHolderImg.getWidth(),
 					itemHolderImg.getHeight(), null);
 
 			if (itmNb - 1 < mapLevel.player.items.size() && mapLevel.player.items.get(itmNb - 1) != null) {
-				r.renderMapObject(g, mapLevel.player.items.get(itmNb - 1), ga.config.screenWidth - offsetX - posX,
+				r.renderMapObject(g, 
+						mapLevel.player.items.get(itmNb - 1), 
+						ga.config.screenWidth + 2 - offsetX - posX,
 						ga.config.screenHeight - (itemHolderImg.getHeight() + 12));
 			}
 		}
