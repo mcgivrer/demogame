@@ -1,7 +1,7 @@
 package demo.states;
 
 import core.Game;
-import core.Renderer;
+import core.gfx.Renderer;
 import core.state.AbstractState;
 import core.state.State;
 

@@ -1,5 +1,11 @@
 package core.state;
 
+import core.Game;
+import core.gfx.Renderer;
+import core.object.Camera;
+import core.object.GameObject;
+import lombok.extern.slf4j.Slf4j;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -7,12 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import core.Game;
-import core.Renderer;
-import core.object.Camera;
-import core.object.GameObject;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * the AbstractState is the default implementation for a State interface. It

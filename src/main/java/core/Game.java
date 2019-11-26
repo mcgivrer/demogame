@@ -2,6 +2,7 @@ package core;
 
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
+import core.gfx.Renderer;
 import core.io.InputHandler;
 import core.state.StateManager;
 import core.system.SystemManager;

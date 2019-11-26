@@ -2,8 +2,8 @@ package core.state;
 
 import com.google.gson.Gson;
 import core.Game;
-import core.Renderer;
 import core.ResourceManager;
+import core.gfx.Renderer;
 import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;

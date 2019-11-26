@@ -23,10 +23,10 @@ public class Config {
      */
     public Config() {
         this.title = "notitle";
-        this.screenWidth = 0;
-        this.screenHeight = 0;
-        this.screenScale = 0f;
-        this.fps = 0;
+        this.screenWidth = 720;
+        this.screenHeight = 300;
+        this.screenScale = 1.5f;
+        this.fps = 30;
         this.debug = 0;
         this.statesPath = "/res/game.json";
     }

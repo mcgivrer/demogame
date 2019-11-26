@@ -6,7 +6,7 @@ import core.object.Camera;
 import java.awt.*;
 
 /**
- * A core.Renderer for the core.map.MapLevel.
+ * A core.gfx.Renderer for the core.map.MapLevel.
  *
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @since 2019

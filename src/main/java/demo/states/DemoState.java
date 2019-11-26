@@ -1,21 +1,13 @@
 package demo.states;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-
 import core.Game;
 import core.ProgressListener;
-import core.Renderer;
 import core.ResourceManager;
 import core.audio.SoundSystem;
 import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
 import core.collision.OnCollision;
+import core.gfx.Renderer;
 import core.io.InputHandler;
 import core.map.MapLayer;
 import core.map.MapLevel;
@@ -28,6 +20,11 @@ import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 /**
  * The <code>DemoState</code> is an implementation for a Game <code>State<code>

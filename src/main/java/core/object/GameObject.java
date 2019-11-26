@@ -2,6 +2,7 @@ package core.object;
 
 import core.Game;
 import core.collision.MapTileCollision;
+import core.gfx.Renderer;
 import core.map.MapObject;
 
 import java.awt.*;
@@ -139,7 +140,7 @@ public class GameObject {
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
-     * @see core.Renderer#render(Game)
+     * @see Renderer#render(Game)
      */
     public void render(Game dg, Graphics2D g) {
         switch (type) {
