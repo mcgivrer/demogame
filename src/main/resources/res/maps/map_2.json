@@ -1,6 +1,16 @@
 {
 	"name": "Level 1.1",
 	"description": "This a demonstration level.",
+	"environment": {
+		"ambiantlight": {
+			"color": [
+				1.0,
+				1.0,
+				1.0
+			],
+			"intensity": 1.0
+		}
+	},
 	"layers": {
 		"background": {
 			"name": "background",
@@ -18,7 +28,7 @@
 			"map": [
 				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				")()()()()()BBbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbBBBBBBBBBBBBB",
-				"()()()Bbbbbb                   V                                   BBBBBBBBBBBBB",
+				"()()()Bbbbbb  L            L   V          L           L           LBBBBBBBBBBBBB",
 				")()()()Bbbb                                                            BBBBBBBBB",
 				"()()()BBbbb                                                             BBBBBBBB",
 				"BBBBBBBBbbb                                                                BBBBB",

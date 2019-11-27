@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import core.ResourceManager;
 import core.object.GameObject;
 import core.object.GameObjectType;
+import core.object.Light;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
@@ -85,7 +86,7 @@ public class MapReader {
 				if (ml.assetsObjects.get(0).objects.containsKey(code)) {
 					MapObject mo = ml.assetsObjects.get(0).objects.get(code);
 					// those MapObject is tile
-					if ("player,enemy".contains(mo.type)) {
+					if ("player,enemy,light".contains(mo.type)) {
 						// those MapObject are GameObject !
 						createGameObject(mapLevel, ml, y, x, mo);
 					} else {
@@ -113,12 +114,15 @@ public class MapReader {
 			}
 			mapLevel.enemies.add(go);
 			break;
+		case "light":
+			mapLevel.lights.add((Light)go);
+			break;
 		default:
-			System.out.println(String.format("Unknown object type %s", mo.type));
+			log.error(String.format("Unknown object type %s", mo.type));
 			break;
 		}
-		if(go!=null) {
-			mapLevel.child.put(go.name,go);
+		if (go != null) {
+			mapLevel.child.put(go.name, go);
 		}
 	}
 
@@ -132,7 +136,7 @@ public class MapReader {
 	 * @param y        the vertical position
 	 * @return a well fitted GameObject.
 	 */
-	private static GameObject generateGameObject(MapLevel mapLevel, MapLayer  layer, MapObject mo, int x, int y) {
+	private static GameObject generateGameObject(MapLevel mapLevel, MapLayer layer, MapObject mo, int x, int y) {
 		GameObject go = null;
 		try {
 			switch (mo.type) {
@@ -144,6 +148,8 @@ public class MapReader {
 			case "enemy":
 				go = createObjectFromClass(mapLevel, layer, mo, x, y);
 				break;
+			case "light":
+				go = createObjectFromClass(mapLevel, layer, mo, x, y);
 			default:
 				break;
 			}
@@ -226,23 +232,26 @@ public class MapReader {
 	}
 
 	private static GameObject populateGameObjectAttributes(MapObjectAsset moa, GameObject go, MapObject mo) {
-		if (!mo.offset.equals("")) {
+		if (mo.offset != null 
+				&& !mo.offset.equals("")
+			&& mo.size!=null 
+				&& !mo.size.equals("")) {
 			String[] values = mo.offset.split(",");
 			int ox = Integer.parseInt(values[1]);
 			int oy = Integer.parseInt(values[0]);
-
 			values = mo.size.split(",");
 			go.width = Integer.parseInt(values[0]);
 			go.height = Integer.parseInt(values[1]);
-			go.priority = mo.priority;
-			go.layer = mo.layer;
 			// get image
-			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth,
-					(oy - 1) * moa.tileHeight, (int) go.width, (int) go.height);
+
+			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth, (oy - 1) * moa.tileHeight, (int) go.width,
+					(int) go.height);
 			go.type = GameObjectType.IMAGE;
 			go.bbox = mo.bbox;
 			go.bbox.fromGameObject(go);
 		}
+		go.priority = mo.priority;
+		go.layer = mo.layer;
 
 		// the GameObject can collect items (or not !)
 		go.canCollect = mo.canCollect;
@@ -270,8 +279,8 @@ public class MapReader {
 
 			}
 		}
-		if(mo.name!=null && !mo.name.equals("")) {
-			go.name = mo.name.replace("#", ""+(++idxEnemy));			
+		if (mo.name != null && !mo.name.equals("")) {
+			go.name = mo.name.replace("#", "" + (++idxEnemy));
 		}
 		// initialize attributes
 		go.attributes.putAll(mo.attributes);

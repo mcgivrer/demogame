@@ -58,6 +58,20 @@
         "maxItems": 3
       }
     },
+    "L": {
+      "id": "L",
+      "type": "light",
+      "name":"light_#",
+      "clazz": "core.object.Light",
+      "lighttype": "LIGHT_AMBIANT",
+      "priority": 10,
+      "layer": 3,
+      "color": "WHITE",
+      "attributes": {
+        "intensity": 0.9,
+        "size": 130
+      }
+    },
     "1": {
       "type": "item",
       "name":"sword",
