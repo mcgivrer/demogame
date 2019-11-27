@@ -47,7 +47,7 @@ public interface State {
 
     void onFocus(Game g);
 
-    void focusLost(Game g);
+    void lostFocus(Game g);
 
     Camera getActiveCamera();
 

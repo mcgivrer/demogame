@@ -39,7 +39,7 @@ public class StateManager extends AbstractSystem implements System {
      */
     public StateManager(Game g) {
         super(g);
-        load(g.config.statesPath);
+        loadFromFile(g.config.statesPath);
     }
 
 
@@ -48,7 +48,7 @@ public class StateManager extends AbstractSystem implements System {
      *
      * @param path path to the game configuration JSON file.
      */
-    public void load(String path) {
+    public void loadFromFile(String path) {
         try {
             String gameStates = ResourceManager.getString("/res/game.json");
             Gson gs = new Gson();
@@ -61,16 +61,16 @@ public class StateManager extends AbstractSystem implements System {
                 log.info("load state {}", stateItem.getKey());
             }
             activate(statesMap.defaultState);
-
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
-            log.info("Unable to create class ", e);
+        } catch (IllegalAccessException 
+                | InstantiationException 
+                | ClassNotFoundException e) {
+            log.info("Unable to create class", e);
         }
     }
 
-
     public void activate(String s) {
         if(current!=null){
-            current.focusLost(game);
+            current.lostFocus(game);
         }
         current = states.get(s);
         if (!current.isLoaded()) {
