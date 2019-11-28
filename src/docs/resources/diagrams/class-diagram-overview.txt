@@ -18,9 +18,17 @@ class GameObject{
  +y:double
  +dx:double
  +dy:double
+ +animation:Animation
+ +image:BufferedImage
  +input():void
  +render(Renderer r):void
  +update(double elapsed):void
+}
+class Animation{
+ +frameImages:List<BufferedImage>
+ +frameTimes:List<Integer>
+ +elapsed:double
+ +frameIndex:int
 }
 class AbstractState implements State{
  +getName():String
