@@ -15,4 +15,6 @@ Renderer -- Game:rendererSystem
 InputHandler -- Game:inputHandler
 ResourceManager -- Game:resourceManager
 StateManager -- Game:sysMan
+StateManager "1"--* AbstractState
+Game "1"--* GameObject :objects
 @enduml
