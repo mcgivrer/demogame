@@ -1,6 +1,18 @@
 @startuml
-Renderer-rendererSystem->Game
-InputHandler-inputHandler->Game
-ResourceManager-resourceManager->Game
-StateManager-sysMan->Game
+class Game{
+ +objects:Map<String,GameObject>
+ +title:String
+ +run()
+ -initialize()
+ -input()
+ -update(float elapsed)
+ -render(Renderer r)
+ -loop()
+ -dispose()
+
+}
+Renderer -- Game:rendererSystem
+InputHandler -- Game:inputHandler
+ResourceManager -- Game:resourceManager
+StateManager -- Game:sysMan
 @enduml
