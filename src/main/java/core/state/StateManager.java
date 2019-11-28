@@ -114,8 +114,8 @@ public class StateManager extends AbstractSystem implements System {
         current.update(g, elapsed);
     }
 
-    public void render(Game g, Renderer r) {
-        current.render(g, r);
+    public void render(Game g, Renderer r, double elapsed) {
+        current.render(g, r, elapsed);
     }
 
     public void dispose(Game g) {

@@ -69,7 +69,7 @@ public abstract class AbstractState implements State, KeyListener {
 	public abstract void update(Game g, float elapsed);
 
 	@Override
-	public abstract void render(Game g, Renderer r);
+	public abstract void render(Game g, Renderer r, double elpased);
 
 	@Override
 	public void onFocus(Game g) {

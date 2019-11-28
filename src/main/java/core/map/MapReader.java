@@ -1,18 +1,21 @@
 package core.map;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
+
 import com.google.gson.Gson;
+
 import core.ResourceManager;
+import core.gfx.Animation;
 import core.object.GameObject;
 import core.object.GameObjectType;
 import core.object.Light;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * The class read the map file from a fileMap path and generate/load all needed
@@ -54,11 +57,7 @@ public class MapReader {
 					ml.height = ml.map.size();
 					// load asset from json file.
 					for (String assetStr : ml.assets) {
-						String jsonAssetString = ResourceManager.getString(assetStr);
-						if (jsonAssetString != null && !jsonAssetString.equals("")) {
-							MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
-							ml.assetsObjects.add(mop);
-						}
+						createAsset(gson, ml, assetStr);
 					}
 					mapLevel = generateTilesAndObject(mapLevel, ml);
 					// generate tiles
@@ -70,6 +69,19 @@ public class MapReader {
 
 		}
 		return mapLevel;
+	}
+
+	/**
+	 * @param gson
+	 * @param ml
+	 * @param assetStr
+	 */
+	private static void createAsset(Gson gson, MapLayer ml, String assetStr) {
+		String jsonAssetString = ResourceManager.getString(assetStr);
+		if (jsonAssetString != null && !jsonAssetString.equals("")) {
+			MapObjectAsset mop = gson.fromJson(jsonAssetString, MapObjectAsset.class);
+			ml.assetsObjects.add(mop);
+		}
 	}
 
 	public static MapLevel generateTilesAndObject(MapLevel mapLevel, MapLayer ml) {
@@ -103,7 +115,7 @@ public class MapReader {
 
 	public static void createGameObject(MapLevel mapLevel, MapLayer ml, int y, int x, MapObject mo) {
 		GameObject go = null;
-		go = generateGameObject(mapLevel, ml, mo, x, y);
+		go = generateGameObjectFromMapObject(mapLevel, ml, mo, x, y);
 		switch (mo.type) {
 		case "player":
 			mapLevel.player = go;
@@ -115,7 +127,7 @@ public class MapReader {
 			mapLevel.enemies.add(go);
 			break;
 		case "light":
-			mapLevel.lights.add((Light)go);
+			mapLevel.lights.add((Light) go);
 			break;
 		default:
 			log.error(String.format("Unknown object type %s", mo.type));
@@ -136,7 +148,8 @@ public class MapReader {
 	 * @param y        the vertical position
 	 * @return a well fitted GameObject.
 	 */
-	private static GameObject generateGameObject(MapLevel mapLevel, MapLayer layer, MapObject mo, int x, int y) {
+	private static GameObject generateGameObjectFromMapObject(MapLevel mapLevel, MapLayer layer, MapObject mo, int x,
+			int y) {
 		GameObject go = null;
 		try {
 			switch (mo.type) {
@@ -198,27 +211,30 @@ public class MapReader {
 				asset.imageBuffer = ImageIO.read(MapReader.class.getResourceAsStream(asset.image));
 				for (Entry<String, MapObject> emo : asset.objects.entrySet()) {
 					MapObject mo = emo.getValue();
+					mo.asset = asset;
 					if (mo != null) {
 						switch (mo.type) {
 						case "tile":
 						case "object":
 						default:
+							if (mo.size != null && !mo.size.equals("")) {
+								String[] sizeValue = mo.offset.split(",");
+								mo.width = Integer.parseInt(sizeValue[0]);
+								mo.height = Integer.parseInt(sizeValue[1]);
+							} else {
+								mo.width = asset.tileWidth;
+								mo.height = asset.tileHeight;
+							}
 							if (mo.offset != null && !mo.offset.equals("")) {
 								String[] offsetValue = mo.offset.split(",");
 								mo.offsetX = Integer.parseInt(offsetValue[0]);
 								mo.offsetY = Integer.parseInt(offsetValue[1]);
-								if (mo.size != null && !mo.size.equals("")) {
-									String[] sizeValue = mo.offset.split(",");
-									mo.width = Integer.parseInt(sizeValue[0]);
-									mo.height = Integer.parseInt(sizeValue[1]);
-								} else {
-									mo.width = asset.tileWidth;
-									mo.height = asset.tileHeight;
-								}
-								int ix = (mo.offsetX - 1) * asset.tileWidth;
-								int iy = (mo.offsetY - 1) * asset.tileHeight;
-								mo.imageBuffer = asset.imageBuffer.getSubimage(ix, iy, mo.width, mo.height);
+								mo = getImageBufferFromAsset(asset, mo, mo.offsetX, mo.offsetY);
 							}
+							if (mo.frameSet.size() > 0) {
+								mo = createAnimation(asset, mo);
+							}
+
 							asset.objects.put(emo.getKey(), mo);
 							break;
 						}
@@ -231,11 +247,37 @@ public class MapReader {
 		return mapLayer;
 	}
 
+	/**
+	 * Create frames from a list of offset(frameSet) and build list of frameImages
+	 * 
+	 * @param asset
+	 * @param mo
+	 */
+	private static MapObject createAnimation(MapObjectAsset asset, MapObject mo) {
+		mo.animation = new Animation();
+		for (String frame : mo.frameSet) {
+			String[] frameItem = frame.split(",");
+			int ox = Integer.parseInt(frameItem[0]);
+			int oy = Integer.parseInt(frameItem[1]);
+			int timeFrame = Integer.parseInt(frameItem[2]);
+			BufferedImage img = asset.imageBuffer.getSubimage((ox - 1) * mo.width, (oy - 1) * mo.height, mo.width,
+					mo.height);
+			mo.animation.frameImages.add(img);
+			mo.animation.frameTime.add(timeFrame);
+		}		
+		mo.animation.reset();
+		return mo;
+	}
+
+	public static MapObject getImageBufferFromAsset(MapObjectAsset asset, MapObject mo, int x, int y) {
+		int ix = (x - 1) * asset.tileWidth;
+		int iy = (y - 1) * asset.tileHeight;
+		mo.imageBuffer = asset.imageBuffer.getSubimage(ix, iy, mo.width, mo.height);
+		return mo;
+	}
+
 	private static GameObject populateGameObjectAttributes(MapObjectAsset moa, GameObject go, MapObject mo) {
-		if (mo.offset != null 
-				&& !mo.offset.equals("")
-			&& mo.size!=null 
-				&& !mo.size.equals("")) {
+		if (mo.offset != null && !mo.offset.equals("") && mo.size != null && !mo.size.equals("")) {
 			String[] values = mo.offset.split(",");
 			int ox = Integer.parseInt(values[1]);
 			int oy = Integer.parseInt(values[0]);

@@ -147,6 +147,7 @@ public class DemoState extends AbstractState implements State {
 					if (go.items.size() <= maxItems) {
 						go.items.add(mo);
 						map.tiles[x][y] = null;
+						log.debug("Collect {}:{} at {},{}", mo.type,mo.name, x, y);
 					}
 				}
 			}
@@ -163,9 +164,11 @@ public class DemoState extends AbstractState implements State {
 			private void collectCoin(MapLayer map, GameObject go, MapObject mo, int x, int y) {
 
 				if (mo.money > 0) {
-					go.attributes.put("coins", (double) (go.attributes.get("coins")) + mo.money);
+					double value = (double) (go.attributes.get("coins"));
+					go.attributes.put("coins", (double) mo.money + value);
 					map.tiles[x][y] = null;
 					soundSystem.play("coins", 1.0f);
+					log.debug("Collect {}:{} at {},{}", mo.type, mo.money, x, y);
 				}
 			}
 		});
@@ -180,15 +183,21 @@ public class DemoState extends AbstractState implements State {
 			// Add Score text on H.U.D. (fixed = true)
 
 			/*
-			 * TODO add score TextObject scoreObject = new TextObject(); scoreObject.name =
-			 * "score"; scoreObject.fixed = true; scoreObject.layer = 4;
-			 * scoreObject.foregroundColor = Color.WHITE; scoreObject.shadowColor =
-			 * Color.BLACK; scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-			 * scoreObject.setPosition((g.config.screenWidth / 6) * 5, 24);
-			 * addObject(scoreObject);
+			 * TODO add score
 			 */
+			TextObject scoreObject = new TextObject();
+			scoreObject.name = "score";
+			scoreObject.fixed = true;
+			scoreObject.layer = 0;
+			scoreObject.foregroundColor = Color.WHITE;
+			scoreObject.shadowColor = Color.BLACK;
+			scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+			scoreObject.setPosition(100, 100);
+			addObject(scoreObject);
+
+			GameObject player = objects.get("player");
 			// Create camera
-			Camera cam = new Camera("camera", mapLevel.player, 0.017f,
+			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
 			addObject(cam);
 		}
@@ -215,7 +224,7 @@ public class DemoState extends AbstractState implements State {
 			g.exitRequest = true;
 		}
 
-		mapLevel.player.setSpeed(0.0f, 0.0f);
+		player.setSpeed(0.0f, 0.0f);
 		if (player.action == GameAction.FALL) {
 			player.dx = 0.0f;
 			player.dy = 0.25f;
@@ -281,8 +290,10 @@ public class DemoState extends AbstractState implements State {
 	public void update(Game g, float elapsed) {
 
 		// TODO activate score TextObject update
-		// scoreObject.text = String.format("%05d", this.score);
-
+		TextObject s = (TextObject) objects.get("score");
+		if (s != null) {
+			s.text = String.format("%05d", this.score);
+		}
 		MapLayer frontLayer = mapLevel.layers.get("front");
 		// update all objects
 		for (GameObject go : objects.values()) {
@@ -299,9 +310,9 @@ public class DemoState extends AbstractState implements State {
 	}
 
 	@Override
-	public void render(Game g, Renderer r) {
+	public void render(Game g, Renderer r, double elapsed) {
 
-		g.renderer.render(g);
+		g.renderer.render(g,elapsed);
 	}
 
 	@Override

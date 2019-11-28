@@ -1,9 +1,12 @@
 package core.map;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import core.gfx.Animation;
 import core.object.BBox;
 import lombok.ToString;
 
@@ -26,6 +29,12 @@ public class MapObject {
 	public String size;
 	public int priority;
 	public int layer;
+
+	public MapObjectAsset asset;
+	
+	public Animation animation;
+
+	public List<String> frameSet = new ArrayList<>();
 
 	public int mapX, mapY;
 
