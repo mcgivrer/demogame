@@ -1,4 +1,6 @@
+@startuml
 Renderer-rendererSystem->Game
 InputHandler-inputHandler->Game
 ResourceManager-resourceManager->Game
 StateManager-sysMan->Game
+@enduml
