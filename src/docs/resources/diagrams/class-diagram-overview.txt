@@ -11,10 +11,59 @@ class Game{
  -dispose()
 
 }
+class GameObject{
+ -id:long
+ +name:String
+ +x:double
+ +y:double
+ +dx:double
+ +dy:double
+ +input():void
+ +render(Renderer r):void
+ +update(double elapsed):void
+}
+class AbstractState implements State{
+ +getName():String
+ +objects:Map<String,GameObject>
+}
+class SystemManager{
+ -systems:Map<Class<?>,System>
+}
+class SoundSystem implements System{}
+class Renderer implements System{
+  -renderingPipeline:List<GameObject>
+  -lights:List<Light>
+  -layers:List<Layer> 
+}
+class Layer{
+  -index:int
+  -objects:List<GameObject>
+}
+class Light extends GameObject {
+  -lightType:LightType
+  -target:GameObject
+}
+class Camera extends GameObject {
+  -tween:double
+  -target:GameObject
+}
+class TextObject extends GameObject {
+  -text:String
+}
+class InputHandler implements System{}
+class ResourceManager implements System{}
+class StateManager implements System{
+ - states:Map<String,State>
+ - current:State
+}
+SystemManager -- Game:sysMan
 Renderer -- Game:rendererSystem
 InputHandler -- Game:inputHandler
 ResourceManager -- Game:resourceManager
-StateManager -- Game:sysMan
-StateManager "1"--* AbstractState
+StateManager -- Game:stateManager
+SoundSystem -- Game:soundSystem
+SoundSystem -- SoundClip:sounds
+StateManager "1"--* AbstractState:states
 Game "1"--* GameObject :objects
+AbstractState "1"--* GameObject:objects
 @enduml
