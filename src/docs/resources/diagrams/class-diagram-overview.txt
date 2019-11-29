@@ -18,7 +18,7 @@ class GameObject{
  +y:double
  +dx:double
  +dy:double
- +animation:Animation
+ +animations:Map<String,Animation>
  +image:BufferedImage
  +input():void
  +render(Renderer r):void
@@ -74,4 +74,5 @@ SoundSystem -- SoundClip:sounds
 StateManager "1"--* AbstractState:states
 Game "1"--* GameObject :objects
 AbstractState "1"--* GameObject:objects
+GameObject "1"--* Animation:animations
 @enduml
