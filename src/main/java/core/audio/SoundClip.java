@@ -122,16 +122,9 @@ public class SoundClip {
         if (clip == null) {
             return;
         } else {
-            while (clip.isActive()) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                clip.flush();
-                clip.stop();
-            }
-            clip.setFramePosition(0);
+            clip.flush();
+            clip.stop();
+            clip.setMicrosecondPosition(0);
             clip.start();
         }
     }

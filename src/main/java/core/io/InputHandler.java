@@ -3,6 +3,7 @@ package core.io;
 import core.Game;
 import core.system.AbstractSystem;
 import core.system.System;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,6 +17,7 @@ import java.util.List;
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  * @since 2019
  */
+@Slf4j
 public class InputHandler extends AbstractSystem implements KeyListener, System {
 
     /**
@@ -106,6 +108,8 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         for (KeyListener kl : listeners) {
             kl.keyPressed(e);
         }
+        
+        log.debug("key {}:{} pressed",e.getKeyCode(),e.getKeyChar());
     }
 
     /**
@@ -124,6 +128,7 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         for (KeyListener kl : listeners) {
             kl.keyReleased(e);
         }
+        log.debug("key {}:{} released",e.getKeyCode(),e.getKeyChar());
     }
 
     /**

@@ -117,9 +117,6 @@ public class MapReader {
 		GameObject go = null;
 		go = generateGameObjectFromMapObject(mapLevel, ml, mo, x, y);
 		switch (mo.type) {
-		case "player":
-			mapLevel.player = go;
-			break;
 		case "enemy":
 			if (mapLevel.enemies == null) {
 				mapLevel.enemies = new ArrayList<>();

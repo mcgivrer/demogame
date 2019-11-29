@@ -112,7 +112,7 @@ public class Renderer extends AbstractSystem implements System {
     /**
      * Render all objects !
      */
-    public void render(Game dg,double elapsed) {
+    public void render(Game dg, double elapsed) {
         if (!renderingPause) {
             Graphics2D g = screenBuffer.createGraphics();
 
@@ -144,7 +144,7 @@ public class Renderer extends AbstractSystem implements System {
                                 g.fillRect(0, 0, (int) go.width, (int) go.height);
                             }
                             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            mapRenderer.render(dg, g, (MapLevel) go, camera,elapsed);
+                            mapRenderer.render(dg, g, (MapLevel) go, camera, elapsed);
 
                         } else if (go instanceof GameObject) {
 
@@ -267,7 +267,8 @@ public class Renderer extends AbstractSystem implements System {
             l.index = go.layer;
             if (go.fixed) {
                 l.fixed = true;
-            } ;
+            }
+            ;
             layers.put(go.layer, l);
         }
         l = layers.get(go.layer);

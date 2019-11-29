@@ -29,12 +29,11 @@ import java.awt.image.BufferedImage;
 /**
  * The <code>DemoState</code> is an implementation for a Game <code>State<code>
  * to demonstrate how to use this small framework to produce a PLatform 2D game.
- * 
+ *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
- * @since 2019
- * 
  * @see State
  * @see AbstractState
+ * @since 2019
  */
 @Slf4j
 public class DemoState extends AbstractState implements State {
@@ -50,6 +49,7 @@ public class DemoState extends AbstractState implements State {
 	private BufferedImage coinsImg;
 	private BufferedImage lifeImg;
 	private BufferedImage itemHolderImg;
+	private BufferedImage itemHolderSelectedImg;
 	private InputHandler inputHandler;
 	private SoundSystem soundSystem;
 
@@ -72,6 +72,8 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void load(Game g) {
+		g.config.attributes.put("sound_volume",0.8f);
+		g.config.attributes.put("music_volume",0.4f);
 
 		ResourceManager.clear();
 		ResourceManager.addListener(new ProgressListener() {
@@ -80,10 +82,15 @@ public class DemoState extends AbstractState implements State {
 				log.info("reading resources: {} : {}", value * 100.0f, path);
 			}
 		});
-		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav"
-				// , "/res/audio/musics/once-around-the-kingdom.mp3"
-		});
+		ResourceManager.add(new String[] { 
+				"/res/maps/map_2.json", 
+				"/res/assets/asset-2.json",
+				"/res/images/background-1.jpg", 
+				"/res/images/tileset-1.png", 
+				"/res/audio/sounds/collect-coin.wav",
+				"/res/audio/sounds/collect-item-1.wav", 
+				"/res/audio/sounds/collect-item-2.wav",
+				"/res/audio/musics/once-around-the-kingdom.mp3" });
 
 		objects.clear();
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
@@ -94,7 +101,8 @@ public class DemoState extends AbstractState implements State {
 		manaImg = sprites.getSubimage(0, 22, 41, 5);
 		lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
 		coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
-		itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
+		itemHolderSelectedImg = sprites.getSubimage((5 * 16)+2, 16, 18, 18);
+		itemHolderImg = sprites.getSubimage((6 * 16)+2, 16, 18, 18);
 	}
 
 	@Override
@@ -106,6 +114,8 @@ public class DemoState extends AbstractState implements State {
 		// load Sounds
 		soundSystem = g.sysMan.getSystem(SoundSystem.class);
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.wav");
+		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
+		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
 
 		soundSystem.setMute(false);
@@ -114,7 +124,7 @@ public class DemoState extends AbstractState implements State {
 		mapCollider.addListener(GameObject.class, new OnCollision() {
 			/**
 			 * Collision Listener
-			 * 
+			 *
 			 * @param e Collision Event to manage.
 			 */
 			public void collide(CollisionEvent e) {
@@ -134,7 +144,7 @@ public class DemoState extends AbstractState implements State {
 
 			/**
 			 * A GameObject <code>go</code> collects a MapObject <code>mo</code> item
-			 * 
+			 *
 			 * @param map the MapLayer where the GameObject is moving
 			 * @param go  the GameObject having collision
 			 * @param mo  the Item to be collected by the GameObject
@@ -147,14 +157,15 @@ public class DemoState extends AbstractState implements State {
 					if (go.items.size() <= maxItems) {
 						go.items.add(mo);
 						map.tiles[x][y] = null;
-						log.debug("Collect {}:{} at {},{}", mo.type,mo.name, x, y);
+						soundSystem.play("item-1", (float)game.config.attributes.get("sound_volume"));
+						log.debug("Collect {}:{} at {},{}", mo.type, mo.name, x, y);
 					}
 				}
 			}
 
 			/**
 			 * A GameObject <code>go</code> collect a MapObject <code>mo</code> as Coins.
-			 * 
+			 *
 			 * @param map the MapLayer where the GameObject is moving
 			 * @param go  the GameObject having collision
 			 * @param mo  the coins to be collected by the GameObject
@@ -167,7 +178,7 @@ public class DemoState extends AbstractState implements State {
 					double value = (double) (go.attributes.get("coins"));
 					go.attributes.put("coins", (double) mo.money + value);
 					map.tiles[x][y] = null;
-					soundSystem.play("coins", 1.0f);
+					soundSystem.play("coins", (float)game.config.attributes.get("sound_volume"));
 					log.debug("Collect {}:{} at {},{}", mo.type, mo.money, x, y);
 				}
 			}
@@ -185,7 +196,7 @@ public class DemoState extends AbstractState implements State {
 			/*
 			 * TODO add score
 			 */
-			TextObject scoreObject = new TextObject();
+			scoreObject = new TextObject();
 			scoreObject.name = "score";
 			scoreObject.fixed = true;
 			scoreObject.layer = 0;
@@ -207,7 +218,8 @@ public class DemoState extends AbstractState implements State {
 	public void onFocus(Game g) {
 		super.onFocus(g);
 		// start game music background
-		// soundSystem.loop("music", 0.4f);
+		soundSystem = g.sysMan.getSystem(SoundSystem.class);
+		soundSystem.loop("music", (float)g.config.attributes.get("music_volume"));
 	}
 
 	@Override
@@ -251,6 +263,24 @@ public class DemoState extends AbstractState implements State {
 			player.dx = 0.2f;
 			player.direction = 1;
 			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
+		}
+
+		int itemsNb = player.items.size();
+		if (inputHandler.keys[KeyEvent.VK_1] && itemsNb <= 1) {
+			player.attributes.put("selectedItem", 1.0);
+
+		}
+		if (inputHandler.keys[KeyEvent.VK_2] && itemsNb <= 2) {
+			player.attributes.put("selectedItem", 2.0);
+		}
+		if (inputHandler.keys[KeyEvent.VK_3] && itemsNb <= 3) {
+			player.attributes.put("selectedItem", 3.0);
+		}
+		if (inputHandler.keys[KeyEvent.VK_4] && itemsNb <= 4) {
+			player.attributes.put("selectedItem", 4.0);
+		}
+		if (inputHandler.keys[KeyEvent.VK_5] && itemsNb <= 5) {
+			player.attributes.put("selectedItem", 5.0);
 		}
 	}
 
@@ -312,7 +342,7 @@ public class DemoState extends AbstractState implements State {
 	@Override
 	public void render(Game g, Renderer r, double elapsed) {
 
-		g.renderer.render(g,elapsed);
+		g.renderer.render(g, elapsed);
 	}
 
 	@Override
@@ -321,6 +351,7 @@ public class DemoState extends AbstractState implements State {
 	}
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
+		GameObject player = objects.get("player");
 		// super.drawHUD(ga, r, g);
 
 		int offsetX = 24;
@@ -344,32 +375,37 @@ public class DemoState extends AbstractState implements State {
 		// draw Coins
 		g.drawImage(coinsImg, offsetX, offsetY, null);
 		g.setFont(infoFont);
-		double coins = (double) (mapLevel.player.attributes.get("coins"));
+		double coins = (double) (player.attributes.get("coins"));
 		r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK);
 
 		// draw Mana
 		float nrjRatio = (energyImg.getWidth() / 100.0f);
-		double nrj = nrjRatio * ((double) (mapLevel.player.attributes.get("energy")));
+		double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
 		g.drawImage(energyImg, offsetX + 24, offsetY - 8, (int) nrj, energyImg.getHeight(), null);
 
 		// draw Energy
 		float manaRatio = (manaImg.getWidth() / 100.0f);
-		double mana = manaRatio * ((double) (mapLevel.player.attributes.get("mana")));
+		double mana = manaRatio * ((double) (player.attributes.get("mana")));
 		g.drawImage(manaImg, offsetX + 24, offsetY + 2, (int) mana, manaImg.getHeight(), null);
 
 		// draw Items
-		double maxItems = (double) mapLevel.player.attributes.get("maxItems");
+		double maxItems = (double) player.attributes.get("maxItems");
+		double selectedItem = (double) player.attributes.get("selectedItem");
 		for (int itmNb = 1; itmNb <= maxItems; itmNb++) {
 
 			int posX = (int) (maxItems - itmNb) * (itemHolderImg.getWidth() - 1);
+			MapObject item = null;
+			if (player.items.size() > 0 && itmNb - 1 < player.items.size()) {
+				item = player.items.get(itmNb - 1);
+			}
+			BufferedImage holder = (((double)itmNb) == selectedItem && (item != null) ? itemHolderSelectedImg : itemHolderImg);
+			g.drawImage(holder, ga.config.screenWidth - offsetX - posX,
+					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(),
+					holder.getHeight(), null);
 
-			g.drawImage(itemHolderImg, ga.config.screenWidth - offsetX - posX,
-					ga.config.screenHeight - (itemHolderImg.getHeight() + 12), itemHolderImg.getWidth(),
-					itemHolderImg.getHeight(), null);
-
-			if (itmNb - 1 < mapLevel.player.items.size() && mapLevel.player.items.get(itmNb - 1) != null) {
-				r.renderMapObject(g, mapLevel.player.items.get(itmNb - 1), ga.config.screenWidth + 2 - offsetX - posX,
-						ga.config.screenHeight - (itemHolderImg.getHeight() + 12));
+			if (itmNb - 1 < player.items.size() && item != null) {
+				r.renderMapObject(g, item, ga.config.screenWidth + 1 - offsetX - posX,
+						ga.config.screenHeight - (holder.getHeight() + 12));
 			}
 		}
 	}

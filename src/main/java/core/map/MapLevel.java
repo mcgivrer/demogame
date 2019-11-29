@@ -31,8 +31,6 @@ public class MapLevel extends GameObject {
 	// name of the output level
 	public String nextLevel;
 
-	// the player
-	public GameObject player;
 	// the initial position of the GameObject player.
 	public float playerInitialX = 0;
 	public float playerInitialY = 0;
