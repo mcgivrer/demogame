@@ -121,7 +121,7 @@ public class Game {
 	/**
 	 * The famous java Execution entry point.
 	 *
-	 * @param argc
+	 * @param argc list of arguments from command lines
 	 */
 	public static void main(String[] argc) {
 		Game dg = new Game(argc);

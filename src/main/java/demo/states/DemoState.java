@@ -192,10 +192,6 @@ public class DemoState extends AbstractState implements State {
 			addObject(mapLevel);
 
 			// Add Score text on H.U.D. (fixed = true)
-
-			/*
-			 * TODO add score
-			 */
 			scoreObject = new TextObject();
 			scoreObject.name = "score";
 			scoreObject.fixed = true;
@@ -319,7 +315,6 @@ public class DemoState extends AbstractState implements State {
 	@Override
 	public void update(Game g, float elapsed) {
 
-		// TODO activate score TextObject update
 		TextObject s = (TextObject) objects.get("score");
 		if (s != null) {
 			s.text = String.format("%05d", this.score);
@@ -363,10 +358,10 @@ public class DemoState extends AbstractState implements State {
 		}
 
 		// draw Score
-		g.setFont(scoreFont);
-		r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY + 8,
-				Color.WHITE, Color.BLACK);
-
+		/* g.setFont(scoreFont);
+		 * r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY + 8,
+		 *		Color.WHITE, Color.BLACK);
+		 */
 		// draw Life
 		g.drawImage(lifeImg, offsetX, offsetY - 16, null);
 		g.setFont(infoFont);
