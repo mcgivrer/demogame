@@ -101,8 +101,8 @@ public class DemoState extends AbstractState implements State {
 		manaImg = sprites.getSubimage(0, 22, 41, 5);
 		lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
 		coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
-		itemHolderSelectedImg = sprites.getSubimage((5 * 16)+2, 16, 18, 18);
-		itemHolderImg = sprites.getSubimage((6 * 16)+2, 16, 18, 18);
+		itemHolderSelectedImg = sprites.getSubimage((4 * 16), 16, 18, 18);
+		itemHolderImg = sprites.getSubimage((5 * 16)+1, 16, 18, 18);
 	}
 
 	@Override
@@ -398,7 +398,13 @@ public class DemoState extends AbstractState implements State {
 			if (player.items.size() > 0 && itmNb - 1 < player.items.size()) {
 				item = player.items.get(itmNb - 1);
 			}
-			BufferedImage holder = (((double)itmNb) == selectedItem && (item != null) ? itemHolderSelectedImg : itemHolderImg);
+			BufferedImage holder;
+			if(((double)itmNb) == selectedItem && (item != null)){
+				holder = itemHolderSelectedImg ;
+				
+			}else{
+				holder = itemHolderImg;
+			}
 			g.drawImage(holder, ga.config.screenWidth - offsetX - posX,
 					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(),
 					holder.getHeight(), null);
