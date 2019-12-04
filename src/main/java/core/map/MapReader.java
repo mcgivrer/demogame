@@ -15,6 +15,7 @@ import core.gfx.Animation;
 import core.object.GameObject;
 import core.object.GameObjectType;
 import core.object.Light;
+import core.object.Light.LightType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -261,7 +262,7 @@ public class MapReader {
 					mo.height);
 			mo.animation.frameImages.add(img);
 			mo.animation.frameTime.add(timeFrame);
-		}		
+		}
 		mo.animation.reset();
 		return mo;
 	}
@@ -291,31 +292,43 @@ public class MapReader {
 		}
 		go.priority = mo.priority;
 		go.layer = mo.layer;
-
 		// the GameObject can collect items (or not !)
 		go.canCollect = mo.canCollect;
 
 		if (!mo.color.equals("")) {
-			switch (mo.color) {
-			case "RED":
-				go.foregroundColor = Color.RED;
-				break;
-			case "BLUE":
-				go.foregroundColor = Color.BLUE;
-				break;
-			case "GREEN":
-				go.foregroundColor = Color.GREEN;
-				break;
-			case "WHITE":
-				go.foregroundColor = Color.WHITE;
-				break;
-			case "BLACK":
-				go.foregroundColor = Color.BLACK;
-				break;
-			default:
-				go.foregroundColor = null;
-				break;
+			if (mo.color.startsWith("[")) {
+				String[] color = mo.color.substring(1, mo.color.length() - 1).split(",");
+				float[] v = new float[4];
+				int i = 0;
+				for (String c : color) {
+					v[i++] = Float.parseFloat(c);
+				}
+				go.foregroundColor = new Color(v[0], v[1], v[2], v[3]);
+			} else {
+				switch (mo.color) {
+				case "RED":
+					go.foregroundColor = Color.RED;
+					break;
+				case "YELLOW":
+					go.foregroundColor = Color.YELLOW;
+					break;
+				case "BLUE":
+					go.foregroundColor = Color.BLUE;
+					break;
+				case "GREEN":
+					go.foregroundColor = Color.GREEN;
+					break;
+				case "WHITE":
+					go.foregroundColor = Color.WHITE;
+					break;
+				case "BLACK":
+					go.foregroundColor = Color.BLACK;
+					break;
+				default:
+					go.foregroundColor = null;
+					break;
 
+				}
 			}
 		}
 		if (mo.name != null && !mo.name.equals("")) {
@@ -323,6 +336,31 @@ public class MapReader {
 		}
 		// initialize attributes
 		go.attributes.putAll(mo.attributes);
+		// Specific processing for Light object
+		if (go instanceof Light) {
+			Light l = (Light) go;
+			if (mo.lightType != null) {
+				l.lightType = mo.lightType;
+			}
+			switch (l.lightType) {
+			case LIGHT_CONE:
+				l.width = (double) mo.attributes.get("radius");
+				l.height = (double) mo.attributes.get("size");
+				break;
+			case LIGHT_SPHERE:
+				l.width = (double) mo.attributes.get("radius");
+				l.height = (double) mo.attributes.get("radius");
+				break;
+			case LIGHT_AMBIANT:
+				break;
+			}
+			l.intensity = (double) mo.attributes.get("intensity");
+			l.y += (3 * moa.tileHeight);
+			if (mo.attributes.containsKey("glittering")) {
+				l.glitterEffect = (double) mo.attributes.get("glittering");
+			}
+			return l;
+		}
 		return go;
 	}
 }

@@ -1,230 +1,244 @@
 {
-  "name": "Objects Set 1",
-  "image": "/res/images/tileset-1.png",
-  "tileWidth": 16,
-  "tileHeight": 16,
-  "objects": {
-    "E": {
-      "id": "E",
-      "type": "enemy",
-      "name": "enemy_#",
-      "clazz": "core.object.GameObject",
-      "image": "todo",
-      "offset": "6,1",
-      "size": "32,32",
-      "priority": 2,
-      "layer": 2,
-      "bbox": {
-        "top": 8.0,
-        "bottom": 0.0,
-        "left": 4.0,
-        "right": 4.0
-      },
-      "color": "RED",
-      "canCollect": false,
-      "attributes": {
-        "energy": 100.0,
-        "damage": 10.0,
-        "coins": 5
-      }
-    },
-    "P": {
-      "id": "P",
-      "type": "player",
-      "name": "player",
-      "clazz": "core.object.GameObject",
-      "image": "todo",
-      "offset": "4,1",
-      "size": "32,32",
-      "priority": 10,
-      "layer": 3,
-      "bbox": {
-        "top": 8.0,
-        "bottom": 0.0,
-        "left": 4.0,
-        "right": 4.0
-      },
-      "color": "BLUE",
-      "canCollect": true,
-      "attributes": {
-        "energy": 100.0,
-        "mana": 100.0,
-        "damage": 50.0,
-        "coins": 250,
-        "items": [
-          "sword-15",
-          "nrj+10"
-        ],
-        "maxItems": 3,
-        "selectedItem": 0
-      }
-    },
-    "L": {
-      "id": "L",
-      "type": "light",
-      "name": "light_#",
-      "clazz": "core.object.Light",
-      "lightType": "LIGHT_AMBIANT",
-      "priority": 10,
-      "layer": 3,
-      "color": "WHITE",
-      "attributes": {
-        "intensity": 0.9,
-        "size": 130
-      }
-    },
-    "1": {
-      "type": "item",
-      "name": "sword",
-      "id": "1",
-      "description": "sword-1",
-      "usage": "weapon",
-      "collectible": true,
-      "damage": 10.0,
-      "offset": "7,1"
-    },
-    "2": {
-      "type": "item",
-      "name": "boost-energy",
-      "id": "2",
-      "description": "nrj-10",
-      "usage": "health",
-      "collectible": true,
-      "energy": 10.0,
-      "offset": "4,1"
-    },
-    "3": {
-      "type": "item",
-      "name": "arc",
-      "id": "3",
-      "description": "arc-10",
-      "usage": "weapon",
-      "collectible": true,
-      "energy": 10.0,
-      "offset": "5,1"
-    },
-    "o": {
-      "type": "object",
-      "id": "o",
-      "collectible": true,
-      "money": 10,
-      "frameSet": [
-        "7,7,100",
-        "8,7,100",
-        "9,7,100",
-        "10,7,80",
-        "11,7,80",
-        "10,7,70",
-        "9,7,70",
-        "8,7,70"
-      ]
-    },
-    "O": {
-      "type": "object",
-      "id": "O",
-      "collectible": true,
-      "money": 100,
-      "frameSet": [
-        "7,6,120",
-        "8,6,120",
-        "9,6,120",
-        "10,6,120",
-        "11,6,120",
-        "10,6,120",
-        "9,6,120",
-        "8,6,120"
-      ]
-    },
-    ">": {
-      "type": "tile",
-      "id": ">",
-      "image": "pic-right.png",
-      "hit": true,
-      "damage": 10
-    },
-    "<": {
-      "type": "tile",
-      "id": "<",
-      "image": "pic-left.png",
-      "hit": true,
-      "damage": 10
-    },
-    "V": {
-      "type": "tile",
-      "id": "V",
-      "image": "pic-down.png",
-      "hit": true,
-      "damage": 10
-    },
-    "|": {
-      "type": "tile",
-      "id": "|",
-      "image": "pic-up.png",
-      "hit": true,
-      "damage": 10
-    },
-    "b": {
-      "type": "tile",
-      "id": "b",
-      "block": true,
-      "offset": "17,8"
-    },
-    "B": {
-      "type": "tile",
-      "id": "B",
-      "block": true,
-      "offset": "19,8"
-    },
-    "H": {
-      "type": "tile",
-      "id": "H",
-      "block": false,
-      "offset": "13,6",
-      "climbable": true
-    },
-    "h": {
-      "type": "tile",
-      "id": "h",
-      "block": false,
-      "offset": "19,5",
-      "climbable": true
-    },
-    "T": {
-      "type": "tile",
-      "id": "T",
-      "block": false,
-      "offset": "19,6"
-    },
-    "k": {
-      "type": "tile",
-      "id": "k",
-      "block": false,
-      "offset": "19,5"
-    },
-    "=": {
-      "type": "tile",
-      "id": "=",
-      "block": true,
-      "offset": "19,5"
-    },
-    "X": {
-      "type": "tile",
-      "id": "X",
-      "image": "door-level-out.png",
-      "levelOutput": true,
-      "nextLevel": "map_2"
-    },
-    "(": {
-      "type": "tile",
-      "id": "(",
-      "block": true,
-      "offset": "19,7"
-    },
-    ")": {
-      "type": "tile",
-      "id": "(",
-      "block": true,
-      "offset": "20,7"
-    }
-  }
+	"name": "Objects Set 1",
+	"image": "/res/images/tileset-1.png",
+	"tileWidth": 16,
+	"tileHeight": 16,
+	"objects": {
+		"E": {
+			"id": "E",
+			"type": "enemy",
+			"name": "enemy_#",
+			"clazz": "core.object.GameObject",
+			"image": "todo",
+			"offset": "6,1",
+			"size": "32,32",
+			"priority": 2,
+			"layer": 2,
+			"bbox": {
+				"top": 8.0,
+				"bottom": 0.0,
+				"left": 4.0,
+				"right": 4.0
+			},
+			"color": "RED",
+			"canCollect": false,
+			"attributes": {
+				"energy": 100.0,
+				"damage": 10.0,
+				"coins": 5
+			}
+		},
+		"P": {
+			"id": "P",
+			"type": "player",
+			"name": "player",
+			"clazz": "core.object.GameObject",
+			"image": "todo",
+			"offset": "4,1",
+			"size": "32,32",
+			"priority": 10,
+			"layer": 3,
+			"bbox": {
+				"top": 8.0,
+				"bottom": 0.0,
+				"left": 4.0,
+				"right": 4.0
+			},
+			"color": "BLUE",
+			"canCollect": true,
+			"attributes": {
+				"energy": 100.0,
+				"mana": 100.0,
+				"damage": 50.0,
+				"coins": 250,
+				"items": [
+					"sword-15",
+					"nrj+10"
+				],
+				"maxItems": 3,
+				"selectedItem": 0
+			}
+		},
+		"L": {
+			"id": "L",
+			"type": "light",
+			"name": "light_#",
+			"clazz": "core.object.Light",
+			"lightType": "LIGHT_AMBIANT",
+			"priority": 10,
+			"layer": 3,
+			"color": "[0.6,0.3,0.2,1.0]",
+			"attributes": {
+				"intensity": 0.2
+				}
+		},
+		"l": {
+			"id": "l",
+			"type": "light",
+			"name": "light_#",
+			"clazz": "core.object.Light",
+			"lightType": "LIGHT_SPHERE",
+			"priority": 10,
+			"layer": 4,
+			"color": "[0.9,0.9,0.3,1.0]",
+			"attributes": {
+				"intensity": 0.1,
+				"radius": 130,
+				"glittering":0.8
+			}
+		},
+		"1": {
+			"type": "item",
+			"name": "sword",
+			"id": "1",
+			"description": "sword-1",
+			"usage": "weapon",
+			"collectible": true,
+			"damage": 10.0,
+			"offset": "7,1"
+		},
+		"2": {
+			"type": "item",
+			"name": "boost-energy",
+			"id": "2",
+			"description": "nrj-10",
+			"usage": "health",
+			"collectible": true,
+			"energy": 10.0,
+			"offset": "4,1"
+		},
+		"3": {
+			"type": "item",
+			"name": "arc",
+			"id": "3",
+			"description": "arc-10",
+			"usage": "weapon",
+			"collectible": true,
+			"energy": 10.0,
+			"offset": "5,1"
+		},
+		"o": {
+			"type": "object",
+			"id": "o",
+			"collectible": true,
+			"money": 10,
+			"frameSet": [
+				"7,7,100",
+				"8,7,100",
+				"9,7,100",
+				"10,7,80",
+				"11,7,80",
+				"10,7,70",
+				"9,7,70",
+				"8,7,70"
+			]
+		},
+		"O": {
+			"type": "object",
+			"id": "O",
+			"collectible": true,
+			"money": 100,
+			"frameSet": [
+				"7,6,120",
+				"8,6,120",
+				"9,6,120",
+				"10,6,120",
+				"11,6,120",
+				"10,6,120",
+				"9,6,120",
+				"8,6,120"
+			]
+		},
+		">": {
+			"type": "tile",
+			"id": ">",
+			"image": "pic-right.png",
+			"hit": true,
+			"damage": 10
+		},
+		"<": {
+			"type": "tile",
+			"id": "<",
+			"image": "pic-left.png",
+			"hit": true,
+			"damage": 10
+		},
+		"V": {
+			"type": "tile",
+			"id": "V",
+			"image": "pic-down.png",
+			"hit": true,
+			"damage": 10
+		},
+		"|": {
+			"type": "tile",
+			"id": "|",
+			"image": "pic-up.png",
+			"hit": true,
+			"damage": 10
+		},
+		"b": {
+			"type": "tile",
+			"id": "b",
+			"block": true,
+			"offset": "17,8"
+		},
+		"B": {
+			"type": "tile",
+			"id": "B",
+			"block": true,
+			"offset": "19,8"
+		},
+		"H": {
+			"type": "tile",
+			"id": "H",
+			"block": false,
+			"offset": "13,6",
+			"climbable": true
+		},
+		"h": {
+			"type": "tile",
+			"id": "h",
+			"block": false,
+			"offset": "19,5",
+			"climbable": true
+		},
+		"T": {
+			"type": "tile",
+			"id": "T",
+			"block": false,
+			"offset": "19,6"
+		},
+		"k": {
+			"type": "tile",
+			"id": "k",
+			"block": false,
+			"offset": "19,5"
+		},
+		"=": {
+			"type": "tile",
+			"id": "=",
+			"block": true,
+			"offset": "19,5"
+		},
+		"X": {
+			"type": "tile",
+			"id": "X",
+			"image": "door-level-out.png",
+			"levelOutput": true,
+			"nextLevel": "map_2"
+		},
+		"(": {
+			"type": "tile",
+			"id": "(",
+			"block": true,
+			"offset": "19,7"
+		},
+		")": {
+			"type": "tile",
+			"id": "(",
+			"block": true,
+			"offset": "20,7"
+		}
+	}
 }
