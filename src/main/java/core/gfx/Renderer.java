@@ -1,30 +1,5 @@
 package core.gfx;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-
 import core.Config;
 import core.Game;
 import core.ResourceManager;
@@ -38,6 +13,20 @@ import core.object.Light;
 import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.*;
 
 /**
  * This Renderer class is the main rendering component for all objects managed
@@ -141,51 +130,14 @@ public class Renderer extends AbstractSystem implements System {
 				if (camera != null && !layer.fixed) {
 					g.translate(-camera.x, -camera.y);
 				}
-
-				// draw all objects
-				for (GameObject go : layer.objects) {
-					if (go.enable) {
-						g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-						if (go instanceof MapLevel) {
-
-							// if MapLevel, delegates rendering operation to the MapRenderer.
-							if (dg.config.debug > 2) {
-								g.setColor(Color.BLUE);
-								g.fillRect(0, 0, (int) go.width, (int) go.height);
-							}
-							
-							mapRenderer.render(dg, g, (MapLevel) go, camera, elapsed);
-
-						} else if (go instanceof GameObject) {
-
-							if (dg.config.debug > 2) {
-								DebugInfo.displayCollisionTest(g, go);
-								DebugInfo.display(g, go);
-							}
-							// if standard GameObject, render with the embedded render method.
-							go.render(dg, g);
-						}
-					}
-				}
+				drawObjects(dg, elapsed, g, camera, layer);
 
 				// if a camera is set, use it.
 				if (camera != null && !layer.fixed) {
 					g.translate(camera.x, camera.y);
 				}
 			}
-
-			// rendering light
-			Graphics2D lg = (Graphics2D) lightBuffer.getGraphics();
-			lg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			lg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-			// Clear Light buffer
-			lg.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
-
-			lg.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
-			// draw all Lights
-			for (Light l : lights) {
-				l.render(dg, lg);
-			}
+			Graphics2D lg = drawLights(dg);
 
 			// draw HUD
 			dg.stateManager.getCurrent().drawHUD(dg, this, g);
@@ -196,6 +148,50 @@ public class Renderer extends AbstractSystem implements System {
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg);
 		}
+	}
+
+	private void drawObjects(Game dg, double elapsed, Graphics2D g, Camera camera, Layer layer) {
+		// draw all objects
+		for (GameObject go : layer.objects) {
+			if (go.enable) {
+				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				if (go instanceof MapLevel) {
+
+					// if MapLevel, delegates rendering operation to the MapRenderer.
+					if (dg.config.debug > 2) {
+						g.setColor(Color.BLUE);
+						g.fillRect(0, 0, (int) go.width, (int) go.height);
+					}
+
+					mapRenderer.render(dg, g, (MapLevel) go, camera, elapsed);
+
+				} else if (go instanceof GameObject) {
+
+					if (dg.config.debug > 2) {
+						DebugInfo.displayCollisionTest(g, go);
+						DebugInfo.display(g, go);
+					}
+					// if standard GameObject, render with the embedded render method.
+					go.render(dg, g);
+				}
+			}
+		}
+	}
+
+	private Graphics2D drawLights(Game dg) {
+		// rendering light
+		Graphics2D lg = (Graphics2D) lightBuffer.getGraphics();
+		lg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		lg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+		// Clear Light buffer
+		lg.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+
+		lg.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
+		// draw all Lights
+		for (Light l : lights) {
+			l.render(dg, lg);
+		}
+		return lg;
 	}
 
 	/**
