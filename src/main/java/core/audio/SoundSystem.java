@@ -14,6 +14,7 @@ import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
@@ -88,7 +89,7 @@ public class SoundSystem extends AbstractSystem implements System {
      * @return
      */
     public String add(String code, SoundClip sc) {
-        if (sc != null) {
+        if (sc != null && !mute) {
             soundBank.put(code, sc);
             log.debug("Load sound {} to Sound Bank", sc.getCode(), code);
         }
@@ -202,6 +203,11 @@ public class SoundSystem extends AbstractSystem implements System {
         this.game = game;
         soundsStack.setSize(MAX_SOUNDS_IN_STACK);
         log.info("Initialize SoundControl with {} stack places", MAX_SOUNDS_IN_STACK);
+        Type[] supportedFiletypes = AudioSystem.getAudioFileTypes();
+        for (Type t : supportedFiletypes) {
+            log.info("supported file format '{}'", t);
+        }
+        this.mute = game.config.mute;
         Mixer.Info[] infos = AudioSystem.getMixerInfo();
         for (Info info : infos) {
             Gson gson = new Gson();

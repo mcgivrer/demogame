@@ -1,5 +1,7 @@
 package core;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import java.util.Map;
  *
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  */
+@Slf4j
 public class Config {
 	public int screenWidth;
 	public int screenHeight;
@@ -27,6 +30,7 @@ public class Config {
 	public String title;
 	public int debug;
 	public String statesPath;
+	public boolean mute;
 
 	public Map<String, Object> attributes = new HashMap<>();
 
@@ -41,6 +45,7 @@ public class Config {
 		this.fps = 30;
 		this.debug = 0;
 		this.statesPath = "/res/game.json";
+		this.mute = false;
 	}
 
 	/**
@@ -63,32 +68,48 @@ public class Config {
 			System.out.println(String.format("arg: %s", arg));
 			String[] parts = arg.split("=");
 			switch (parts[0]) {
-			case "f":
-			case "fps":
-				config.fps = Integer.parseInt(parts[1]);
-				break;
-			case "t":
-			case "title":
-				config.title = parts[1];
-				break;
-			case "h":
-			case "height":
-				config.screenHeight = Integer.parseInt(parts[1]);
-				break;
-			case "w":
-			case "width":
-				config.screenWidth = Integer.parseInt(parts[1]);
-				break;
-			case "s":
-			case "scale":
-				config.screenScale = Float.parseFloat(parts[1]);
-				break;
-			case "d":
-			case "debug":
-				config.debug = Integer.parseInt(parts[1]);
-			default:
-				System.out.println(String.format("Unknown arguments '%s'", arg));
-				break;
+				case "f":
+				case "fps":
+					config.fps = Integer.parseInt(parts[1]);
+					log.debug("fps request:{}", config.fps);
+
+					break;
+				case "t":
+				case "title":
+					config.title = parts[1];
+					log.debug("window title:{}", config.title);
+
+					break;
+				case "h":
+				case "height":
+					config.screenHeight = Integer.parseInt(parts[1]);
+					log.debug("Screen height:{}", config.screenHeight);
+
+					break;
+				case "w":
+				case "width":
+					config.screenWidth = Integer.parseInt(parts[1]);
+					log.debug("Screen width:{}", config.screenWidth);
+
+					break;
+				case "s":
+				case "scale":
+					config.screenScale = Float.parseFloat(parts[1]);
+					log.debug("screen scale:{}", config.screenScale);
+					break;
+				case "d":
+				case "debug":
+					config.debug = Integer.parseInt(parts[1]);
+					log.debug("debug mode:{}", config.debug);
+					break;
+				case "m":
+				case "mute":
+					config.mute = Boolean.parseBoolean(parts[1]);
+					log.debug("sound mute:{}", config.mute);
+					break;
+				default:
+					System.out.println(String.format("Unknown arguments '%s'", arg));
+					break;
 			}
 		}
 		return config;

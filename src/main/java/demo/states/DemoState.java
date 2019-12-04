@@ -1,13 +1,5 @@
 package demo.states;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-
 import core.Game;
 import core.ProgressListener;
 import core.ResourceManager;
@@ -28,6 +20,11 @@ import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 /**
  * The <code>DemoState</code> is an implementation for a Game <code>State<code>
@@ -86,10 +83,15 @@ public class DemoState extends AbstractState implements State {
 				log.info("reading resources: {} : {}", value * 100.0f, path);
 			}
 		});
-		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav",
-				"/res/audio/sounds/collect-item-1.wav", "/res/audio/sounds/collect-item-2.wav",
-				"/res/audio/musics/once-around-the-kingdom.mp3" });
+		ResourceManager.add(new String[]{
+				"/res/maps/map_2.json",
+				"/res/assets/asset-2.json",
+				"/res/images/background-1.jpg",
+				"/res/images/tileset-1.png",
+				"/res/audio/sounds/collect-coin.wav",
+				"/res/audio/sounds/collect-item-1.wav",
+				"/res/audio/sounds/collect-item-2.wav",
+				"/res/audio/musics/once-around-the-kingdom.mp3"});
 
 		objects.clear();
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
