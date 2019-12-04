@@ -1,5 +1,13 @@
 package demo.states;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+
 import core.Game;
 import core.ProgressListener;
 import core.ResourceManager;
@@ -21,14 +29,10 @@ import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-
 /**
  * The <code>DemoState</code> is an implementation for a Game <code>State<code>
- * to demonstrate how to use this small framework to produce a PLatform 2D game.
+ * to demonstrate how to use this small framework to produce a PLatform 2D game
+ * .
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  * @see State
@@ -72,8 +76,8 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void load(Game g) {
-		g.config.attributes.put("sound_volume",0.8f);
-		g.config.attributes.put("music_volume",0.4f);
+		g.config.attributes.put("sound_volume", 0.8f);
+		g.config.attributes.put("music_volume", 0.4f);
 
 		ResourceManager.clear();
 		ResourceManager.addListener(new ProgressListener() {
@@ -82,14 +86,9 @@ public class DemoState extends AbstractState implements State {
 				log.info("reading resources: {} : {}", value * 100.0f, path);
 			}
 		});
-		ResourceManager.add(new String[] { 
-				"/res/maps/map_2.json", 
-				"/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", 
-				"/res/images/tileset-1.png", 
-				"/res/audio/sounds/collect-coin.wav",
-				"/res/audio/sounds/collect-item-1.wav", 
-				"/res/audio/sounds/collect-item-2.wav",
+		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
+				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav",
+				"/res/audio/sounds/collect-item-1.wav", "/res/audio/sounds/collect-item-2.wav",
 				"/res/audio/musics/once-around-the-kingdom.mp3" });
 
 		objects.clear();
@@ -101,8 +100,8 @@ public class DemoState extends AbstractState implements State {
 		manaImg = sprites.getSubimage(0, 22, 41, 5);
 		lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
 		coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
-		itemHolderSelectedImg = sprites.getSubimage((5 * 16)+2, 16, 18, 18);
-		itemHolderImg = sprites.getSubimage((6 * 16)+2, 16, 18, 18);
+		itemHolderSelectedImg = sprites.getSubimage((4 * 16), 16, 18, 18);
+		itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
 	}
 
 	@Override
@@ -157,7 +156,7 @@ public class DemoState extends AbstractState implements State {
 					if (go.items.size() <= maxItems) {
 						go.items.add(mo);
 						map.tiles[x][y] = null;
-						soundSystem.play("item-1", (float)game.config.attributes.get("sound_volume"));
+						soundSystem.play("item-1", (float) game.config.attributes.get("sound_volume"));
 						log.debug("Collect {}:{} at {},{}", mo.type, mo.name, x, y);
 					}
 				}
@@ -178,7 +177,7 @@ public class DemoState extends AbstractState implements State {
 					double value = (double) (go.attributes.get("coins"));
 					go.attributes.put("coins", (double) mo.money + value);
 					map.tiles[x][y] = null;
-					soundSystem.play("coins", (float)game.config.attributes.get("sound_volume"));
+					soundSystem.play("coins", (float) game.config.attributes.get("sound_volume"));
 					log.debug("Collect {}:{} at {},{}", mo.type, mo.money, x, y);
 				}
 			}
@@ -207,6 +206,7 @@ public class DemoState extends AbstractState implements State {
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
 			addObject(cam);
+
 		}
 	}
 
@@ -215,7 +215,7 @@ public class DemoState extends AbstractState implements State {
 		super.onFocus(g);
 		// start game music background
 		soundSystem = g.sysMan.getSystem(SoundSystem.class);
-		soundSystem.loop("music", (float)g.config.attributes.get("music_volume"));
+		soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 	}
 
 	@Override
@@ -393,10 +393,15 @@ public class DemoState extends AbstractState implements State {
 			if (player.items.size() > 0 && itmNb - 1 < player.items.size()) {
 				item = player.items.get(itmNb - 1);
 			}
-			BufferedImage holder = (((double)itmNb) == selectedItem && (item != null) ? itemHolderSelectedImg : itemHolderImg);
+			BufferedImage holder;
+			if (((double) itmNb) == selectedItem && (item != null)) {
+				holder = itemHolderSelectedImg;
+
+			} else {
+				holder = itemHolderImg;
+			}
 			g.drawImage(holder, ga.config.screenWidth - offsetX - posX,
-					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(),
-					holder.getHeight(), null);
+					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(), holder.getHeight(), null);
 
 			if (itmNb - 1 < player.items.size() && item != null) {
 				r.renderMapObject(g, item, ga.config.screenWidth + 1 - offsetX - posX,

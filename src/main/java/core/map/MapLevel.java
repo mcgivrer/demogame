@@ -32,8 +32,8 @@ public class MapLevel extends GameObject {
 	public String nextLevel;
 
 	// the initial position of the GameObject player.
-	public float playerInitialX = 0;
-	public float playerInitialY = 0;
+	public double playerInitialX = 0;
+	public double playerInitialY = 0;
 
 	// enemies GameObject in the level.
 	public List<GameObject> enemies = new ArrayList<>();

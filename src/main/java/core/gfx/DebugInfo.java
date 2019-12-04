@@ -30,8 +30,8 @@ public class DebugInfo {
         int maxWidth = 60;
         int maxLinePerColumn = 4;
         int fontHeight = fm.getHeight();
-        float offsetX = go.x + go.width + 2;
-        float offsetY = go.y;
+        double offsetX = go.x + go.width + 2;
+        double offsetY = go.y;
 
         java.util.List<String> debugInfo = prepareDebugInfo(go);
         int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
@@ -67,7 +67,7 @@ public class DebugInfo {
 
     private static void drawAttributesText(
             Graphics2D g, List<String> debugInfo,
-            float offsetX, float offsetY,
+            double offsetX, double offsetY,
             int maxWidth, int maxLinePerColumn,
             int fontHeight,
             Color textColor) {
@@ -75,8 +75,8 @@ public class DebugInfo {
         int x = 0, y = 0;
         for (String line : debugInfo) {
             g.drawString(String.format("%s", line),
-                    (x + offsetX),
-                    (y * (fontHeight + 2)) + offsetY + 4);
+                    (int)(x + offsetX),
+                    (int)((y * (fontHeight + 2)) + offsetY + 4));
             y += 1;
             if (y > maxLinePerColumn) {
                 y = 0;
@@ -87,7 +87,7 @@ public class DebugInfo {
 
     private static void drawBackgroundPanel(
             Graphics2D g,
-            float offsetX, float offsetY,
+            double offsetX, double offsetY,
             int width, int height,
             Color borderColor, Color backgroundColor) {
         g.setColor(backgroundColor);

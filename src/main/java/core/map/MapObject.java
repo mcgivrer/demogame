@@ -27,12 +27,16 @@ public class MapObject {
     public String clazz;
     public String color;
 
-    public LightType lightType;
     public String offset;
     public String size;
     public int priority;
     public int layer;
 
+    public LightType lightType;
+    public double intensity;
+    public double radius;
+
+    
     public MapObjectAsset asset;
 
     public Animation animation;
