@@ -1,18 +1,20 @@
 package core.state;
 
-import core.Game;
-import core.gfx.Renderer;
-import core.object.Camera;
-import core.object.GameObject;
-import lombok.extern.slf4j.Slf4j;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import core.Game;
+import core.audio.SoundSystem;
+import core.gfx.Renderer;
+import core.io.InputHandler;
+import core.object.Camera;
+import core.object.GameObject;
+import core.object.ObjectManager;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * the AbstractState is the default implementation for a State interface. It
@@ -32,9 +34,9 @@ public abstract class AbstractState implements State, KeyListener {
 	protected String name;
 	// a State must have a Camera.
 	public Camera camera;
-	// all objects to be managed and rendered by this state.
-	public Map<String, GameObject> objects = new ConcurrentHashMap<>();
-
+	public ObjectManager objectManager;
+	protected  InputHandler inputHandler;
+	protected  SoundSystem soundSystem;
 	/**
 	 * the default constructor.
 	 */
@@ -59,8 +61,14 @@ public abstract class AbstractState implements State, KeyListener {
 	@Override
 	public abstract void input(Game g);
 
-	@Override
-	public abstract void initialize(Game g);
+	public void initialize(Game g) {
+		objectManager = g.sysMan.getSystem(ObjectManager.class);
+		// prepare user input handler
+		inputHandler = g.sysMan.getSystem(InputHandler.class);
+		// load Sounds
+		soundSystem = g.sysMan.getSystem(SoundSystem.class);
+
+	};
 
 	@Override
 	public abstract void load(Game g);
@@ -92,58 +100,17 @@ public abstract class AbstractState implements State, KeyListener {
 	public void addObject(GameObject go) {
 		if (go instanceof Camera) {
 			this.camera = (Camera) go;
-		} else if (objects != null && !objects.containsKey(go.name)) {
-			objects.put(go.name, go);
+		}else {
+			objectManager.add(go);
 			game.renderer.add(go);
 			if (!go.child.isEmpty()) {
-				objects.putAll(go.child);
+				objectManager.putAll(go.child);
 				game.renderer.addAll(go.child);
 			}
 
 		}
 	}
 
-	/**
-	 * Add a bunch of object to the game !
-	 *
-	 * @param objects the list of core.object.GameObject to be added to the
-	 *                core.Game#objects list.
-	 */
-	public void addAllObject(Collection<GameObject> objects) {
-		for (GameObject o : objects) {
-			addObject(o);
-		}
-	}
-
-	public void removeObject(GameObject go) {
-		objects.remove(go.name);
-		game.renderer.remove(go);
-	}
-
-	public void removeObject(String name) {
-		if (objects.containsKey(name)) {
-			GameObject go = objects.get(name);
-			removeObject(go);
-		}
-	}
-
-	public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
-		game.renderer.removeAll(objectsToBeRemoved);
-		objects.values().removeAll(objectsToBeRemoved);
-	}
-
-	public void removeFilteredObjects(String nameFilter) {
-		List<GameObject> toBeRemoved = new ArrayList<>();
-		for (GameObject go : objects.values()) {
-			if (go.name.contains(nameFilter)) {
-				toBeRemoved.add(go);
-			}
-		}
-		if (!toBeRemoved.isEmpty()) {
-			removeAllObjects(toBeRemoved);
-			toBeRemoved.clear();
-		}
-	}
 
 	/**
 	 * return the current active camera.
@@ -154,14 +121,6 @@ public abstract class AbstractState implements State, KeyListener {
 		return camera;
 	}
 
-	/**
-	 * return all the objects of the state.
-	 *
-	 * @return
-	 */
-	public Map<String, GameObject> getObjects() {
-		return objects;
-	}
 
 	/**
 	 * Define the parent Game.

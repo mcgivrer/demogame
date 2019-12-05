@@ -35,9 +35,6 @@ public class MapLevel extends GameObject {
 	public double playerInitialX = 0;
 	public double playerInitialY = 0;
 
-	// enemies GameObject in the level.
-	public List<GameObject> enemies = new ArrayList<>();
-
 	// Lights in the level.
 	public List<Light> lights = new ArrayList<>();
 

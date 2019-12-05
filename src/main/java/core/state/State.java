@@ -51,19 +51,7 @@ public interface State {
 
     Camera getActiveCamera();
 
-    public Map<String, GameObject> getObjects();
-
     void drawHUD(Game ga, Renderer r, Graphics2D g);
-
-    void addObject(GameObject go);
-
-    void addAllObject(Collection<GameObject> objects);
-
-    void removeObject(GameObject go);
-
-    void removeObject(String name);
-
-    void removeFilteredObjects(String nameFilter);
 
     void setGame(Game g);
 

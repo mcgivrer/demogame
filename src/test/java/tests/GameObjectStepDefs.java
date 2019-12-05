@@ -1,13 +1,14 @@
 package tests;
 
+import static org.junit.Assert.assertTrue;
+
 import core.Game;
 import core.object.GameObject;
+import core.object.ObjectManager;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
-import static org.junit.Assert.assertTrue;
 
 public class GameObjectStepDefs {
 
@@ -22,27 +23,27 @@ public class GameObjectStepDefs {
     @When("^I Add a new GameObject named \"([^\"]*)\" at \\((-?\\d+),(-?\\d+)\\) with size \\((-?\\d+),(-?\\d+)\\)$")
     public void iAddANewGameObjectNamedAt(String name, int x, int y, int width, int height) throws Throwable {
         GameObject go = new GameObject(name, x, y, width, height);
-        dg.stateManager.getCurrent().addObject(go);
+        dg.sysMan.getSystem(ObjectManager.class).add(go);
     }
 
     @Then("^the GameObject \"([^\"]*)\" exists in the DemoGame objects map\\.$")
     public void theGameObjectExistsInTheDemoGameObjectsMap(String name) throws Throwable {
-        assertTrue("", dg.stateManager.getCurrent().getObjects().containsKey(name));
+        assertTrue("", dg.sysMan.getSystem(ObjectManager.class).contains(name));
     }
 
     @Then("^the GameObject \"([^\"]*)\" does not exist in the DemoGame objects map\\.$")
     public void theGameObjectDoesNotExistInTheDemoGameObjectsMap(String name) throws Throwable {
-        assertTrue("", !dg.stateManager.getCurrent().getObjects().containsKey(name));
+        assertTrue("", !dg.sysMan.getSystem(ObjectManager.class).contains(name));
     }
 
     @And("^I Remove the GameObject named \"([^\"]*)\"$")
     public void iRemoveTheGameObjectNamed(String name) throws Throwable {
-        dg.stateManager.getCurrent().removeObject(name);
+    	dg.sysMan.getSystem(ObjectManager.class).removeObject(name);
     }
 
     @When("^I removed all objects based name \"([^\"]*)\"$")
     public void iRemovedAllObjectsBasedName(String filteredName) throws Throwable {
-        dg.stateManager.getCurrent().removeFilteredObjects(filteredName);
+    	dg.sysMan.getSystem(ObjectManager.class).removeFilteredObjects(filteredName);
     }
 
 }
