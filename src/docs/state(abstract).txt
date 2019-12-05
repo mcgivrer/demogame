@@ -1,0 +1,55 @@
+public abstract class AbstractState implements State, KeyListener {
+
+	/*---- Attributes for a State ----*/
+	protected Game game;
+	protected String name;
+	public Map<String, GameObject> objects = new ConcurrentHashMap<>();
+
+	public AbstractState() {...}
+	public AbstractState(Game g) {...}
+
+
+	/*---- State Lifecycle management ----*/
+	@Override
+	public abstract void initialize(Game g);
+	@Override
+	public abstract void load(Game g);
+	@Override
+	public void activate(Game g) {...}
+	@Override
+	public void onFocus(Game g) {...}
+	@Override
+	public void lostFocus(Game g) {...}
+
+	/*---- Processing state game ----*/
+	@Override
+	public abstract void input(Game g);
+	@Override
+	public abstract void update(Game g, float elapsed);
+	@Override
+	public abstract void render(Game g, Renderer r);
+
+
+	/*---- Objects management ----*/
+	public void addObject(GameObject go) {...}
+	public void addAllObject(Collection<GameObject> objects) {...}
+
+	public void removeObject(GameObject go) {...}
+
+	public void removeObject(String name) {...}
+
+	public void removeAllObjects(List<GameObject> objectsToBeRemoved) {...}
+
+	public void removeFilteredObjects(String nameFilter) {...}
+	public Camera getActiveCamera() {...}
+	public Map<String, GameObject> getObjects() {...}
+
+    /*---- KeyListener implementation ----*/
+	@Override
+	public void keyTyped(KeyEvent e) {...}
+	@Override
+	public void keyPressed(KeyEvent e) {...}
+	@Override
+	public void	keyReleased(KeyEvent e) {...}
+
+}

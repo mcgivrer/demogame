@@ -89,6 +89,8 @@ public class DemoState extends AbstractState implements State {
 				"/res/audio/musics/once-around-the-kingdom.mp3" });
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
 
+		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
+		
 		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
 
 		energyImg = sprites.getSubimage(0, 0, 41, 9);
@@ -185,18 +187,12 @@ public class DemoState extends AbstractState implements State {
 			addObject(mapLevel);
 
 			// Add Score text on H.U.D. (fixed = true)
-
-			/*
-			 * TODO add score
-			 */
-			scoreObject = new TextObject();
-			scoreObject.name = "score";
-			scoreObject.fixed = true;
-			scoreObject.layer = 0;
-			scoreObject.foregroundColor = Color.WHITE;
-			scoreObject.shadowColor = Color.BLACK;
-			scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-			scoreObject.setPosition(100, 100);
+			scoreObject = new TextObject("name", g.config.screenWidth - 100, (int) 32,
+					Color.WHITE,
+					Color.BLACK,
+					new Color(0.1f, 0.1f, 0.1f, 0.8f),
+					scoreFont.deriveFont(24.0f), true, 5);
+			scoreObject.attributes.put("text", "00000");
 			addObject(scoreObject);
 
 			GameObject player = objectManager.get("player");
@@ -411,3 +407,4 @@ public class DemoState extends AbstractState implements State {
 	}
 
 }
+

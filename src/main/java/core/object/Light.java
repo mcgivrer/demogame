@@ -2,32 +2,26 @@
  * SnapGames
  * 
  * Game Development Java
- * 
+ *
  * DemoGame
- * 
+ *
  * @year 2019
  */
 package core.object;
-
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.RadialGradientPaint;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 
 import core.Game;
 import lombok.Data;
 import lombok.ToString;
 
+import java.awt.*;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+
 /**
  * Light to illuminate the world !
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
- *
  */
 @Data
 @ToString
@@ -37,26 +31,26 @@ public class Light extends GameObject {
 		LIGHT_CONE, LIGHT_SPHERE, LIGHT_AMBIANT
 	}
 
-	public LightType lightType;
-	public GameObject target;
-	public double glitterEffect = 1.0;
+    public LightType lightType;
+    public GameObject target;
+    public double glitterEffect = 1.0;
 
-	public double intensity;
-	public float[] dist = { 0.0f, 0.75f, 1.0f };
-	public Color[] colors;
+    public double intensity;
+    public float[] dist = {0.0f, 0.75f, 1.0f};
+    public Color[] colors;
 
-	RadialGradientPaint rgp;
+    public RadialGradientPaint rgp;
 
-	/**
-	 * 
-	 */
-	public Light() {
+    /**
+     *
+     */
+    public Light() {
 
-	}
+    }
 
-	/**
-	 * 
-	 * @param name
+    /**
+     *
+     * @param name
 	 * @param x
 	 * @param y
 	 * @param radius

@@ -30,3 +30,5 @@ hs_err_pid*
 .classpath
 .project
 target/
+/stale_outputs_checked
+/DemoGame.iml
