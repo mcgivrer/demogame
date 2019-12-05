@@ -3,13 +3,13 @@ package core.gfx;
 import core.Config;
 import core.Game;
 import core.ResourceManager;
-import core.collision.MapTileCollision;
 import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
+import core.object.Light;
 import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,10 +41,35 @@ import java.util.*;
 @Slf4j
 public class Renderer extends AbstractSystem implements System {
 
+    /**
+     * Make a color brighten.
+     *
+     * @param color    Color to make brighten.
+     * @param fraction Darkness fraction.
+     * @return Lighter color.
+     */
+    public static Color brighten(Color color, double fraction) {
+
+        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+        int alpha = color.getAlpha();
+
+        return new Color(red, green, blue, alpha);
+
+    }
+
     private static int screenShotIndex = 0;
     public BufferedImage screenBuffer;
+    public BufferedImage lightBuffer;
     private JFrame jf;
+
+    private Map<Integer, Layer> layers = new HashMap<>();
     private List<GameObject> renderingObjectPipeline = new ArrayList<>();
+
+    private List<Light> lights = new ArrayList<>();
+
     private MapRenderer mapRenderer = new MapRenderer();
     private boolean renderingPause = false;
 
@@ -54,6 +82,7 @@ public class Renderer extends AbstractSystem implements System {
         super(dg);
         jf = createWindow(dg);
         screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
+        lightBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
     }
 
     /**
@@ -98,9 +127,10 @@ public class Renderer extends AbstractSystem implements System {
     /**
      * Render all objects !
      */
-    public void render(Game dg) {
+    public void render(Game dg, double elapsed) {
         if (!renderingPause) {
             Graphics2D g = screenBuffer.createGraphics();
+            DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
 
             Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 
@@ -111,50 +141,123 @@ public class Renderer extends AbstractSystem implements System {
             // clear image
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
+            Composite c = g.getComposite();
+            for (Layer layer : layers.values()) {
+                // if a camera is set, use it.
+                if (camera != null && !layer.fixed) {
+                    g.translate(-camera.x, -camera.y);
+                }
+                drawObjects(dg, elapsed, g, camera, layer);
 
-            // if a camera is set, use it.
-            if (camera != null) {
-                g.translate(-camera.x, -camera.y);
-            }
-
-            // draw all objects
-            for (GameObject go : renderingObjectPipeline) {
-                if (go.enable) {
-
-                    if (go instanceof MapLevel) {
-
-                        // if MapLevel, delegates rendering operation to the MapRenderer.
-                        if (dg.config.debug > 2) {
-                            g.setColor(Color.BLUE);
-                            g.fillRect(0, 0, (int) go.width, (int) go.height);
-                        }
-                        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        mapRenderer.render(dg, g, (MapLevel) go, camera);
-
-                    } else if (go instanceof GameObject) {
-
-                        if (dg.config.debug > 2) {
-                            displayLiveDebug(g, go);
-                            DebugInfo.display(g, go);
-                        }
-                        // if standard GameObject, render with the embedded render method.
-                        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        go.render(dg, g);
-                    }
+                // if a camera is set, use it.
+                if (camera != null && !layer.fixed) {
+                    g.translate(camera.x, camera.y);
                 }
             }
 
-            // if a camera is set, use it.
-            if (camera != null) {
-                g.translate(camera.x, camera.y);
-            }
+            drawLights(dg);
 
             // draw HUD
+            g.setComposite(c);
             dg.stateManager.getCurrent().drawHUD(dg, this, g);
             g.dispose();
-
             // render image to real screen (applying scale factor)
             renderToScreen(dg);
+        }
+    }
+
+    private void drawObjects(Game dg, double elapsed, Graphics2D g, Camera camera, Layer layer) {
+        // draw all objects
+        for (GameObject go : layer.objects) {
+            if (go.enable) {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                if (go instanceof MapLevel) {
+
+                    // if MapLevel, delegates rendering operation to the MapRenderer.
+                    if (dg.config.debug > 2) {
+                        g.setColor(Color.BLUE);
+                        g.fillRect(0, 0, (int) go.width, (int) go.height);
+                    }
+
+                    mapRenderer.render(dg, g, (MapLevel) go, camera, elapsed);
+
+                } else if (go instanceof GameObject) {
+
+                    if (dg.config.debug > 2) {
+                        DebugInfo.displayCollisionTest(g, go);
+                        DebugInfo.display(g, go);
+                    }
+                    // if standard GameObject, render with the embedded render method.
+                    go.render(dg, g);
+                    //renderObject(dg, g, go);
+                }
+            }
+        }
+    }
+
+    private void drawLights(Game dg) {
+        // rendering light
+        Graphics2D lg = (Graphics2D) lightBuffer.getGraphics();
+        lg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        lg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        // Clear Light buffer
+        lg.setColor(new Color(0.0f, 0.0f, 0.0f, 1.0f));
+
+        lg.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
+        // draw all Lights
+        for (Light l : lights) {
+            l.render(dg, lg);
+            //drawLight(dg, lg, l);
+        }
+        lg.dispose();
+    }
+
+    /**
+     * rendering of a Light object.
+     *
+     * @param dg the core.Game containing the object.
+     * @param g  the graphics API.
+     * @param l  the Light to be rendered.
+     */
+    private void drawLight(Game dg, Graphics2D g, Light l) {
+        //l.render(dg, g);
+        switch (l.lightType) {
+            case LIGHT_SPHERE:
+                l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+                l.colors = new Color[]{l.foregroundColor,
+                        new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+                                l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
+                        new Color(0.0f, 0.0f, 0.0f, 0.0f)};
+                l.rgp = new RadialGradientPaint(new Point((int) (l.x + (10 * Math.random() * l.glitterEffect)),
+                        (int) (l.y + (10 * Math.random() * l.glitterEffect))), (int) l.width, l.dist, l.colors);
+
+                g.setPaint(l.rgp);
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+                g.fill(new Ellipse2D.Double(
+                        l.x - l.width,
+                        l.y - l.width,
+                        l.width * 2,
+                        l.width * 2));
+                break;
+
+            case LIGHT_CONE:
+                // TODO implement the CONE light type
+                break;
+
+            case LIGHT_AMBIANT:
+
+                final Area ambientArea = new Area(
+                        new Rectangle2D.Double(
+                                dg.stateManager.getCurrent().getActiveCamera().x,
+                                dg.stateManager.getCurrent().getActiveCamera().y,
+                                dg.config.screenWidth,
+                                dg.config.screenHeight));
+                g.setColor(l.foregroundColor);
+                Composite c = g.getComposite();
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+                g.fill(ambientArea);
+                g.setComposite(c);
+                break;
         }
     }
 
@@ -164,8 +267,9 @@ public class Renderer extends AbstractSystem implements System {
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
+     * @param go the GameObject to be rendered.
      */
-    public void renderObject(Game dg, GameObject go, Graphics2D g) {
+    public void renderObject(Game dg, Graphics2D g, GameObject go) {
         switch (go.type) {
             case RECTANGLE:
                 g.setColor(go.foregroundColor);
@@ -185,48 +289,10 @@ public class Renderer extends AbstractSystem implements System {
         }
     }
 
-    private void displayLiveDebug(Graphics2D g, GameObject go) {
-        int ox = (int) (go.bbox.x / 16);
-        int ow = (int) (go.bbox.width / 16);
-        int oy = (int) (go.bbox.y / 16);
-        int oh = (int) (go.bbox.height / 16);
-        // draw GameObject in the Map Tiles coordinates
-        g.setColor(Color.ORANGE);
-        g.drawRect(ox * 16, oy * 16, ow * 16, oh * 16);
-        // draw the bounding box
-        g.setColor(Color.RED);
-        g.drawRect((int) (go.bbox.x + go.bbox.left), (int) (go.bbox.y + go.bbox.top),
-                (int) (go.bbox.width - go.bbox.left - go.bbox.right),
-                (int) (go.bbox.height - go.bbox.top - go.bbox.bottom));
-        // draw the tested Tiles to detect Fall action.
-        g.setColor(Color.BLUE);
-        if (!go.collidingZone.isEmpty()) {
-            for (MapTileCollision mo : go.collidingZone) {
-                if (mo.mo != null) {
-                    Font d = g.getFont();
-                    g.setFont(d.deriveFont(9.5f));
-                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-                    g.setColor(Color.WHITE);
-                    g.drawString(mo.mo.type, mo.rX + 2, mo.rY + (mo.h / 2) + 4);
-                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                    g.setFont(d);
-                    switch (mo.mo.type) {
-                        case "tile":
-                            g.setColor(Color.ORANGE);
-                            break;
-                        case "object":
-                            g.setColor(Color.YELLOW);
-                            break;
-                        default:
-                            g.setColor(Color.GREEN);
-                            break;
-                    }
-                } else {
-                    g.setColor(Color.BLUE);
-                }
-                g.drawRect(mo.rX, mo.rY, mo.w, mo.h);
-            }
-        }
+    public class Layer {
+        int index;
+        boolean fixed;
+        List<GameObject> objects = new ArrayList<>();
     }
 
     public void renderToScreen(Game dg) {
@@ -239,6 +305,11 @@ public class Renderer extends AbstractSystem implements System {
             if (g != null) {
                 g.drawImage(screenBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, dg.config.screenWidth,
                         dg.config.screenHeight, Color.BLACK, null);
+
+                if (lights.size() > 0) {
+                    g.drawImage(lightBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, dg.config.screenWidth,
+                            dg.config.screenHeight, null);
+                }
                 if (dg.config.debug > 0) {
                     g.setColor(Color.ORANGE);
                     g.drawString(String.format("debug:%d | cam:(%03.1f,%03.1f)", dg.config.debug, camera.x, camera.y),
@@ -281,17 +352,37 @@ public class Renderer extends AbstractSystem implements System {
     }
 
     public void add(GameObject go) {
-        if (!renderingObjectPipeline.contains(go)) {
-            renderingObjectPipeline.add(go);
-            Collections.sort(renderingObjectPipeline, new Comparator<GameObject>() {
-                public int compare(GameObject g1, GameObject g2) {
-                    return g1.layer < g2.layer ? -1 : (g1.priority < g2.priority ? -1 : 1);
-                }
-            });
-        } else {
-            log.info(String.format("Error : core.object.GameObject %s already exists in rendering pipeline.", go.name));
+        if (go instanceof GameObject) {
+            disptachToLayer(go);
+        } else if (go instanceof Light) {
+            lights.add((Light) go);
         }
+    }
 
+    private void disptachToLayer(GameObject go) {
+        Layer l;
+        if (layers.get(go.layer) == null) {
+            l = new Layer();
+            l.index = go.layer;
+            if (go.fixed) {
+                l.fixed = true;
+            }
+            ;
+            layers.put(go.layer, l);
+        }
+        l = layers.get(go.layer);
+        l.objects.add(go);
+        Collections.sort(l.objects, new Comparator<GameObject>() {
+            public int compare(GameObject g1, GameObject g2) {
+                return g1.layer < g2.layer ? -1 : (g1.priority < g2.priority ? -1 : 1);
+            }
+        });
+    }
+
+    public void addAll(Collection<GameObject> objects) {
+        for (GameObject go : objects) {
+            add(go);
+        }
     }
 
     public void addAll(Map<String, GameObject> objects) {

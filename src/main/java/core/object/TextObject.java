@@ -22,6 +22,21 @@ public class TextObject extends GameObject {
     // border color
     public Color borderColor;
 
+    public TextObject(String name, double x, double y,
+                      Color foreground, Color border, Color shadow,
+                      Font font, boolean fixed, int layer) {
+        this.name = name;
+        this.x = x;
+        this.y = y;
+        this.foregroundColor = foreground;
+        this.borderColor = border;
+        this.shadowColor = shadow;
+        this.font = font;
+        this.layer = layer;
+        this.fixed = fixed;
+
+    }
+
 
     /**
      * recompute text to be displayed on each frame.
@@ -32,8 +47,11 @@ public class TextObject extends GameObject {
      * @param elapsed the elapsed time since previous call.
      */
     @Override
-    public void update(Game dg, float elapsed) {
+    public void update(Game dg, double elapsed) {
         text = (String) attributes.get("text");
+        if (text == null) {
+            text = "00000";
+        }
     }
 
     /**
@@ -45,6 +63,7 @@ public class TextObject extends GameObject {
     @Override
     public void render(Game dg, Graphics2D g) {
         if (font != null && text != null) {
+            Font b = g.getFont();
             g.setFont(font);
             FontMetrics fm = g.getFontMetrics(font);
             width = fm.stringWidth(text);
@@ -52,18 +71,19 @@ public class TextObject extends GameObject {
 
             if (shadowColor != null) {
                 g.setColor(shadowColor);
-                g.drawString(text, x + 1, y + 1);
-                g.drawString(text, x + 2, y + 2);
+                g.drawString(text, (int) x + 1, (int) y + 1);
+                g.drawString(text, (int) x + 2, (int) y + 2);
             }
             if (borderColor != null) {
                 g.setColor(borderColor);
-                g.drawString(text, x + 1, y);
-                g.drawString(text, x, y + 1);
-                g.drawString(text, x - 1, y);
-                g.drawString(text, x, y - 1);
+                g.drawString(text, (int) x + 1, (int) y);
+                g.drawString(text, (int) x, (int) y + 1);
+                g.drawString(text, (int) x - 1, (int) y);
+                g.drawString(text, (int) x, (int) y - 1);
             }
             g.setColor(foregroundColor);
-            g.drawString(text, x, y);
+            g.drawString(text, (int) x, (int) y);
+            g.setFont(b);
         }
     }
 }

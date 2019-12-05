@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import core.object.GameObject;
+import core.object.Light;
 import lombok.ToString;
 
 /**
@@ -30,14 +31,15 @@ public class MapLevel extends GameObject {
 	// name of the output level
 	public String nextLevel;
 
-	// the player
-	public GameObject player;
 	// the initial position of the GameObject player.
-	public float playerInitialX = 0;
-	public float playerInitialY = 0;
+	public double playerInitialX = 0;
+	public double playerInitialY = 0;
 
 	// enemies GameObject in the level.
 	public List<GameObject> enemies = new ArrayList<>();
+
+	// Lights in the level.
+	public List<Light> lights = new ArrayList<>();
 
 	/**
 	 * This method is used to constrain GameObject in the MapLevel bounding box.

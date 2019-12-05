@@ -44,7 +44,7 @@ public class StateManager extends AbstractSystem implements System {
 
 
     /**
-     * Load all states configurationand defnition from <code>game.json</code> file.
+     * Load all states configuration and definition from <code>game.json</code> file.
      *
      * @param path path to the game configuration JSON file.
      */
@@ -114,8 +114,8 @@ public class StateManager extends AbstractSystem implements System {
         current.update(g, elapsed);
     }
 
-    public void render(Game g, Renderer r) {
-        current.render(g, r);
+    public void render(Game g, Renderer r, float elapsed) {
+        current.render(g, r, elapsed);
     }
 
     public void dispose(Game g) {

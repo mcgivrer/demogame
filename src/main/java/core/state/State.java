@@ -41,7 +41,7 @@ public interface State {
 
     void update(Game g, float elapsed);
 
-    void render(Game g, Renderer r);
+    void render(Game g, Renderer r,double elapsed);
 
     void dispose(Game g);
 
