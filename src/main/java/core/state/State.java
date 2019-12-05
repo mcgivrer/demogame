@@ -41,13 +41,13 @@ public interface State {
 
     void update(Game g, float elapsed);
 
-    void render(Game g, Renderer r,double elpased);
+    void render(Game g, Renderer r,double elapsed);
 
     void dispose(Game g);
 
     void onFocus(Game g);
 
-    void focusLost(Game g);
+    void lostFocus(Game g);
 
     Camera getActiveCamera();
 

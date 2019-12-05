@@ -77,7 +77,7 @@ public abstract class AbstractState implements State, KeyListener {
 	}
 
 	@Override
-	public void focusLost(Game g) {
+	public void lostFocus(Game g) {
 		log.debug("{} state lost focus", this.getName());
 	}
 
