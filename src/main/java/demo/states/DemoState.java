@@ -91,10 +91,13 @@ public class DemoState extends AbstractState implements State {
 				"/res/audio/sounds/collect-coin.wav",
 				"/res/audio/sounds/collect-item-1.wav",
 				"/res/audio/sounds/collect-item-2.wav",
-				"/res/audio/musics/once-around-the-kingdom.mp3"});
+				"/res/audio/musics/once-around-the-kingdom.mp3",
+				"/res/fonts/Prince Valiant.ttf"});
 
 		objects.clear();
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
+
+		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
 
 		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
 
@@ -193,14 +196,12 @@ public class DemoState extends AbstractState implements State {
 			addObject(mapLevel);
 
 			// Add Score text on H.U.D. (fixed = true)
-			scoreObject = new TextObject();
-			scoreObject.name = "score";
-			scoreObject.fixed = true;
-			scoreObject.layer = 0;
-			scoreObject.foregroundColor = Color.WHITE;
-			scoreObject.shadowColor = Color.BLACK;
-			scoreObject.borderColor = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-			scoreObject.setPosition(100, 100);
+			scoreObject = new TextObject("name", g.config.screenWidth - 100, (int) 32,
+					Color.WHITE,
+					Color.BLACK,
+					new Color(0.1f, 0.1f, 0.1f, 0.8f),
+					scoreFont.deriveFont(24.0f), true, 5);
+			scoreObject.attributes.put("text", "00000");
 			addObject(scoreObject);
 
 			GameObject player = objects.get("player");
@@ -338,7 +339,6 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void render(Game g, Renderer r, double elapsed) {
-
 		g.renderer.render(g, elapsed);
 	}
 
@@ -349,7 +349,6 @@ public class DemoState extends AbstractState implements State {
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
 		GameObject player = objects.get("player");
-		// super.drawHUD(ga, r, g);
 
 		int offsetX = 24;
 		int offsetY = 30;

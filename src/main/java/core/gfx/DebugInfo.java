@@ -15,7 +15,7 @@ import java.util.Map;
  * @since 2019
  */
 public class DebugInfo {
-
+    public static Font debugFont;
     /**
      * display information to an information panel on right of GameObject
      *
@@ -23,10 +23,10 @@ public class DebugInfo {
      * @param go
      */
     public static void display(Graphics2D g, GameObject go) {
-        Font debugFont = g.getFont().deriveFont(8f);
         g.setFont(debugFont);
         FontMetrics fm = g.getFontMetrics(debugFont);
 
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         int maxWidth = 60;
         int maxLinePerColumn = 4;
         int fontHeight = fm.getHeight();
