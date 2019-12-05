@@ -1,6 +1,16 @@
 {
 	"name": "Level 1.1",
 	"description": "This a demonstration level.",
+	"environment": {
+		"ambiantlight": {
+			"color": [
+				1.0,
+				1.0,
+				1.0
+			],
+			"intensity": 1.0
+		}
+	},
 	"layers": {
 		"background": {
 			"name": "background",
@@ -18,29 +28,29 @@
 			"map": [
 				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				")()()()()()BBbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbBBBBBBBBBBBBB",
-				"()()()Bbbbbb                   V                                   BBBBBBBBBBBBB",
+				"()()()BbbbbbL l            l   V          l           l           LBBBBBBBBBBBBB",
 				")()()()Bbbb                                                            BBBBBBBBB",
 				"()()()BBbbb                                                             BBBBBBBB",
 				"BBBBBBBBbbb                                                                BBBBB",
 				"BBBBBBBBbbb                                                                  BBB",
 				"BBBBBBBBbbb                                                                   BB",
-				"BBBBBBBBbbb  P     o           o      1                                       BB",
+				"BBBBBBBBbbb  P     o   O        O      1                                       BB",
 				"BBBBBBBBBBBTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT     [        o   E    o   ]BB",
 				"BBBbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb     TTTTTTTTTTTTTTTTTTTTTTTBB",
 				"BBb>                                                  BBBBBBBBBBBBBBBBBBBBBBBBBB",
-				"BBb>  oooo         o     o                [    E     ]BBBBBBBBBBBBBBBBBBBBBBBBBB",
+				"BBb>  oOoOo        o    O                 [    E     ]BBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBBTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT        BhTTTTTTTTTTBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb    TTTTBHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb    BBBBBHBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb    BbbbbHbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbBBBBB",
-				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb         H                              <BBBBB",
+				"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb         H          l                   <BBBBB",
 				"BBbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb         H                              <BBBBB",
 				"BBb         2             VVVV             H              TThTTTTTTTTTTTTTTBBBBB",
 				"BBb    TTTTTTTTTTTT                        H                H         BBBBBBBBBB",
 				"BBb    BBBBBBBBBBBb                        H     o      o   H   o     BBBBBBBBBB",
 				"BBb    BBBBBBBBBBBBBTTTTTThTTTTTTT    TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTBBBBBBBBBB",
 				"BBb    VBBBBBBBBBBBBBBBBBBHBBBBBBb    BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-				"BBb                       H  BBBBb    BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+				"BBb             l         H  BBBBb    BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBb                       H  BBBBb    BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
 				"BBBTTTTTTTT    =====k=====k==BBBBb    BbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbBBBBBBBBBB",
 				"BBBBBBBBBBb         H        BBBBb                                    VBBBBBBBBB",
@@ -48,7 +58,7 @@
 				"Bb            ==k============BBBBBTTTTTTTTTTTTTTTTTT | TTTTTTTTTTTT    BBBBBBBBB",
 				"Bb  [E        ] H            BbbBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb    BBBBBBBBB",
 				"Bb==============k========       BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBb    BBBBBBBBB",
-				"Bb              H               BBBBBBBBBBBBBb   BBBBBBBBBBBBBBBBBb    BBBBBBBBB",
+				"Bb              H               BBBBBBBBBBBBBb l BBBBBBBBBBBBBBBBBb    BBBBBBBBB",
 				"Bb [oOoOoO      H 3        E]   BBBBBBBBBBBBBb    BBBBBBBBBBBBBBBBb    BBBBBBBBB",
 				"BBTTTTTTTTTTTTTTTTTTTTTTTTTTTTTBBBBBBBBBBBb        BBBBBBBBBBBBBBBb    BBBBBBBBB",
 				"BBBBBBBBBBbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb            Bbbbbbbbbbbbb    BbbbbbbBB",

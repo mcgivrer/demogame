@@ -32,7 +32,7 @@ public class TextObject extends GameObject {
      * @param elapsed the elapsed time since previous call.
      */
     @Override
-    public void update(Game dg, float elapsed) {
+    public void update(Game dg, double elapsed) {
         text = (String) attributes.get("text");
     }
 
@@ -52,18 +52,18 @@ public class TextObject extends GameObject {
 
             if (shadowColor != null) {
                 g.setColor(shadowColor);
-                g.drawString(text, x + 1, y + 1);
-                g.drawString(text, x + 2, y + 2);
+                g.drawString(text, (int)x + 1, (int)y + 1);
+                g.drawString(text, (int)x + 2, (int)y + 2);
             }
             if (borderColor != null) {
                 g.setColor(borderColor);
-                g.drawString(text, x + 1, y);
-                g.drawString(text, x, y + 1);
-                g.drawString(text, x - 1, y);
-                g.drawString(text, x, y - 1);
+                g.drawString(text, (int)x + 1, (int)y);
+                g.drawString(text, (int)x, (int)y + 1);
+                g.drawString(text, (int)x - 1, (int)y);
+                g.drawString(text, (int)x, (int)y - 1);
             }
             g.setColor(foregroundColor);
-            g.drawString(text, x, y);
+            g.drawString(text, (int)x, (int)y);
         }
     }
 }

@@ -35,7 +35,7 @@ public class TestState extends AbstractState implements State {
     }
 
     @Override
-    public void render(Game g, Renderer r) {
+    public void render(Game g, Renderer r, double elapsed) {
 
     }
 

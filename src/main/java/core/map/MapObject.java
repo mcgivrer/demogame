@@ -1,56 +1,72 @@
 package core.map;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import core.gfx.Animation;
 import core.object.BBox;
+import core.object.Light;
+import core.object.Light.LightType;
 import lombok.ToString;
 
 /**
  * The MapObject is one of the objects in an assets to populate MapLayer tiles.
- * 
+ *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  * @since 2019
  */
 @ToString
 public class MapObject {
-	public String id;
-	public String image;
-	public String type;
-	public String name;
-	public String clazz;
-	public String color;
+    public String id;
+    public String image;
+    public String type;
+    public String name;
+    public String clazz;
+    public String color;
 
-	public String offset;
-	public String size;
-	public int priority;
-	public int layer;
+    public String offset;
+    public String size;
+    public int priority;
+    public int layer;
 
-	public int mapX, mapY;
+    public LightType lightType;
+    public double intensity;
+    public double radius;
 
-	public BBox bbox;
+    
+    public MapObjectAsset asset;
 
-	public String description;
-	public String usage;
+    public Animation animation;
 
-	public int offsetX, offsetY, width, height;
+    public List<String> frameSet = new ArrayList<>();
 
-	public BufferedImage imageBuffer;
+    public int mapX, mapY;
 
-	public boolean collectible;
-	public boolean hit;
-	public boolean block;
-	public boolean canCollect;
-	public boolean can;
-	public boolean climbable;
+    public BBox bbox;
 
-	public int money;
-	public int damage;
-	public int energy;
+    public String description;
+    public String usage;
 
-	public Map<String, Object> attributes = new HashMap<>();
+    public int offsetX, offsetY, width, height;
 
-	public boolean levelOutput;
-	public String nextLevel;
+    public BufferedImage imageBuffer;
+
+    public boolean collectible;
+    public boolean hit;
+    public boolean block;
+    public boolean canCollect;
+    public boolean can;
+    public boolean climbable;
+
+    public int money;
+    public int damage;
+    public int energy;
+
+    public Map<String, Object> attributes = new HashMap<>();
+
+    public boolean levelOutput;
+    public String nextLevel;
 }

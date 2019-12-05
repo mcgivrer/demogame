@@ -1,14 +1,14 @@
 package core.object;
 
 public class BBox {
-    public float x;
-    public float y;
-    public float width;
-    public float height;
+    public double x;
+    public double y;
+    public double width;
+    public double height;
 
-    public float top, bottom, left, right;
+    public double top, bottom, left, right;
 
-    public BBox(float x, float y, float w, float h) {
+    public BBox(double x, double y, double w, double h) {
         this.x = x;
         this.y = y;
         this.width = w;
