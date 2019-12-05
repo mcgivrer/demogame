@@ -5,6 +5,7 @@ import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -123,11 +124,24 @@ public class ResourceManager implements System {
                 }
                 log.debug("'{}' added as a JSON resource", path);
             }
-            if (path.contains(".wav") || path.contains(".mp3")) {
+            if (path.contains(".wav") || path.contains(".mp3") || path.contains(".aiff")) {
                 InputStream sndStream = ResourceManager.class.getResourceAsStream(path);
                 SoundClip sc = new SoundClip(path, sndStream);
                 if (sc != null) {
                     instance.resources.put(path, sc);
+                }
+                log.debug("'{}' added as an audio resource", path);
+            }
+            if (path.contains(".ttf")) {
+                // load a Font resource
+                try {
+                    InputStream stream = ResourceManager.class.getResourceAsStream(path);
+                    Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+                    if (font != null) {
+                        instance.resources.put(path, font);
+                    }
+                } catch (FontFormatException | IOException e) {
+                    log.error("Unable to read font from " + path);
                 }
             }
         } catch (IOException e) {
@@ -152,11 +166,15 @@ public class ResourceManager implements System {
         }
     }
 
-    public static void clear(){
+    public static void clear() {
         if (instance != null) {
             instance.dispose();
         }
 
+    }
+
+    public static Font getFont(String s) {
+        return (Font) instance.resources.get(s);
     }
 
     /**

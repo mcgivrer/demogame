@@ -19,6 +19,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,13 +41,35 @@ import java.util.*;
 @Slf4j
 public class Renderer extends AbstractSystem implements System {
 
+    /**
+     * Make a color brighten.
+     *
+     * @param color    Color to make brighten.
+     * @param fraction Darkness fraction.
+     * @return Lighter color.
+     */
+    public static Color brighten(Color color, double fraction) {
+
+        int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+        int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+        int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+        int alpha = color.getAlpha();
+
+        return new Color(red, green, blue, alpha);
+
+    }
+
     private static int screenShotIndex = 0;
     public BufferedImage screenBuffer;
     public BufferedImage lightBuffer;
     private JFrame jf;
+
     private Map<Integer, Layer> layers = new HashMap<>();
     private List<GameObject> renderingObjectPipeline = new ArrayList<>();
+
     private List<Light> lights = new ArrayList<>();
+
     private MapRenderer mapRenderer = new MapRenderer();
     private boolean renderingPause = false;
 
@@ -105,6 +130,7 @@ public class Renderer extends AbstractSystem implements System {
     public void render(Game dg, double elapsed) {
         if (!renderingPause) {
             Graphics2D g = screenBuffer.createGraphics();
+            DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
 
             Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 
@@ -115,7 +141,7 @@ public class Renderer extends AbstractSystem implements System {
             // clear image
             g.setColor(Color.BLACK);
             g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
-
+            Composite c = g.getComposite();
             for (Layer layer : layers.values()) {
                 // if a camera is set, use it.
                 if (camera != null && !layer.fixed) {
@@ -129,9 +155,10 @@ public class Renderer extends AbstractSystem implements System {
                 }
             }
 
-            drawLights(dg, g);
+            drawLights(dg);
 
             // draw HUD
+            g.setComposite(c);
             dg.stateManager.getCurrent().drawHUD(dg, this, g);
             g.dispose();
             // render image to real screen (applying scale factor)
@@ -162,13 +189,15 @@ public class Renderer extends AbstractSystem implements System {
                     }
                     // if standard GameObject, render with the embedded render method.
                     go.render(dg, g);
+                    //renderObject(dg, g, go);
                 }
             }
         }
     }
 
-    private void drawLights(Game dg, Graphics2D lg) {
+    private void drawLights(Game dg) {
         // rendering light
+        Graphics2D lg = (Graphics2D) lightBuffer.getGraphics();
         lg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         lg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         // Clear Light buffer
@@ -178,6 +207,57 @@ public class Renderer extends AbstractSystem implements System {
         // draw all Lights
         for (Light l : lights) {
             l.render(dg, lg);
+            //drawLight(dg, lg, l);
+        }
+        lg.dispose();
+    }
+
+    /**
+     * rendering of a Light object.
+     *
+     * @param dg the core.Game containing the object.
+     * @param g  the graphics API.
+     * @param l  the Light to be rendered.
+     */
+    private void drawLight(Game dg, Graphics2D g, Light l) {
+        //l.render(dg, g);
+        switch (l.lightType) {
+            case LIGHT_SPHERE:
+                l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+                l.colors = new Color[]{l.foregroundColor,
+                        new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+                                l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
+                        new Color(0.0f, 0.0f, 0.0f, 0.0f)};
+                l.rgp = new RadialGradientPaint(new Point((int) (l.x + (10 * Math.random() * l.glitterEffect)),
+                        (int) (l.y + (10 * Math.random() * l.glitterEffect))), (int) l.width, l.dist, l.colors);
+
+                g.setPaint(l.rgp);
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+                g.fill(new Ellipse2D.Double(
+                        l.x - l.width,
+                        l.y - l.width,
+                        l.width * 2,
+                        l.width * 2));
+                break;
+
+            case LIGHT_CONE:
+                // TODO implement the CONE light type
+                break;
+
+            case LIGHT_AMBIANT:
+
+                final Area ambientArea = new Area(
+                        new Rectangle2D.Double(
+                                dg.stateManager.getCurrent().getActiveCamera().x,
+                                dg.stateManager.getCurrent().getActiveCamera().y,
+                                dg.config.screenWidth,
+                                dg.config.screenHeight));
+                g.setColor(l.foregroundColor);
+                Composite c = g.getComposite();
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+                g.fill(ambientArea);
+                g.setComposite(c);
+                break;
         }
     }
 
@@ -187,8 +267,9 @@ public class Renderer extends AbstractSystem implements System {
      *
      * @param dg the core.Game containing the object.
      * @param g  the graphics API.
+     * @param go the GameObject to be rendered.
      */
-    public void renderObject(Game dg, GameObject go, Graphics2D g) {
+    public void renderObject(Game dg, Graphics2D g, GameObject go) {
         switch (go.type) {
             case RECTANGLE:
                 g.setColor(go.foregroundColor);
@@ -206,6 +287,12 @@ public class Renderer extends AbstractSystem implements System {
                 }
                 break;
         }
+    }
+
+    public class Layer {
+        int index;
+        boolean fixed;
+        List<GameObject> objects = new ArrayList<>();
     }
 
     public void renderToScreen(Game dg) {
@@ -351,11 +438,5 @@ public class Renderer extends AbstractSystem implements System {
     @Override
     public void dispose() {
 
-    }
-
-    public class Layer {
-        int index;
-        boolean fixed;
-        List<GameObject> objects = new ArrayList<>();
     }
 }

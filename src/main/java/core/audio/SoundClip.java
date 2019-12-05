@@ -122,10 +122,14 @@ public class SoundClip {
         if (clip == null) {
             return;
         } else {
-            clip.flush();
-            clip.stop();
-            clip.setMicrosecondPosition(0);
-            clip.start();
+            try {
+                clip.flush();
+                clip.stop();
+                clip.setMicrosecondPosition(0);
+                clip.start();
+            } catch (RuntimeException e) {
+                log.error("Unable to play sound on {}", clip.getLineInfo());
+            }
         }
     }
 
@@ -148,7 +152,10 @@ public class SoundClip {
      * @param balance
      */
     private void setBalance(float balance) {
-        balanceControl.setValue(balance);
+
+        if (balanceControl != null) {
+            balanceControl.setValue(balance);
+        }
     }
 
     /**
@@ -157,7 +164,9 @@ public class SoundClip {
      * @param pan
      */
     public void setPan(float pan) {
-        panControl.setValue(pan);
+        if (panControl != null) {
+            panControl.setValue(pan);
+        }
     }
 
     /**
@@ -166,9 +175,11 @@ public class SoundClip {
      * @param volume
      */
     public void setVolume(float volume) {
-        float min = gainControl.getMinimum() / 4;
-        if (volume != 1) {
-            gainControl.setValue(min * (1 - volume));
+        if (gainControl != null) {
+            float min = gainControl.getMinimum() / 4;
+            if (volume != 1) {
+                gainControl.setValue(min * (1 - volume));
+            }
         }
     }
 
