@@ -155,4 +155,17 @@ public class ObjectManager extends AbstractSystem implements System {
 		}
 	}
 
+	public void clear() {
+		objects.clear();
+		
+	}
+
+	public Object getAll() {
+		return objects.values().toArray();
+	}
+	
+	public boolean contains(String name) {
+		return objects.containsKey(name);
+	}
+
 }

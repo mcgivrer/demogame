@@ -3,7 +3,7 @@ package core.map;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
@@ -15,7 +15,6 @@ import core.gfx.Animation;
 import core.object.GameObject;
 import core.object.GameObjectType;
 import core.object.Light;
-import core.object.Light.LightType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -117,12 +116,13 @@ public class MapReader {
 	public static void createGameObject(MapLevel mapLevel, MapLayer ml, int y, int x, MapObject mo) {
 		GameObject go = null;
 		go = generateGameObjectFromMapObject(mapLevel, ml, mo, x, y);
+		if (mapLevel.child == null) {
+			mapLevel.child = new HashMap<String,GameObject>();
+		}
 		switch (mo.type) {
 		case "enemy":
-			if (mapLevel.enemies == null) {
-				mapLevel.enemies = new ArrayList<>();
-			}
-			mapLevel.enemies.add(go);
+		case "player":
+			mapLevel.child.put(go.name,go);
 			break;
 		case "light":
 			mapLevel.lights.add((Light) go);
@@ -131,9 +131,9 @@ public class MapReader {
 			log.error(String.format("Unknown object type %s", mo.type));
 			break;
 		}
-		if (go != null) {
+		/*if (go != null) {
 			mapLevel.child.put(go.name, go);
-		}
+		}*/
 	}
 
 	/**

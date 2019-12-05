@@ -16,7 +16,6 @@ import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
 import core.collision.OnCollision;
 import core.gfx.Renderer;
-import core.io.InputHandler;
 import core.map.MapLayer;
 import core.map.MapLevel;
 import core.map.MapObject;
@@ -24,7 +23,6 @@ import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
-import core.object.ObjectManager;
 import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
@@ -55,9 +53,6 @@ public class DemoState extends AbstractState implements State {
 	private BufferedImage lifeImg;
 	private BufferedImage itemHolderImg;
 	private BufferedImage itemHolderSelectedImg;
-	private InputHandler inputHandler;
-	private SoundSystem soundSystem;
-	private ObjectManager om;
 
 	private static int lastIdleChange = 0;
 	private static int lastIdleChangePace = 120;
@@ -92,8 +87,6 @@ public class DemoState extends AbstractState implements State {
 				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav",
 				"/res/audio/sounds/collect-item-1.wav", "/res/audio/sounds/collect-item-2.wav",
 				"/res/audio/musics/once-around-the-kingdom.mp3" });
-
-		objects.clear();
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
 
 		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
@@ -108,18 +101,18 @@ public class DemoState extends AbstractState implements State {
 
 	@Override
 	public void initialize(Game g) {
-		// prepare user input handler
-		inputHandler = g.sysMan.getSystem(InputHandler.class);
+		super.initialize(g);
+
+		objectManager.clear();
+
 		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingService.class);
-		// load Sounds
-		soundSystem = g.sysMan.getSystem(SoundSystem.class);
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.wav");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
 		soundSystem.setMute(false);
-		
+
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
 			/**
@@ -206,7 +199,7 @@ public class DemoState extends AbstractState implements State {
 			scoreObject.setPosition(100, 100);
 			addObject(scoreObject);
 
-			GameObject player = objects.get("player");
+			GameObject player = objectManager.get("player");
 			// Create camera
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
@@ -231,7 +224,7 @@ public class DemoState extends AbstractState implements State {
 	@Override
 	public void input(Game g) {
 
-		GameObject player = objects.get("player");
+		GameObject player = objectManager.get("player");
 
 		if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
@@ -287,7 +280,7 @@ public class DemoState extends AbstractState implements State {
 
 	private void randomNextIdleAction() {
 
-		GameObject player = objects.get("player");
+		GameObject player = objectManager.get("player");
 		// compute next value for Idle
 		lastIdleChange++;
 		if (lastIdleChange > lastIdleChangePace) {
@@ -306,7 +299,7 @@ public class DemoState extends AbstractState implements State {
 		case KeyEvent.VK_R:
 			if (control) {
 
-				GameObject player = objects.get("player");
+				GameObject player = objectManager.get("player");
 				player.action = GameAction.IDLE2;
 				player.setSpeed(0.0f, 0.0f);
 				player.setPosition(mapLevel.playerInitialX, mapLevel.playerInitialY);
@@ -321,18 +314,19 @@ public class DemoState extends AbstractState implements State {
 	public void update(Game g, float elapsed) {
 
 		// TODO activate score TextObject update
-		TextObject s = (TextObject) objects.get("score");
+		TextObject s = (TextObject) objectManager.get("score");
 		if (s != null) {
 			s.text = String.format("%05d", this.score);
 		}
 		MapLayer frontLayer = mapLevel.layers.get("front");
 		// update all objects
-		for (GameObject go : objects.values()) {
-			if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
-				go.update(g, elapsed);
-				mapCollider.checkCollision(frontLayer, 0, go);
-				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-			}
+		for (GameObject go : objectManager.getFilteredObjectList(GameObject.class)) {
+
+			// if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
+			go.update(g, elapsed);
+			mapCollider.checkCollision(frontLayer, 0, go);
+			mapLevel.constrainToMapLevel(frontLayer, 0, go);
+			// }
 		}
 		// active core.object.Camera update
 		if (this.camera != null) {
@@ -352,7 +346,7 @@ public class DemoState extends AbstractState implements State {
 	}
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
-		GameObject player = objects.get("player");
+		GameObject player = objectManager.get("player");
 		// super.drawHUD(ga, r, g);
 
 		int offsetX = 24;
