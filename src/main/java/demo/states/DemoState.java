@@ -24,6 +24,7 @@ import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
+import core.object.ObjectManager;
 import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
@@ -56,6 +57,7 @@ public class DemoState extends AbstractState implements State {
 	private BufferedImage itemHolderSelectedImg;
 	private InputHandler inputHandler;
 	private SoundSystem soundSystem;
+	private ObjectManager om;
 
 	private static int lastIdleChange = 0;
 	private static int lastIdleChangePace = 120;
@@ -116,9 +118,8 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
-
 		soundSystem.setMute(false);
-
+		
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
 			/**
