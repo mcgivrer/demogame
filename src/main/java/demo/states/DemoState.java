@@ -1,13 +1,5 @@
 package demo.states;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-
 import core.Game;
 import core.ProgressListener;
 import core.ResourceManager;
@@ -28,6 +20,11 @@ import core.object.TextObject;
 import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 /**
  * The <code>DemoState</code> is an implementation for a Game <code>State<code>
@@ -347,7 +344,6 @@ public class DemoState extends AbstractState implements State {
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
 		GameObject player = objects.get("player");
-		// super.drawHUD(ga, r, g);
 
 		int offsetX = 24;
 		int offsetY = 30;
