@@ -83,10 +83,18 @@ public class DemoState extends AbstractState implements State {
 				log.info("reading resources: {} : {}", value * 100.0f, path);
 			}
 		});
-		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav",
-				"/res/audio/sounds/collect-item-1.wav", "/res/audio/sounds/collect-item-2.wav",
-				"/res/audio/musics/once-around-the-kingdom.mp3" });
+		ResourceManager.add(new String[] { 
+			"/res/maps/map_2.json", 
+			"/res/assets/asset-2.json",
+			"/res/images/background-1.jpg", 
+			"/res/images/tileset-1.png", 
+			"/res/audio/sounds/collect-coin.wav",
+			"/res/audio/sounds/collect-item-1.wav", 
+			"/res/audio/sounds/collect-item-2.wav",
+			"/res/audio/musics/once-around-the-kingdom.mp3", 
+			"/res/fonts/Prince Valiant.ttf"
+		});
+		
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
 
 		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
@@ -105,6 +113,7 @@ public class DemoState extends AbstractState implements State {
 	public void initialize(Game g) {
 		super.initialize(g);
 
+		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
 		objectManager.clear();
 
 		inputHandler.addListener(this);
