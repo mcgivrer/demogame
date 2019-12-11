@@ -13,6 +13,14 @@ import java.awt.*;
  */
 public class TextObject extends GameObject {
 
+    public enum TextAlign {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
+    public TextAlign align = TextAlign.CENTER;
+
     // text to be displayed
     public String text;
     // font to be used to render text
@@ -22,21 +30,36 @@ public class TextObject extends GameObject {
     // border color
     public Color borderColor;
 
-    public TextObject(String name, double x, double y,
+    /**
+     * Create a new TextObject with some default attributes values.
+     *
+     * @param name
+     * @param x
+     * @param y
+     * @param foreground
+     * @param border
+     * @param shadow
+     * @param font
+     * @param fixed
+     * @param layer
+     * @param align
+     */
+    public TextObject(String name,
+                      double x, double y,
                       Color foreground, Color border, Color shadow,
-                      Font font, boolean fixed, int layer) {
-        this.name = name;
-        this.x = x;
-        this.y = y;
+                      Font font,
+                      boolean fixed,
+                      int layer,
+                      TextAlign align) {
+        super(name, x, y, 0, 0);
         this.foregroundColor = foreground;
         this.borderColor = border;
         this.shadowColor = shadow;
         this.font = font;
         this.layer = layer;
         this.fixed = fixed;
-
+        this.align = align;
     }
-
 
     /**
      * recompute text to be displayed on each frame.
@@ -48,9 +71,8 @@ public class TextObject extends GameObject {
      */
     @Override
     public void update(Game dg, double elapsed) {
-        text = (String) attributes.get("text");
-        if (text == null) {
-            text = "00000";
+        if (attributes.containsKey("text")) {
+            this.text = attributes.get("text").toString();
         }
     }
 
@@ -68,6 +90,21 @@ public class TextObject extends GameObject {
             FontMetrics fm = g.getFontMetrics(font);
             width = fm.stringWidth(text);
             height = fm.getHeight();
+            double ox=x,oy=y;
+            switch(align){
+                case CENTER:
+                    ox = x - (width/2);
+
+                    break;
+                case LEFT:
+                    ox = x;
+                    break;
+                case RIGHT:
+                    ox = x - width;
+                    break;
+                default:
+                    break;
+            }
 
             if (shadowColor != null) {
                 g.setColor(shadowColor);
@@ -85,5 +122,14 @@ public class TextObject extends GameObject {
             g.drawString(text, (int) x, (int) y);
             g.setFont(b);
         }
+    }
+
+    public void setText(String text, Object... attributes) {
+        this.text = String.format(text, attributes);
+    }
+
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

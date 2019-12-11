@@ -154,11 +154,11 @@ public class Renderer extends AbstractSystem implements System {
                     g.translate(camera.x, camera.y);
                 }
             }
+            g.setComposite(c);
 
             drawLights(dg);
 
             // draw HUD
-            g.setComposite(c);
             dg.stateManager.getCurrent().drawHUD(dg, this, g);
             g.dispose();
             // render image to real screen (applying scale factor)
@@ -188,8 +188,7 @@ public class Renderer extends AbstractSystem implements System {
                         DebugInfo.display(g, go);
                     }
                     // if standard GameObject, render with the embedded render method.
-                    go.render(dg, g);
-                    //renderObject(dg, g, go);
+                    renderObject(dg, g, go);
                 }
             }
         }
@@ -206,8 +205,7 @@ public class Renderer extends AbstractSystem implements System {
         lg.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
         // draw all Lights
         for (Light l : lights) {
-            l.render(dg, lg);
-            //drawLight(dg, lg, l);
+            drawLight(dg, lg, l);
         }
         lg.dispose();
     }
@@ -349,6 +347,22 @@ public class Renderer extends AbstractSystem implements System {
 
         g.setColor(textColor);
         g.drawString(text, x, y);
+    }
+
+    /**
+     * draw an outline text at (x,y) with textColor and a borderColor.
+     *
+     * @param g
+     * @param text
+     * @param x
+     * @param y
+     * @param textColor
+     * @param borderColor
+     * @param font
+     */
+    public void drawOutLinedText(Graphics2D g, String text, int x, int y, Color textColor, Color borderColor, Font font) {
+        g.setFont(font);
+        drawOutLinedText(g, text, x, y, textColor, borderColor);
     }
 
     public void add(GameObject go) {

@@ -74,7 +74,7 @@ public abstract class AbstractState implements State, KeyListener {
 	public abstract void load(Game g);
 
 	@Override
-	public abstract void update(Game g, float elapsed);
+	public abstract void update(Game g, double elapsed);
 
 	@Override
 	public abstract void render(Game g, Renderer r, double elpased);
@@ -107,9 +107,9 @@ public abstract class AbstractState implements State, KeyListener {
 				objectManager.putAll(go.child);
 				game.renderer.addAll(go.child);
 			}
-
 		}
 	}
+
 
 
 	/**

@@ -39,7 +39,7 @@ public interface State {
 
     void input(Game g);
 
-    void update(Game g, float elapsed);
+    void update(Game g, double elapsed);
 
     void render(Game g, Renderer r,double elapsed);
 

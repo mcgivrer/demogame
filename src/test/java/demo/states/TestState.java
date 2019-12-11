@@ -31,7 +31,7 @@ public class TestState extends AbstractState implements State {
     }
 
     @Override
-    public void update(Game g, float elapsed) {
+    public void update(Game g, double elapsed) {
     }
 
     @Override

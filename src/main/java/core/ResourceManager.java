@@ -174,6 +174,10 @@ public class ResourceManager implements System {
     }
 
     public static Font getFont(String s) {
+    	if(!instance.resources.containsKey(s)) {
+    		add(s);
+    		log.warn("Resource loading time can be optimized by adding this '{}' resource to the preload time",s);
+    	}
         return (Font) instance.resources.get(s);
     }
 

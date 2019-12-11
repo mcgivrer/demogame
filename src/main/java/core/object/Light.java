@@ -11,6 +11,7 @@ package core.object;
 
 import core.Game;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.awt.*;
@@ -23,6 +24,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
 public class Light extends GameObject {
@@ -49,7 +51,8 @@ public class Light extends GameObject {
     }
 
     /**
-     *
+     * Create a new Light object with set parameters
+	 *
      * @param name
 	 * @param x
 	 * @param y
@@ -68,36 +71,7 @@ public class Light extends GameObject {
 
 	@Override
 	public void render(Game dg, Graphics2D g) {
-		switch (lightType) {
-		case LIGHT_SPHERE:
-			foregroundColor = brighten(foregroundColor, intensity);
-			colors = new Color[] { foregroundColor,
-					new Color(foregroundColor.getRed() / 2, foregroundColor.getGreen() / 2,
-							foregroundColor.getBlue() / 2, foregroundColor.getAlpha() / 2),
-					new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-			rgp = new RadialGradientPaint(new Point((int) (x + (10 * Math.random() * glitterEffect)),
-					(int) (y + (10 * Math.random() * this.glitterEffect))), (int) width, dist, colors);
 
-			g.setPaint(rgp);
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)intensity));
-			g.fill(new Ellipse2D.Double(x - width, y - width, width * 2, width * 2));
-			break;
-
-		case LIGHT_CONE:
-			// TODO implement the CONE light type
-			break;
-
-		case LIGHT_AMBIANT:
-			
-			final Area ambientArea = new Area(
-					new Rectangle2D.Double(dg.stateManager.getCurrent().getActiveCamera().x, dg.stateManager.getCurrent().getActiveCamera().y, dg.config.screenWidth, dg.config.screenHeight));
-			g.setColor(foregroundColor);
-			Composite c = g.getComposite();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)intensity));
-			g.fill(ambientArea);
-			g.setComposite(c);
-			break;
-		}
 	}
 
 	/**
