@@ -11,6 +11,7 @@ package core.object;
 
 import core.Game;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.awt.*;
@@ -23,6 +24,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
 public class Light extends GameObject {
@@ -49,7 +51,8 @@ public class Light extends GameObject {
     }
 
     /**
-     *
+     * Create a new Light object with set parameters
+	 *
      * @param name
 	 * @param x
 	 * @param y

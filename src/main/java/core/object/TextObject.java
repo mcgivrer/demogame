@@ -48,9 +48,8 @@ public class TextObject extends GameObject {
      */
     @Override
     public void update(Game dg, double elapsed) {
-        text = (String) attributes.get("text");
-        if (text == null) {
-            text = "00000";
+        if(attributes.containsKey("text")){
+            this.text = attributes.get("text").toString();
         }
     }
 
@@ -85,5 +84,14 @@ public class TextObject extends GameObject {
             g.drawString(text, (int) x, (int) y);
             g.setFont(b);
         }
+    }
+
+    public void setText(String text, Object... attributes){
+        this.text = String.format(text,attributes);
+    }
+
+
+    public void setText(String text){
+        this.text = text;
     }
 }

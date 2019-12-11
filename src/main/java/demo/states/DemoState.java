@@ -92,12 +92,10 @@ public class DemoState extends AbstractState implements State {
 				"/res/audio/sounds/collect-item-1.wav", 
 				"/res/audio/sounds/collect-item-2.wav",
 				"/res/audio/musics/once-around-the-kingdom.mp3",
-				"/res/fonts/Prince Valiant.ttf"});
+				"/res/fonts/Prince Valiant.ttf",
+				"/res/fonts/lilliput steps.ttf"});
 		
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
-
-
-		
 		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
 
 		energyImg = sprites.getSubimage(0, 0, 41, 9);
@@ -114,15 +112,16 @@ public class DemoState extends AbstractState implements State {
 
 		objectManager.clear();
 
-		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
-		
+		scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(24.0f);
+		infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
+
 		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingService.class);
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.wav");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
-		soundSystem.setMute(false);
+		soundSystem.setMute(true);
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
@@ -196,12 +195,12 @@ public class DemoState extends AbstractState implements State {
 			addObject(mapLevel);
 
 			// Add Score text on H.U.D. (fixed = true)
-			scoreObject = new TextObject("name", g.config.screenWidth - 100, (int) 32,
+			scoreObject = new TextObject("name", g.config.screenWidth - 70, (int) 32,
 					Color.WHITE,
 					Color.BLACK,
 					new Color(0.1f, 0.1f, 0.1f, 0.8f),
-					scoreFont.deriveFont(24.0f), true, 5);
-			scoreObject.attributes.put("text", "00000");
+					scoreFont, true, 5);
+			scoreObject.setText("%06d",this.score);
 			addObject(scoreObject);
 
 			GameObject player = objectManager.get("player");
@@ -321,7 +320,7 @@ public class DemoState extends AbstractState implements State {
 		// TODO activate score TextObject update
 		TextObject s = (TextObject) objectManager.get("score");
 		if (s != null) {
-			s.text = String.format("%05d", this.score);
+			s.setText("%06d",this.score);
 		}
 		MapLayer frontLayer = mapLevel.layers.get("front");
 		// update all objects
@@ -356,16 +355,6 @@ public class DemoState extends AbstractState implements State {
 
 		int offsetX = 24;
 		int offsetY = 30;
-		// prepare font.
-		if (scoreFont == null) {
-			infoFont = g.getFont().deriveFont(10.0f);
-			scoreFont = infoFont.deriveFont(AffineTransform.getScaleInstance(1.4, 2.0));
-		}
-
-		// draw Score
-		g.setFont(scoreFont);
-		r.drawOutLinedText(g, String.format("%05d", score), ga.config.screenWidth - (46 + offsetX), offsetY + 8,
-				Color.WHITE, Color.BLACK);
 
 		// draw Life
 		g.drawImage(lifeImg, offsetX, offsetY - 16, null);
