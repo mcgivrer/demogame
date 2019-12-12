@@ -90,6 +90,7 @@ public class TextObject extends GameObject {
             FontMetrics fm = g.getFontMetrics(font);
             width = fm.stringWidth(text);
             height = fm.getHeight();
+
             double ox=x,oy=y;
             switch(align){
                 case CENTER:
@@ -108,18 +109,20 @@ public class TextObject extends GameObject {
 
             if (shadowColor != null) {
                 g.setColor(shadowColor);
-                g.drawString(text, (int) x + 1, (int) y + 1);
-                g.drawString(text, (int) x + 2, (int) y + 2);
+                g.drawString(text, (int) ox + 1, (int) oy + 1);
+                g.drawString(text, (int) ox + 2, (int) oy + 2);
             }
+            
             if (borderColor != null) {
                 g.setColor(borderColor);
-                g.drawString(text, (int) x + 1, (int) y);
-                g.drawString(text, (int) x, (int) y + 1);
-                g.drawString(text, (int) x - 1, (int) y);
-                g.drawString(text, (int) x, (int) y - 1);
+                g.drawString(text, (int) ox + 1, (int) oy);
+                g.drawString(text, (int) ox, (int) oy + 1);
+                g.drawString(text, (int) ox - 1, (int) oy);
+                g.drawString(text, (int) ox, (int) oy - 1);
             }
+            
             g.setColor(foregroundColor);
-            g.drawString(text, (int) x, (int) y);
+            g.drawString(text, (int) ox, (int) oy);
             g.setFont(b);
         }
     }

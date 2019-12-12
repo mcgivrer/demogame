@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import core.Game;
@@ -86,6 +85,7 @@ public class DemoState extends AbstractState implements State {
                 log.info("reading resources: {} : {}", value * 100.0f, path);
             }
         });
+
         ResourceManager.add(new String[]{
                 "/res/maps/map_2.json",
                 "/res/assets/asset-2.json",
@@ -115,7 +115,7 @@ public class DemoState extends AbstractState implements State {
 
         objectManager.clear();
         messageFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(12.0f);
-        scoreFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(24.0f);
+        scoreFont = messageFont.deriveFont(24.0f);
         infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
         inputHandler.addListener(this);
@@ -210,7 +210,8 @@ public class DemoState extends AbstractState implements State {
             addObject(welcomeText);
             
             // Add Score text on H.U.D. (fixed = true)
-            scoreObject = new TextObject("name", g.config.screenWidth - 70, (int) 32,
+            scoreObject = new TextObject("score", 
+            		g.config.screenWidth - 70, 32,
                     Color.WHITE,
                     Color.BLACK,
                     new Color(0.1f, 0.1f, 0.1f, 0.8f),
@@ -339,7 +340,6 @@ public class DemoState extends AbstractState implements State {
     @Override
     public void update(Game g, double elapsed) {
 
-        // TODO activate score TextObject update
         TextObject s = (TextObject) objectManager.get("score");
         if (s != null) {
             s.setText("%06d", this.score);
@@ -358,7 +358,7 @@ public class DemoState extends AbstractState implements State {
 
         // active core.object.Camera update
         if (this.camera != null) {
-            camera.update(g, elapsed);
+            ((Camera)camera).update(g, elapsed);
         }
     }
 
@@ -374,7 +374,6 @@ public class DemoState extends AbstractState implements State {
 
     public void drawHUD(Game ga, Renderer r, Graphics2D g) {
         GameObject player = objectManager.get("player");
-        // super.drawHUD(ga, r, g);
 
         int offsetX = 24;
         int offsetY = 30;

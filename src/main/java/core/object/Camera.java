@@ -37,9 +37,9 @@ public class Camera extends GameObject {
      * @param dg      the core.Game container for this camera
      * @param elapsed the elapsed time since previous update.
      */
-    public void update(Game dg, float elapsed) {
-        this.x += (target.x + (target.width) - ((float) (viewport.width) * 0.5f) - this.x) * tween * elapsed;
-        this.y += (target.y + (target.height) - ((float) (viewport.height) * 0.5f) - this.y) * tween * elapsed;
+    public void update(Game dg, double elapsed) {
+        this.x += (target.x + (target.width) - ((double) (viewport.width) * 0.5f) - this.x) * tween * elapsed;
+        this.y += (target.y + (target.height) - ((double) (viewport.height) * 0.5f) - this.y) * tween * elapsed;
         viewport.height *= zoom;
         viewport.width *= zoom;
     }

@@ -93,7 +93,7 @@ public class ObjectManager extends AbstractSystem implements System {
      */
     public void updateObject(Game game,GameObject go, double elapsed) {
         go.update(game,elapsed);
-        if (go.duration < 0) {
+        if (go.duration == 0) {
             go.active = false;
         }
     }

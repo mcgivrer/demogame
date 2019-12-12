@@ -148,8 +148,12 @@ public class GameObject {
                 y += (dy * elapsed);
                 break;
             case JUMP:
-                y += (dy * elapsed);
+                y += (dy*3 * elapsed);
+            case UP:
+            	
                 break;
+			default:
+				break;
         }
         // update the bounding box for this GameObject
         if (bbox != null) {

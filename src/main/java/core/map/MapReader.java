@@ -131,9 +131,7 @@ public class MapReader {
 			log.error(String.format("Unknown object type %s", mo.type));
 			break;
 		}
-		/*if (go != null) {
-			mapLevel.child.put(go.name, go);
-		}*/
+		mapLevel.child.put(go.name, go);
 	}
 
 	/**

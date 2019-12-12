@@ -38,7 +38,6 @@ import java.util.*;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @year 2019
  */
-@Slf4j
 public class Renderer extends AbstractSystem implements System {
 
     /**
@@ -134,7 +133,7 @@ public class Renderer extends AbstractSystem implements System {
 
             Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 
-            // activate Antialiasing for image and text rendering.
+            // activate Anti-aliasing for image and text rendering.
 
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
@@ -223,8 +222,8 @@ public class Renderer extends AbstractSystem implements System {
             case LIGHT_SPHERE:
                 l.foregroundColor = brighten(l.foregroundColor, l.intensity);
                 l.colors = new Color[]{l.foregroundColor,
-                        new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
-                                l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
+                        new Color(l.foregroundColor.getRed() / 2.0f, l.foregroundColor.getGreen() / 2.0f,
+                                l.foregroundColor.getBlue() / 2.0f, l.foregroundColor.getAlpha() / 2.0f),
                         new Color(0.0f, 0.0f, 0.0f, 0.0f)};
                 l.rgp = new RadialGradientPaint(new Point((int) (l.x + (10 * Math.random() * l.glitterEffect)),
                         (int) (l.y + (10 * Math.random() * l.glitterEffect))), (int) l.width, l.dist, l.colors);

@@ -2,10 +2,8 @@ package core.state;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import core.Game;
 import core.audio.SoundSystem;
@@ -30,13 +28,15 @@ public abstract class AbstractState implements State, KeyListener {
 
 	// the parent game.
 	protected Game game;
-	// the name fo this state.
+	// the name of this state.
 	protected String name;
 	// a State must have a Camera.
 	public Camera camera;
+	public Map<String, Camera> cameras = new ConcurrentHashMap<>();
 	public ObjectManager objectManager;
-	protected  InputHandler inputHandler;
-	protected  SoundSystem soundSystem;
+	protected InputHandler inputHandler;
+	protected SoundSystem soundSystem;
+
 	/**
 	 * the default constructor.
 	 */
@@ -99,8 +99,13 @@ public abstract class AbstractState implements State, KeyListener {
 	 */
 	public void addObject(GameObject go) {
 		if (go instanceof Camera) {
-			this.camera = (Camera) go;
-		}else {
+			if (!cameras.containsKey(go.name)) {
+				cameras.put(go.name, (Camera) go);
+			}
+			if (this.camera == null) {
+				this.camera = (Camera) go;
+			}
+		} else {
 			objectManager.add(go);
 			game.renderer.add(go);
 			if (!go.child.isEmpty()) {
@@ -110,7 +115,11 @@ public abstract class AbstractState implements State, KeyListener {
 		}
 	}
 
-
+	public void switchCamera(String camName) {
+		if (cameras.containsKey(camName)) {
+			this.camera = cameras.get(camName);
+		}
+	}
 
 	/**
 	 * return the current active camera.
@@ -120,7 +129,6 @@ public abstract class AbstractState implements State, KeyListener {
 	public Camera getActiveCamera() {
 		return camera;
 	}
-
 
 	/**
 	 * Define the parent Game.

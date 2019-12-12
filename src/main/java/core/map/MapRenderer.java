@@ -2,7 +2,6 @@ package core.map;
 
 import core.Game;
 import core.object.Camera;
-import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 
@@ -12,7 +11,6 @@ import java.awt.*;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @since 2019
  */
-@Slf4j
 public class MapRenderer {
 	Color backTransparent = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -63,9 +61,11 @@ public class MapRenderer {
 							} else {
 								g.setColor(Color.BLUE);
 							}
-							g.drawRect((int) x * mapLayer.assetsObjects.get(0).tileWidth,
+							g.drawRect(
+									(int) x * mapLayer.assetsObjects.get(0).tileWidth,
 									(int) y * mapLayer.assetsObjects.get(0).tileHeight,
-									mapLayer.assetsObjects.get(0).tileWidth, mapLayer.assetsObjects.get(0).tileHeight);
+									mapLayer.assetsObjects.get(0).tileWidth, 
+									mapLayer.assetsObjects.get(0).tileHeight);
 						}
 					}
 				}
