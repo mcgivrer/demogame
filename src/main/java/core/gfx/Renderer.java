@@ -34,7 +34,6 @@ import javax.swing.JFrame;
 
 import core.Config;
 import core.Game;
-import core.ResourceManager;
 import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
@@ -42,6 +41,7 @@ import core.map.MapRenderer;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.Light;
+import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
 
@@ -167,10 +167,10 @@ public class Renderer extends AbstractSystem implements System {
 					g.translate(camera.x, camera.y);
 				}
 			}
-			g.setComposite(c);
 
 			drawLights(dg);
 
+			g.setComposite(c);
 			// draw HUD
 			dg.stateManager.getCurrent().drawHUD(dg, this, g);
 			g.dispose();
@@ -231,6 +231,7 @@ public class Renderer extends AbstractSystem implements System {
 	 * @param l  the Light to be rendered.
 	 */
 	private void drawLight(Game dg, Graphics2D g, Light l) {
+		Composite c = g.getComposite();
 		switch (l.lightType) {
 		case LIGHT_SPHERE:
 			l.foregroundColor = brighten(l.foregroundColor, l.intensity);
@@ -242,7 +243,7 @@ public class Renderer extends AbstractSystem implements System {
 					(int) (l.y + (10 * Math.random() * l.glitterEffect))), (int) l.width, l.dist, l.colors);
 
 			g.setPaint(l.rgp);
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER, (float) l.intensity));
 			g.fill(new Ellipse2D.Double(l.x - l.width, l.y - l.width, l.width * 2, l.width * 2));
 			break;
 
@@ -255,12 +256,13 @@ public class Renderer extends AbstractSystem implements System {
 			final Area ambientArea = new Area(new Rectangle2D.Double(dg.stateManager.getCurrent().getActiveCamera().x,
 					dg.stateManager.getCurrent().getActiveCamera().y, dg.config.screenWidth, dg.config.screenHeight));
 			g.setColor(l.foregroundColor);
-			Composite c = g.getComposite();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
+
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER, (float) l.intensity));
 			g.fill(ambientArea);
-			g.setComposite(c);
 			break;
 		}
+		
+		g.setComposite(c);
 	}
 
 	/**

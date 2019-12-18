@@ -5,6 +5,7 @@ import core.collision.MapCollidingService;
 import core.gfx.Renderer;
 import core.io.InputHandler;
 import core.object.ObjectManager;
+import core.resource.ResourceManager;
 import core.state.StateManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;

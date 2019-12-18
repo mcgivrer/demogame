@@ -1,4 +1,4 @@
-package core;
+package core.resource;
 
 /**
  * the ProgressListener interface is used to track  Resource loading progression,

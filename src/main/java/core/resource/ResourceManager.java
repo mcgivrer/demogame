@@ -1,5 +1,6 @@
-package core;
+package core.resource;
 
+import core.Game;
 import core.audio.SoundClip;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;

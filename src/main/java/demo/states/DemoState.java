@@ -8,8 +8,8 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import core.Game;
-import core.ProgressListener;
-import core.ResourceManager;
+import core.resource.ProgressListener;
+import core.resource.ResourceManager;
 import core.audio.SoundSystem;
 import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;

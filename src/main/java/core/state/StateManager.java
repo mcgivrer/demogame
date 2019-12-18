@@ -2,7 +2,7 @@ package core.state;
 
 import com.google.gson.Gson;
 import core.Game;
-import core.ResourceManager;
+import core.resource.ResourceManager;
 import core.gfx.Renderer;
 import core.system.AbstractSystem;
 import core.system.System;

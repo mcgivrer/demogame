@@ -6,7 +6,7 @@
     <artifactId>DemoGame</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>core.Game</name>
-    <description>This is a sample implementaiton of a Game with Java JRE only</description>
+    <description>This is a sample implementation of a Game with Java JRE only</description>
     <url>https://github.com/mcgivrer/demogame</url>
     <inceptionYear>2019</inceptionYear>
 
