@@ -15,94 +15,76 @@ import java.util.Map;
  * @since 2019
  */
 public class DebugInfo {
-    public static Font debugFont;
-    /**
-     * display information to an information panel on right of GameObject
-     *
-     * @param g
-     * @param go
-     */
-    public static void display(Graphics2D g, GameObject go) {
-        g.setFont(debugFont);
-        FontMetrics fm = g.getFontMetrics(debugFont);
+	public static Font debugFont;
 
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        int maxWidth = 60;
-        int maxLinePerColumn = 4;
-        int fontHeight = fm.getHeight();
-        double offsetX = go.x + go.width + 2;
-        double offsetY = go.y;
+	/**
+	 * display information to an information panel on right of GameObject
+	 *
+	 * @param g
+	 * @param go
+	 */
+	public static void display(Graphics2D g, GameObject go) {
+		g.setFont(debugFont);
+		FontMetrics fm = g.getFontMetrics(debugFont);
 
-        java.util.List<String> debugInfo = prepareDebugInfo(go);
-        int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
-        int height = (debugInfo.size() - 1) * (fontHeight - 3);
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+		int maxWidth = 60;
+		int maxLinePerColumn = 4;
+		int fontHeight = fm.getHeight();
+		double offsetX = go.x + go.width + 2;
+		double offsetY = go.y;
 
-        drawBackgroundPanel(g,
-                offsetX, offsetY - fontHeight,
-                width, height,
-                Color.DARK_GRAY,
-                new Color(0.3f, 0.3f, 0.3f, 0.4f));
+		java.util.List<String> debugInfo = prepareDebugInfo(go);
+		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
+		int height = (debugInfo.size() - 1) * (fontHeight - 3);
 
-        drawAttributesText(
-                g, debugInfo,
-                offsetX, offsetY,
-                maxWidth, maxLinePerColumn, fontHeight,
-                Color.WHITE);
-    }
+		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, Color.DARK_GRAY,
+				new Color(0.6f, 0.6f, 0.6f, 0.9f));
 
-    private static List<String> prepareDebugInfo(GameObject go) {
-        List<String> debugInfo = new ArrayList<>();
-        debugInfo.add(String.format("name:%s", go.name));
-        debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.x, go.y));
-        debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.dx, go.dy));
-        debugInfo.add(String.format("debug:%d", go.debugLevel));
-        debugInfo.add(String.format("action:%s", go.action.toString()));
+		drawAttributesText(g, debugInfo, offsetX, offsetY, maxWidth, maxLinePerColumn, fontHeight, Color.WHITE);
 
-        for (Map.Entry<String, Object> e : go.attributes.entrySet()) {
-            String debugInfoLine = String.format("%s:%s", e.getKey(), e.getValue().toString());
-            debugInfo.add(debugInfoLine);
-        }
-        return debugInfo;
-    }
+		// draw object size
+		g.setColor(Color.BLUE);
+		g.fillRect(0, 0, (int) go.width, (int) go.height);
 
-    private static void drawAttributesText(
-            Graphics2D g, List<String> debugInfo,
-            double offsetX, double offsetY,
-            int maxWidth, int maxLinePerColumn,
-            int fontHeight,
-            Color textColor) {
-        g.setColor(textColor);
-        int x = 0, y = 0;
-        for (String line : debugInfo) {
-            g.drawString(String.format("%s", line),
-                    (int)(x + offsetX),
-                    (int)((y * (fontHeight + 2)) + offsetY + 4));
-            y += 1;
-            if (y > maxLinePerColumn) {
-                y = 0;
-                x += maxWidth + 2;
-            }
-        }
-    }
+	}
 
-    private static void drawBackgroundPanel(
-            Graphics2D g,
-            double offsetX, double offsetY,
-            int width, int height,
-            Color borderColor, Color backgroundColor) {
-        g.setColor(backgroundColor);
-        g.fillRect(
-                (int) offsetX - 4, (int) (offsetY),
-                width, height
-        );
-        g.setColor(borderColor);
-        g.drawRect(
-                (int) offsetX - 4,
-                (int) (offsetY),
-                width,
-                height
-        );
-    }
+	private static List<String> prepareDebugInfo(GameObject go) {
+		List<String> debugInfo = new ArrayList<>();
+		debugInfo.add(String.format("name:%s", go.name));
+		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.x, go.y));
+		debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.dx, go.dy));
+		debugInfo.add(String.format("debug:%d", go.debugLevel));
+		debugInfo.add(String.format("action:%s", go.action.toString()));
+
+		for (Map.Entry<String, Object> e : go.attributes.entrySet()) {
+			String debugInfoLine = String.format("%s:%s", e.getKey(), e.getValue().toString());
+			debugInfo.add(debugInfoLine);
+		}
+		return debugInfo;
+	}
+
+	private static void drawAttributesText(Graphics2D g, List<String> debugInfo, double offsetX, double offsetY,
+			int maxWidth, int maxLinePerColumn, int fontHeight, Color textColor) {
+		g.setColor(textColor);
+		int x = 0, y = 0;
+		for (String line : debugInfo) {
+			g.drawString(String.format("%s", line), (int) (x + offsetX), (int) ((y * (fontHeight + 2)) + offsetY + 4));
+			y += 1;
+			if (y > maxLinePerColumn) {
+				y = 0;
+				x += maxWidth + 2;
+			}
+		}
+	}
+
+	private static void drawBackgroundPanel(Graphics2D g, double offsetX, double offsetY, int width, int height,
+			Color borderColor, Color backgroundColor) {
+		g.setColor(backgroundColor);
+		g.fillRect((int) offsetX - 4, (int) (offsetY), width, height);
+		g.setColor(borderColor);
+		g.drawRect((int) offsetX - 4, (int) (offsetY), width, height);
+	}
 
 	public static void displayCollisionTest(Graphics2D g, GameObject go) {
 		int ox = (int) (go.bbox.x / 16);

@@ -42,7 +42,7 @@ public class Config {
         this.screenWidth = 720;
         this.screenHeight = 300;
         this.screenScale = 1.5f;
-        this.fps = 30;
+        this.fps = 60;
         this.debug = 0;
         this.statesPath = "/res/game.json";
         this.mute = false;

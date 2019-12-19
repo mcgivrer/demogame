@@ -108,10 +108,6 @@ public abstract class AbstractState implements State, KeyListener {
 		} else {
 			objectManager.add(go);
 			game.renderer.add(go);
-			if (!go.child.isEmpty()) {
-				objectManager.putAll(go.child);
-				game.renderer.addAll(go.child);
-			}
 		}
 	}
 

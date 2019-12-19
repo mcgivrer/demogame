@@ -114,7 +114,7 @@ public class DemoState extends AbstractState implements State {
         super.initialize(g);
 
         objectManager.clear();
-        messageFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(12.0f);
+        messageFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(16.0f);
         scoreFont = messageFont.deriveFont(24.0f);
         infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
@@ -196,33 +196,34 @@ public class DemoState extends AbstractState implements State {
             mapLevel.layer = 1;
             // MapLevel and all its child GameObjects will be added.
             addObject(mapLevel);
+            
+            // Add Score text on H.U.D. (fixed = true)
+            scoreObject = new TextObject("score", 
+            		g.config.screenWidth - 80, 40,
+                    Color.WHITE,
+                    Color.BLACK,
+                    new Color(0.1f, 0.1f, 0.1f, 0.8f),
+                    scoreFont,
+                    true, 10,
+                    TextAlign.LEFT);
+            scoreObject.setText("%06d", this.score);
+            addObject(scoreObject);
 
+            // add a Welcome message for 3s.
             welcomeText = new TextObject("welcome",
                     g.config.screenWidth/2, g.config.screenHeight/2,
                     Color.WHITE,
                     Color.BLACK,
                     new Color(0.1f, 0.1f, 0.1f, 0.8f),
                     messageFont,
-                    true, 5,
+                    true, 10,
                     TextAlign.CENTER);
             welcomeText.duration=3000;
-            welcomeText.setText("Welcome in this demonstration");
+            welcomeText.setText("Welcome to this Basic Game Demonstration");
             addObject(welcomeText);
-            
-            // Add Score text on H.U.D. (fixed = true)
-            scoreObject = new TextObject("score", 
-            		g.config.screenWidth - 70, 32,
-                    Color.WHITE,
-                    Color.BLACK,
-                    new Color(0.1f, 0.1f, 0.1f, 0.8f),
-                    scoreFont,
-                    true, 5,
-                    TextAlign.LEFT);
-            scoreObject.setText("%06d", this.score);
-            addObject(scoreObject);
-
-            GameObject player = objectManager.get("player");
+          
             // Create camera
+            GameObject player = objectManager.get("player");
             Camera cam = new Camera("camera", player, 0.017f,
                     new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
             addObject(cam);
@@ -319,7 +320,6 @@ public class DemoState extends AbstractState implements State {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_R:
                 if (control) {
-
                     GameObject player = objectManager.get("player");
                     player.action = GameAction.IDLE2;
                     player.setSpeed(0.0f, 0.0f);

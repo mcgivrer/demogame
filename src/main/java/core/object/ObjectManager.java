@@ -29,165 +29,178 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ObjectManager extends AbstractSystem implements System {
 
-    public Map<String, GameObject> objects = new ConcurrentHashMap<>();
+	public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 
-    public List<GameObject> objectsToDelete = new ArrayList<>();
-
-    /**
-     * @param game
-     */
-    public ObjectManager(Game game) {
-        super(game);
-    }
-
-    @Override
-    public int initialize(Game game) {
-        log.info("ObjectManager ready");
-        return 1;
-    }
-
-    @Override
-    public void dispose() {
-        objects.clear();
-        objects = null;
-    }
-
-    @Override
-    public String getName() {
-        return ObjectManager.class.getCanonicalName();
-    }
-
-    public void add(GameObject go) {
-        if (!objects.containsKey(go.name)) {
-            objects.put(go.name, go);
-        } else {
-            log.error("object '{}' as {} is already managed", go.name, go.getClass().getCanonicalName());
-        }
-    }
-
-    public void remove(String name) {
-        objects.remove(name);
-    }
-
-    /**
-     * retrieve all GameObject which name contains filterName.
-     *
-     * @param filterName the string to filter objects on.
-     * @return a filtered list of GameObject.
-     */
-    public List<GameObject> getFilteredObjectList(String filterName) {
-        List<GameObject> filtered = new ArrayList<>();
-        for (GameObject o : objects.values()) {
-            if (o.name.contains(filterName)) {
-                filtered.add(o);
-            }
-        }
-        return filtered;
-    }
-
-    /**
-     * Update the GameObject duration and life status.
-     * If the duration object<0 then this object will be deleted.
-     *
-     * @param go
-     */
-    public void updateObject(Game game,GameObject go, double elapsed) {
-        go.update(game,elapsed);
-        if (go.duration == 0) {
-            go.active = false;
-        }
-    }
+	public List<GameObject> objectsToDelete = new ArrayList<>();
 
 	/**
-	 * Remove all object from the
-	 * @param go
-	 * @param elapsed
+	 * @param game
 	 */
-	public void update(GameObject go, double elapsed){
+	public ObjectManager(Game game) {
+		super(game);
 	}
 
-    /**
-     * @param filterClassName the name of the class to filter objects on.
-     * @returna filtered list of GameObject.
-     */
-    public List<GameObject> getFilteredObjectList(Class<?> filterClassName) {
-        List<GameObject> filtered = new ArrayList<>();
-        for (GameObject o : objects.values()) {
-            if (o.getClass().equals(filterClassName)) {
-                filtered.add(o);
-            }
-        }
-        return filtered;
-    }
+	@Override
+	public int initialize(Game game) {
+		log.info("ObjectManager ready");
+		return 1;
+	}
 
-    /**
-     * Retrieve a specific named object in the map.
-     *
-     * @param name the name of the object to be retrieved.
-     * @return the corresponding GameObject
-     */
-    public GameObject get(String name) {
-        return objects.get(name);
-    }
+	@Override
+	public void dispose() {
+		objects.clear();
+		objects = null;
+	}
 
-    public void putAll(Map<String, GameObject> child) {
-        objects.putAll(child);
+	@Override
+	public String getName() {
+		return ObjectManager.class.getCanonicalName();
+	}
 
-    }
+	public void add(GameObject go) {
+		if (!objects.containsKey(go.name)) {
+			objects.put(go.name, go);
+			if (!go.child.isEmpty()) {
+				putAll(go.child);
+			}
+		} else {
+			log.error("object '{}' as {} is already managed", go.name, go.getClass().getCanonicalName());
+		}
+	}
 
-    /**
-     * Add a bunch of object to the game !
-     *
-     * @param objects the list of core.object.GameObject to be added to the
-     *                core.Game#objects list.
-     */
-    public void addAllObject(Collection<GameObject> objects) {
-        for (GameObject o : objects) {
-            add(o);
-        }
-    }
+	public void remove(String name) {
+		objects.remove(name);
+	}
 
-    public void removeObject(GameObject go) {
-        objects.remove(go.name);
-        game.renderer.remove(go);
-    }
+	/**
+	 * retrieve all GameObject which name contains filterName.
+	 *
+	 * @param filterName the string to filter objects on.
+	 * @return a filtered list of GameObject.
+	 */
+	public List<GameObject> getFilteredObjectList(String filterName) {
+		List<GameObject> filtered = new ArrayList<>();
+		for (GameObject o : objects.values()) {
+			if (o.name.contains(filterName)) {
+				filtered.add(o);
+			}
+		}
+		return filtered;
+	}
 
-    public void removeObject(String name) {
-        if (objects.containsKey(name)) {
-            GameObject go = objects.get(name);
-            removeObject(go);
-        }
-    }
+	/**
+	 * Update the GameObject duration and life status. If the duration object<0 then
+	 * this object will be deleted.
+	 *
+	 * @param go
+	 */
+	public void updateObject(Game game, GameObject go, double elapsed) {
 
-    public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
-        game.renderer.removeAll(objectsToBeRemoved);
-        objects.values().removeAll(objectsToBeRemoved);
-    }
+		// Update object
+		go.update(game, elapsed);
 
-    public void removeFilteredObjects(String nameFilter) {
-        List<GameObject> toBeRemoved = new ArrayList<>();
-        for (GameObject go : objects.values()) {
-            if (go.name.contains(nameFilter)) {
-                toBeRemoved.add(go);
-            }
-        }
-        if (!toBeRemoved.isEmpty()) {
-            removeAllObjects(toBeRemoved);
-            toBeRemoved.clear();
-        }
-    }
+		// Compute Life duration for this GameObject.
+		if (go.displayed && go.duration > 0) {
+			go.duration -= elapsed;
+			if (go.duration <= 0.0) {
+				go.duration = 0;
+				go.displayed = false;
+				log.debug("the GameObject named '{}' is no more displayed", go.name);
+			}
+		}
+	}
 
-    public void clear() {
-        objects.clear();
+	/**
+	 * Return a name's filtered list of GameObject.
+	 * 
+	 * @param filterClassName the name of the class to filter objects on.
+	 * @return a filtered list of GameObject.
+	 */
+	public List<GameObject> getFilteredObjectList(Class<?> filterClassName) {
+		List<GameObject> filtered = new ArrayList<>();
+		for (GameObject o : objects.values()) {
+			if (o.getClass().equals(filterClassName)) {
+				filtered.add(o);
+			}
+		}
+		return filtered;
+	}
 
-    }
+	/**
+	 * Retrieve a specific named object in the map.
+	 *
+	 * @param name the name of the object to be retrieved.
+	 * @return the corresponding GameObject
+	 */
+	public GameObject get(String name) {
+		return objects.get(name);
+	}
 
-    public Object getAll() {
-        return objects.values().toArray();
-    }
+	/**
+	 * Add all object from this map to the Object management system.
+	 * 
+	 * @param child
+	 */
+	public void putAll(Map<String, GameObject> objects) {
+		for (GameObject go : objects.values()) {
+			add(go);
+		}
 
-    public boolean contains(String name) {
-        return objects.containsKey(name);
-    }
+	}
+
+	/**
+	 * Add a bunch of object to the object management system.
+	 *
+	 * @param objects the list of core.object.GameObject to be added to the
+	 *                core.Game#objects list.
+	 */
+	public void addAll(Collection<GameObject> objects) {
+		for (GameObject o : objects) {
+			add(o);
+		}
+	}
+
+	public void removeObject(GameObject go) {
+		objects.remove(go.name);
+		game.renderer.remove(go);
+	}
+
+	public void removeObject(String name) {
+		if (objects.containsKey(name)) {
+			GameObject go = objects.get(name);
+			removeObject(go);
+		}
+	}
+
+	public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
+		game.renderer.removeAll(objectsToBeRemoved);
+		objects.values().removeAll(objectsToBeRemoved);
+	}
+
+	public void removeFilteredObjects(String nameFilter) {
+		List<GameObject> toBeRemoved = new ArrayList<>();
+		for (GameObject go : objects.values()) {
+			if (go.name.contains(nameFilter)) {
+				toBeRemoved.add(go);
+			}
+		}
+		if (!toBeRemoved.isEmpty()) {
+			removeAllObjects(toBeRemoved);
+			toBeRemoved.clear();
+		}
+	}
+
+	public void clear() {
+		objects.clear();
+
+	}
+
+	public Object getAll() {
+		return objects.values().toArray();
+	}
+
+	public boolean contains(String name) {
+		return objects.containsKey(name);
+	}
 
 }

@@ -1,9 +1,11 @@
 package core.map;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import core.Game;
 import core.object.Camera;
-
-import java.awt.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A core.gfx.Renderer for the core.map.MapLevel.
@@ -35,45 +37,78 @@ public class MapRenderer {
 			switch (mapLayer.type) {
 
 			case LAYER_BACKGROUND_IMAGE:
-				if (mapLayer.backgroundImage != null) {
-					double bx = camera.x * mapLayer.backgroundImage.getWidth() / (mWidth * tileWidth);
-					double by = camera.y;
-					for (int x = (int) (bx - (1 * mapLayer.backgroundImage.getWidth())); x <= (bx
-							+ (2 * mapLayer.backgroundImage.getWidth())); x += mapLayer.backgroundImage.getWidth()) {
-						g.drawImage(mapLayer.backgroundImage, (int) x, (int) by, null);
-					}
-				}
+				drawBackgroundLayer(g, camera, mWidth, tileWidth, mapLayer);
 				break;
 
 			case LAYER_TILEMAP:
-				for (int y = 0; y < mHeight; y++) {
-					for (int x = 0; x < mWidth; x++) {
-						MapObject mo = getTile(mapLayer, x, y);
-						if (mo != null) {
-							if (mo.frameSet.size() > 0) {
-								animateMapObject(mo, elapsed);
-							}
-							g.drawImage(mo.imageBuffer, x * mo.width, y * mo.height, null);
-						}
-						if (dg.config.debug > 4) {
-							if (mo != null) {
-								g.setColor(Color.GRAY);
-							} else {
-								g.setColor(Color.BLUE);
-							}
-							g.drawRect(
-									(int) x * mapLayer.assetsObjects.get(0).tileWidth,
-									(int) y * mapLayer.assetsObjects.get(0).tileHeight,
-									mapLayer.assetsObjects.get(0).tileWidth, 
-									mapLayer.assetsObjects.get(0).tileHeight);
-						}
-					}
-				}
+				drawTilemapLayer(dg, g, elapsed, camera, mHeight, mWidth, mapLayer);
 				break;
 			}
 
 		}
 
+	}
+
+	/**
+	 * @param dg
+	 * @param g
+	 * @param elapsed
+	 * @param mHeight
+	 * @param mWidth
+	 * @param mapLayer
+	 */
+	private void drawTilemapLayer(Game dg, Graphics2D g, double elapsed, Camera camera, int mHeight, int mWidth,
+			MapLayer mapLayer) {
+
+		int cx = (int) (camera.x / mapLayer.assetsObjects.get(0).tileWidth);
+		int cy = (int) (camera.y / mapLayer.assetsObjects.get(0).tileHeight);
+		int offCx = (int) (camera.viewport.width / (mapLayer.assetsObjects.get(0).tileWidth)) + 2;
+		int offCy = (int) (camera.viewport.height / (mapLayer.assetsObjects.get(0).tileHeight)) + 2;
+
+		int top = (cy < 0 ? 0 : cy);
+		int bottom = (cy + offCy > mHeight ? mHeight : cy + offCy);
+		int left = (cx < 0 ? 0 : cx);
+		int right = (cx + offCx > mHeight ? mWidth : cx + offCx);
+
+		for (int y = top; y < bottom; y++) {
+			for (int x = left; x < right; x++) {
+				MapObject mo = getTile(mapLayer, x, y);
+				if (mo != null) {
+					if (mo.frameSet.size() > 0) {
+						animateMapObject(mo, elapsed);
+					}
+					g.drawImage(mo.imageBuffer, x * mo.width, y * mo.height, null);
+				}
+				if (dg.config.debug > 4) {
+					if (mo != null) {
+						g.setColor(Color.GRAY);
+					} else {
+						g.setColor(Color.BLUE);
+					}
+					g.drawRect((int) x * mapLayer.assetsObjects.get(0).tileWidth,
+							(int) y * mapLayer.assetsObjects.get(0).tileHeight, mapLayer.assetsObjects.get(0).tileWidth,
+							mapLayer.assetsObjects.get(0).tileHeight);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param g
+	 * @param camera
+	 * @param mWidth
+	 * @param tileWidth
+	 * @param mapLayer
+	 */
+	private void drawBackgroundLayer(Graphics2D g, Camera camera, int mWidth, int tileWidth, MapLayer mapLayer) {
+		if (mapLayer.backgroundImage != null) {
+			double bx = camera.x * mapLayer.backgroundImage.getWidth() / (mWidth * tileWidth);
+			double by = camera.y;
+			for (int x = (int) (bx - (1 * mapLayer.backgroundImage.getWidth())); x <= (bx
+					+ (2 * mapLayer.backgroundImage.getWidth())); x += mapLayer.backgroundImage.getWidth()) {
+				g.drawImage(mapLayer.backgroundImage, (int) x, (int) by, null);
+			}
+		}
 	}
 
 	/**
