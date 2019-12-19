@@ -157,13 +157,11 @@ public class Renderer extends AbstractSystem implements System {
 			Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 
 			// activate Anti-aliasing for image and text rendering.
-
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
 			// clear image
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, dg.config.screenWidth, dg.config.screenHeight);
-			Composite c = g.getComposite();
 			for (Layer layer : layers.values()) {
 				// if a camera is set, use it.
 				if (camera != null && !layer.fixed) {
@@ -176,7 +174,6 @@ public class Renderer extends AbstractSystem implements System {
 				}
 			}
 
-			g.setComposite(c);
 			// draw HUD
 			dg.stateManager.getCurrent().drawHUD(dg, this, g);
 			g.dispose();

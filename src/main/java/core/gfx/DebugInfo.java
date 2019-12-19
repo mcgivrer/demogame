@@ -1,12 +1,16 @@
 package core.gfx;
 
-import core.collision.MapTileCollision;
-import core.object.GameObject;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import core.collision.MapTileCollision;
+import core.object.GameObject;
 
 /**
  * A Debug object to draw debug information on a specific GameObject.
@@ -34,7 +38,7 @@ public class DebugInfo {
 		double offsetX = go.x + go.width + 2;
 		double offsetY = go.y;
 
-		java.util.List<String> debugInfo = prepareDebugInfo(go);
+		List<String> debugInfo = prepareDebugInfo(go);
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
 		int height = (debugInfo.size() - 1) * (fontHeight - 3);
 

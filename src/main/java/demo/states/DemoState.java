@@ -348,7 +348,7 @@ public class DemoState extends AbstractState implements State {
         MapLayer frontLayer = mapLevel.layers.get("front");
 
         // update all objects
-        for (GameObject go : objectManager.getFilteredObjectList(GameObject.class)) {
+        for (GameObject go : objectManager.getAll()) {
             if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
                 objectManager.updateObject(game, go, elapsed);
                 mapCollider.checkCollision(frontLayer, 0, go);

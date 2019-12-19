@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * A manager to store GameObject on the game system..
  *
- * @author Frédéric Delorme
+ * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @since 2019
  */
 @Slf4j
@@ -95,15 +95,25 @@ public class ObjectManager extends AbstractSystem implements System {
 	 * @param go
 	 */
 	public void updateObject(Game game, GameObject go, double elapsed) {
+		if (go.enable) {
+			// Update object
+			go.update(game, elapsed);
+			computeDuration(go, elapsed);
+		}
+	}
 
-		// Update object
-		go.update(game, elapsed);
-
+	/**
+	 * Compute GameObject duration and estimate if it's displayed.
+	 * 
+	 * @param go      GameObject to be tested
+	 * @param elapsed elapsed time since previous call.
+	 */
+	private void computeDuration(GameObject go, double elapsed) {
 		// Compute Life duration for this GameObject.
-		if (go.displayed && go.duration > 0) {
+		if (go.displayed && go.duration > 0.0) {
 			go.duration -= elapsed;
 			if (go.duration <= 0.0) {
-				go.duration = 0;
+				go.duration = 0.0;
 				go.displayed = false;
 				log.debug("the GameObject named '{}' is no more displayed", go.name);
 			}
@@ -160,11 +170,21 @@ public class ObjectManager extends AbstractSystem implements System {
 		}
 	}
 
+	/**
+	 * remove one specific GameObject from object manager.
+	 * 
+	 * @param go the game object to be removed from Management.
+	 */
 	public void removeObject(GameObject go) {
 		objects.remove(go.name);
 		game.renderer.remove(go);
 	}
 
+	/**
+	 * remove one specific GameObject on its name from object manager.
+	 * 
+	 * @param name name of the object to be removed.
+	 */
 	public void removeObject(String name) {
 		if (objects.containsKey(name)) {
 			GameObject go = objects.get(name);
@@ -172,11 +192,21 @@ public class ObjectManager extends AbstractSystem implements System {
 		}
 	}
 
+	/**
+	 * Remove all object in list from the object manager.
+	 * 
+	 * @param objectsToBeRemoved
+	 */
 	public void removeAllObjects(List<GameObject> objectsToBeRemoved) {
 		game.renderer.removeAll(objectsToBeRemoved);
 		objects.values().removeAll(objectsToBeRemoved);
 	}
 
+	/**
+	 * Remove all GameObject with name containing nameFilter.
+	 * 
+	 * @param nameFilter the filtering name to be applied.
+	 */
 	public void removeFilteredObjects(String nameFilter) {
 		List<GameObject> toBeRemoved = new ArrayList<>();
 		for (GameObject go : objects.values()) {
@@ -190,15 +220,30 @@ public class ObjectManager extends AbstractSystem implements System {
 		}
 	}
 
+	/**
+	 * Remove all objects from object management.
+	 */
 	public void clear() {
 		objects.clear();
 
 	}
 
-	public Object getAll() {
-		return objects.values().toArray();
+	/**
+	 * Retrieve all object from object management.
+	 * 
+	 * @return
+	 */
+	public Collection<GameObject> getAll() {
+		return objects.values();
 	}
 
+	/**
+	 * Test if object management contains an object with the specific
+	 * <code>name</code>.
+	 * 
+	 * @param name
+	 * @return
+	 */
 	public boolean contains(String name) {
 		return objects.containsKey(name);
 	}
