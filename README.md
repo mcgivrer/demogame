@@ -49,4 +49,8 @@ Or after a build, just execute:
 
 *figure 3 - the same display with tilemap debug activated*
 
+![A lot of new things like lights !](src/docs/images/screen-4.png "Adding lights and text")
+
+*figure 4 - A lot of new things like lights, Gothic Score, Items and Text!*
+
 McG.

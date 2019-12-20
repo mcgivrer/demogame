@@ -224,25 +224,18 @@ public class Renderer extends AbstractSystem implements System {
 				ox = to.x;
 				break;
 			}
+			int boxPadding=4;
 
 			// draw Background rectangle.
-			if(to.backgroundColor!=null) {
-				g.setColor(to.backgroundColor);
-				g.fillRect((int)(ox-4), (int)(oy-4-(fm.getMaxAscent())), (int)(to.width+8), (int)(to.height+8));
-			}
-			if(to.borderColor!=null) {
-				g.setColor(to.borderColor);
-				
-				g.drawRect((int)(ox-4), (int)(oy-4-(fm.getMaxAscent())), (int)(to.width+8), (int)(to.height+8));
-			}
-			
+			drawBackgroundBox(g, to, fm, ox, oy, boxPadding);
+
 			if (to.shadowColor != null) {
 				g.setColor(to.shadowColor);
 				g.drawString(to.text, (int) ox + 1, (int) oy + 1);
 				g.drawString(to.text, (int) ox + 2, (int) oy + 2);
 			}
 
-			if (to.outlinedColor!= null) {
+			if (to.outlinedColor != null) {
 				g.setColor(to.outlinedColor);
 				g.drawString(to.text, (int) ox + 1, (int) oy);
 				g.drawString(to.text, (int) ox, (int) oy + 1);
@@ -253,6 +246,38 @@ public class Renderer extends AbstractSystem implements System {
 			g.setColor(to.foregroundColor);
 			g.drawString(to.text, (int) ox, (int) oy);
 			g.setFont(b);
+		}
+	}
+
+	/**
+	 * @param g
+	 * @param to
+	 * @param fm
+	 * @param ox
+	 * @param oy
+	 * @param boxPadding
+	 */
+	public void drawBackgroundBox(Graphics2D g, TextObject to, FontMetrics fm, double ox, double oy, int boxPadding) {
+		if (to.backgroundColor != null) {
+			g.setColor(to.shadowColor);
+			g.fillRect((int) (ox), (int) (oy - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
+					(int) (to.height + boxPadding*2));
+			g.setColor(to.backgroundColor);
+			g.fillRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
+					(int) (to.height + boxPadding*2));
+		}
+		if (to.borderColor != null) {
+			g.setColor(to.borderColor);
+			g.drawRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
+					(int) (to.height + boxPadding*2));
+
+			g.setColor(to.shadowColor);
+			g.drawRect((int) (ox - boxPadding + 1), (int) (oy - boxPadding - (fm.getMaxAscent()) + 1), (int) (to.width - 2 + boxPadding*2),
+					(int) (to.height - 2 + boxPadding*2));
+
+			g.setColor(Color.BLACK);
+			g.drawRect((int) (ox - (boxPadding+1)), (int) (oy - (boxPadding+1) - (fm.getMaxAscent())), (int) (to.width + (boxPadding*2)+2),
+					(int) (to.height + (boxPadding*2)+2));
 		}
 	}
 
@@ -478,7 +503,7 @@ public class Renderer extends AbstractSystem implements System {
 			ImageIO.write(screenBuffer, "PNG", out);
 			renderingPause = false;
 		} catch (IOException e) {
-			log.error("Unable to write screenshot to {}:{}",filename,e.getMessage());
+			log.error("Unable to write screenshot to {}:{}", filename, e.getMessage());
 		}
 	}
 
@@ -513,6 +538,21 @@ public class Renderer extends AbstractSystem implements System {
 
 		return new Color(red, green, blue, alpha);
 
+	}
+
+	/**
+	 * Set Rendering process on pause mode if true.
+	 * 
+	 * @param pause
+	 */
+	public void setPause(boolean pause) {
+		this.renderingPause = pause;
+
+	}
+
+	public void clear() {
+		layers.clear();
+		renderingObjectPipeline.clear();
 	}
 
 }
