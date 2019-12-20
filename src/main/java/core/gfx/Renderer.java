@@ -57,25 +57,6 @@ import core.system.System;
  */
 public class Renderer extends AbstractSystem implements System {
 
-	/**
-	 * Make a color brighten.
-	 *
-	 * @param color    Color to make brighten.
-	 * @param fraction Darkness fraction.
-	 * @return Lighter color.
-	 */
-	public static Color brighten(Color color, double fraction) {
-
-		int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
-		int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
-		int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
-
-		int alpha = color.getAlpha();
-
-		return new Color(red, green, blue, alpha);
-
-	}
-
 	private static int screenShotIndex = 0;
 	public BufferedImage screenBuffer;
 	private JFrame jf;
@@ -242,14 +223,25 @@ public class Renderer extends AbstractSystem implements System {
 				break;
 			}
 
+			// draw Background rectangle.
+			if(to.backgroundColor!=null) {
+				g.setColor(to.backgroundColor);
+				g.fillRect((int)(ox-4), (int)(oy-4-(fm.getMaxAscent())), (int)(to.width+8), (int)(to.height+8));
+			}
+			if(to.borderColor!=null) {
+				g.setColor(to.borderColor);
+				
+				g.drawRect((int)(ox-4), (int)(oy-4-(fm.getMaxAscent())), (int)(to.width+8), (int)(to.height+8));
+			}
+			
 			if (to.shadowColor != null) {
 				g.setColor(to.shadowColor);
 				g.drawString(to.text, (int) ox + 1, (int) oy + 1);
 				g.drawString(to.text, (int) ox + 2, (int) oy + 2);
 			}
 
-			if (to.borderColor != null) {
-				g.setColor(to.borderColor);
+			if (to.outlinedColor!= null) {
+				g.setColor(to.outlinedColor);
 				g.drawString(to.text, (int) ox + 1, (int) oy);
 				g.drawString(to.text, (int) ox, (int) oy + 1);
 				g.drawString(to.text, (int) ox - 1, (int) oy);
@@ -271,10 +263,10 @@ public class Renderer extends AbstractSystem implements System {
 	 */
 	private void renderLight(Game dg, Graphics2D g, Light l) {
 		Composite c = g.getComposite();
-		g.setComposite(AlphaComposite.getInstance(AlphaComposite.DST_OVER, (float) l.intensity));
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
 		case LIGHT_SPHERE:
-			// l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+			l.foregroundColor = brighten(l.foregroundColor, l.intensity);
 			l.colors = new Color[] { l.foregroundColor,
 					new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
 							l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
@@ -501,4 +493,24 @@ public class Renderer extends AbstractSystem implements System {
 	public void dispose() {
 
 	}
+
+	/**
+	 * Make a color brighten.
+	 *
+	 * @param color    Color to make brighten.
+	 * @param fraction Darkness fraction.
+	 * @return Lighter color.
+	 */
+	public Color brighten(Color color, double fraction) {
+
+		int red = (int) Math.round(Math.min(255, color.getRed() + 255 * fraction));
+		int green = (int) Math.round(Math.min(255, color.getGreen() + 255 * fraction));
+		int blue = (int) Math.round(Math.min(255, color.getBlue() + 255 * fraction));
+
+		int alpha = color.getAlpha();
+
+		return new Color(red, green, blue, alpha);
+
+	}
+
 }

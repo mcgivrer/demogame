@@ -211,14 +211,16 @@ public class DemoState extends AbstractState implements State {
 
             // add a Welcome message for 3s.
             welcomeText = new TextObject("welcome",
-                    g.config.screenWidth/2, g.config.screenHeight/2,
+                    g.config.screenWidth/2, g.config.screenHeight*2/3,
                     Color.WHITE,
                     Color.BLACK,
                     new Color(0.1f, 0.1f, 0.1f, 0.8f),
                     messageFont,
                     true, 10,
                     TextAlign.CENTER);
-            welcomeText.duration=3000;
+            welcomeText.duration        = 10000;
+            welcomeText.backgroundColor = new Color(0.3f,0.3f,0.3f,0.8f);
+            welcomeText.borderColor     = Color.GRAY;
             welcomeText.setText("Welcome to this Basic Game Demonstration");
             addObject(welcomeText);
           

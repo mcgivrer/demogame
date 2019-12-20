@@ -29,6 +29,8 @@ public class TextObject extends GameObject {
     public Color shadowColor;
     // border color
     public Color borderColor;
+    // text outlined color
+    public Color outlinedColor;
 
     /**
      * Create a new TextObject with some default attributes values.

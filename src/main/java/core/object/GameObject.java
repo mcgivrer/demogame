@@ -70,8 +70,8 @@ public class GameObject {
 
     public Map<GameAction, Animation> animations = new HashMap<>();
 
-    public Color foregroundColor = Color.RED;
-    public Color backgroundColor = Color.BLACK;
+    public Color foregroundColor;
+    public Color backgroundColor;
 
     public Map<String, Object> attributes = new HashMap<>();
 
