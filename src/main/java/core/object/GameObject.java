@@ -70,8 +70,8 @@ public class GameObject {
 
     public Map<GameAction, Animation> animations = new HashMap<>();
 
-    public Color foregroundColor = Color.RED;
-    public Color backgroundColor = Color.BLACK;
+    public Color foregroundColor;
+    public Color backgroundColor;
 
     public Map<String, Object> attributes = new HashMap<>();
 
@@ -84,7 +84,7 @@ public class GameObject {
     /**
      * If the object is active it will be processed as other, but not rendered.
      */
-    public boolean active = true;
+    public boolean displayed = true;
 
     /**
      * Create a new GameObject with some default values.
@@ -158,13 +158,6 @@ public class GameObject {
         // update the bounding box for this GameObject
         if (bbox != null) {
             bbox.fromGameObject(this);
-        }
-        // Compute Life duration for this GameObject.
-        if (duration > -1) {
-            duration -= elapsed;
-            if (duration < 0) {
-                duration = 0;
-            }
         }
     }
 

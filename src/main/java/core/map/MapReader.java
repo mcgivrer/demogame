@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
-import core.ResourceManager;
+import core.resource.ResourceManager;
 import core.gfx.Animation;
 import core.object.GameObject;
 import core.object.GameObjectType;

@@ -29,6 +29,8 @@ public class TextObject extends GameObject {
     public Color shadowColor;
     // border color
     public Color borderColor;
+    // text outlined color
+    public Color outlinedColor;
 
     /**
      * Create a new TextObject with some default attributes values.
@@ -46,14 +48,14 @@ public class TextObject extends GameObject {
      */
     public TextObject(String name,
                       double x, double y,
-                      Color foreground, Color border, Color shadow,
+                      Color foreground, Color outlined, Color shadow,
                       Font font,
                       boolean fixed,
                       int layer,
                       TextAlign align) {
         super(name, x, y, 0, 0);
         this.foregroundColor = foreground;
-        this.borderColor = border;
+        this.outlinedColor = outlined;
         this.shadowColor = shadow;
         this.font = font;
         this.layer = layer;
@@ -71,6 +73,7 @@ public class TextObject extends GameObject {
      */
     @Override
     public void update(Game dg, double elapsed) {
+    	super.update(dg, elapsed);
         if (attributes.containsKey("text")) {
             this.text = attributes.get("text").toString();
         }
@@ -84,47 +87,6 @@ public class TextObject extends GameObject {
      */
     @Override
     public void render(Game dg, Graphics2D g) {
-        if (font != null && text != null) {
-            Font b = g.getFont();
-            g.setFont(font);
-            FontMetrics fm = g.getFontMetrics(font);
-            width = fm.stringWidth(text);
-            height = fm.getHeight();
-
-            double ox=x,oy=y;
-            switch(align){
-                case CENTER:
-                    ox = x - (width/2);
-
-                    break;
-                case LEFT:
-                    ox = x;
-                    break;
-                case RIGHT:
-                    ox = x - width;
-                    break;
-                default:
-                    break;
-            }
-
-            if (shadowColor != null) {
-                g.setColor(shadowColor);
-                g.drawString(text, (int) ox + 1, (int) oy + 1);
-                g.drawString(text, (int) ox + 2, (int) oy + 2);
-            }
-            
-            if (borderColor != null) {
-                g.setColor(borderColor);
-                g.drawString(text, (int) ox + 1, (int) oy);
-                g.drawString(text, (int) ox, (int) oy + 1);
-                g.drawString(text, (int) ox - 1, (int) oy);
-                g.drawString(text, (int) ox, (int) oy - 1);
-            }
-            
-            g.setColor(foregroundColor);
-            g.drawString(text, (int) ox, (int) oy);
-            g.setFont(b);
-        }
     }
 
     public void setText(String text, Object... attributes) {

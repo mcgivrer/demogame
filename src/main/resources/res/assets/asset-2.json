@@ -56,7 +56,7 @@
 					"nrj+10"
 				],
 				"maxItems": 3,
-				"selectedItem": 0
+				"selectedItem": 1
 			}
 		},
 		"L": {
@@ -66,10 +66,10 @@
 			"clazz": "core.object.Light",
 			"lightType": "LIGHT_AMBIANT",
 			"priority": 10,
-			"layer": 2,
-			"color": "[0.6,0.5,0.12,0.98]",
+			"layer": 4,
+			"color": "[0.6,0.5,0.12,0.5]",
 			"attributes": {
-				"intensity": 0.3
+				"intensity": 0.2
 				}
 		},
 		"l": {
@@ -79,8 +79,8 @@
 			"clazz": "core.object.Light",
 			"lightType": "LIGHT_SPHERE",
 			"priority": 10,
-			"layer": 4,
-			"color": "[0.9,0.9,0.3,1.0]",
+			"layer": 5,
+			"color": "[0.9,0.9,0.12,1.0]",
 			"attributes": {
 				"intensity": 0.6,
 				"radius": 130,
@@ -232,13 +232,13 @@
 			"type": "tile",
 			"id": "(",
 			"block": true,
-			"offset": "19,7"
+			"offset": "13,10"
 		},
 		")": {
 			"type": "tile",
 			"id": "(",
 			"block": true,
-			"offset": "20,7"
+			"offset": "14,10"
 		}
 	}
 }

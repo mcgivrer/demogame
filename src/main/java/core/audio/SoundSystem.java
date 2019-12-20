@@ -9,7 +9,7 @@ package core.audio;
 
 import com.google.gson.Gson;
 import core.Game;
-import core.ResourceManager;
+import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
 import lombok.extern.slf4j.Slf4j;
