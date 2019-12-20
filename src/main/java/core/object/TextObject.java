@@ -48,14 +48,14 @@ public class TextObject extends GameObject {
      */
     public TextObject(String name,
                       double x, double y,
-                      Color foreground, Color border, Color shadow,
+                      Color foreground, Color outlined, Color shadow,
                       Font font,
                       boolean fixed,
                       int layer,
                       TextAlign align) {
         super(name, x, y, 0, 0);
         this.foregroundColor = foreground;
-        this.borderColor = border;
+        this.outlinedColor = outlined;
         this.shadowColor = shadow;
         this.font = font;
         this.layer = layer;

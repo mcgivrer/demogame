@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 
 import core.Game;
 import core.object.Camera;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A core.gfx.Renderer for the core.map.MapLevel.

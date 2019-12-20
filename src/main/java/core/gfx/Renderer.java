@@ -47,6 +47,7 @@ import core.object.TextObject;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This Renderer class is the main rendering component for all objects managed
@@ -55,6 +56,7 @@ import core.system.System;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @year 2019
  */
+@Slf4j
 public class Renderer extends AbstractSystem implements System {
 
 	private static int screenShotIndex = 0;
@@ -476,7 +478,7 @@ public class Renderer extends AbstractSystem implements System {
 			ImageIO.write(screenBuffer, "PNG", out);
 			renderingPause = false;
 		} catch (IOException e) {
-			java.lang.System.err.println("Unable to write screenshot to " + filename + ":" + e.getMessage());
+			log.error("Unable to write screenshot to {}:{}",filename,e.getMessage());
 		}
 	}
 
