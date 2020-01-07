@@ -6,6 +6,7 @@ import core.gfx.Renderer;
 import core.io.InputHandler;
 import core.object.ObjectManager;
 import core.resource.ResourceManager;
+import core.scripts.LuaScriptSystem;
 import core.state.StateManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class Game {
 	private SoundSystem soundSystem;
 	private MapCollidingService mapCollider;
 	private ObjectManager objectManager;
+	private LuaScriptSystem luaSystem;
 
 	/**
 	 * Create the Game container.
@@ -89,6 +91,11 @@ public class Game {
 		// start State manager system
 		stateManager = new StateManager(this);
 		sysMan.add(stateManager);
+
+		luaSystem = new LuaScriptSystem(this);
+		sysMan.add(luaSystem);
+
+
 	}
 
 	/**
@@ -99,6 +106,9 @@ public class Game {
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
+		int frames=0;
+		int realFPS = 0;
+		int elapsedFrameTime=0;
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
@@ -107,9 +117,17 @@ public class Game {
 
 			stateManager.input(this);
 			stateManager.update(this, elapsed);
+			renderer.setRealFPS(realFPS);
 			stateManager.render(this, renderer, elapsed);
 
-			float wait = ((config.fps * 0.001f));
+			float wait = (elapsed-(config.fps * 0.001f));
+			frames++;
+			elapsedFrameTime+=elapsed;
+			if(elapsedFrameTime>1000){
+				frames=0;
+				elapsedFrameTime=0;
+				realFPS=frames;
+			}
 
 			if (wait > 0) {
 				try {
