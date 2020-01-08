@@ -125,6 +125,7 @@ public class SoundClip {
             try {
                 clip.flush();
                 clip.stop();
+                clip.drain();
                 clip.setMicrosecondPosition(0);
                 clip.start();
             } catch (RuntimeException e) {

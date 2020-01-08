@@ -120,7 +120,7 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
-		soundSystem.setMute(true);
+		soundSystem.setMute(g.config.mute);
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {

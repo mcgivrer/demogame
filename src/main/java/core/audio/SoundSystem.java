@@ -43,6 +43,9 @@ public class SoundSystem extends AbstractSystem implements System {
      */
     private Map<String, SoundClip> soundBank = new ConcurrentHashMap<String, SoundClip>();
 
+    /**
+     * mute the full soudsystem
+     */
     private boolean mute = true;
 
     /**
@@ -59,13 +62,13 @@ public class SoundSystem extends AbstractSystem implements System {
      * @param filename file name of the sound to be loaded to the
      *                 <code>soundBank</code>.
      * @return filename if file has been loaded into the sound bank or null.
-     * {@link SoundSystem}
-     * <p>
-     * SoundClip coinClip =
-     * (SoundClip)ResourceManager.get("res/audio/sounds/135936__bradwesson__collectcoin.wav");
-     * SystemManager.get(SoundSystem.class).add("coin", coinClip);
-     * </p>
-     * .
+     *         {@link SoundSystem}
+     *         <p>
+     *         SoundClip coinClip =
+     *         (SoundClip)ResourceManager.get("res/audio/sounds/135936__bradwesson__collectcoin.wav");
+     *         SystemManager.get(SoundSystem.class).add("coin", coinClip);
+     *         </p>
+     *         .
      */
     public String load(String code, String filename) {
         if (!soundBank.containsKey(code)) {
@@ -126,7 +129,8 @@ public class SoundSystem extends AbstractSystem implements System {
         if (!mute) {
             if (soundBank.containsKey(code)) {
                 SoundClip sc = soundBank.get(code);
-                sc.play(0.5f, volume);
+                float soundVolume = ((game != null && game.config != null) ? game.config.soundVolume : 1.0f);
+                sc.play(0.5f, volume * soundVolume);
                 log.debug("Play sound {} with volume {}", code, volume);
             } else {
                 log.error("unable to find the sound {} in the SoundBank !", code);
@@ -169,7 +173,6 @@ public class SoundSystem extends AbstractSystem implements System {
     public void loop(String code, float volume) {
         play(code, volume, 0.5f, true);
     }
-
 
     /**
      * Is the sound code playing right now ?
