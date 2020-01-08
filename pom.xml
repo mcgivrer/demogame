@@ -48,6 +48,14 @@
         <mainClass>core.Game</mainClass>
     </properties>
 
+    <distributionManagement>
+        <repository>
+          <id>github-demogame</id>
+          <name>GitHub OWNER Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/mcgivrer/demogame</url>
+        </repository>
+     </distributionManagement>
+
     <!-- Project Dependencies -->
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
