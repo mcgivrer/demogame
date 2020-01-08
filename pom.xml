@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.snapgames</groupId>
-    <artifactId>DemoGame</artifactId>
+    <artifactId>demogame</artifactId>
     <version>0.0.1</version>
-    <name>core.Game</name>
-    <description>This is a sample implementation of a Game with Java JRE only</description>
+    <name>demogame</name>
+    <description>This is a sample implementation of a Game with Java JRE (near) only.</description>
     <url>https://github.com/mcgivrer/demogame</url>
-    <inceptionYear>2019</inceptionYear>
+    <inceptionYear>2020</inceptionYear>
 
     <!-- Authors and Designers -->
     <contributors>
