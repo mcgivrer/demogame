@@ -31,6 +31,7 @@ public class Config {
     public int debug;
     public String statesPath;
     public boolean mute;
+    public float soundVolume;
 
     public Map<String, Object> attributes = new HashMap<>();
 
@@ -39,9 +40,9 @@ public class Config {
      */
     public Config() {
         this.title = "notitle";
-        this.screenWidth = 720;
-        this.screenHeight = 300;
-        this.screenScale = 1.5f;
+        this.screenWidth = 360;
+        this.screenHeight = 200;
+        this.screenScale = 2.0f;
         this.fps = 60;
         this.debug = 0;
         this.statesPath = "/res/game.json";
@@ -62,7 +63,8 @@ public class Config {
 		config.screenHeight = 200;
 		config.screenScale = 2.0f;
 		config.debug = 0;
-		config.fps = 60;
+        config.fps = 60;
+        config.mute = false;
 
 		for (String arg : argc) {
 			System.out.println(String.format("arg: %s", arg));
@@ -106,6 +108,10 @@ public class Config {
                 case "mute":
                     config.mute = Boolean.parseBoolean(parts[1]);
                     log.debug("sound mute:{}", config.mute);
+                    break;
+                case "sv":
+                case "soundVolume":
+                    config.soundVolume = Float.parseFloat(parts[1]);
                     break;
                 default:
                     System.out.println(String.format("Unknown arguments '%s'", arg));

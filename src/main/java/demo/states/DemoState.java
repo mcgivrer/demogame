@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Map;
 
 import javax.script.ScriptException;
 
@@ -23,6 +24,7 @@ import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
+import core.object.ObjectManager;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
 import core.object.World;
@@ -98,12 +100,16 @@ public class DemoState extends AbstractState implements State {
 				// level game
 				"/res/maps/map_2.json", "/res/assets/asset-2.json",
 				// graphics
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png",
+				"/res/images/background-1.jpg", 
+				"/res/images/tileset-1.png",
 				// audio
-				"/res/audio/sounds/collect-coin.wav", "/res/audio/sounds/collect-item-1.wav",
-				"/res/audio/sounds/collect-item-2.wav", "/res/audio/musics/once-around-the-kingdom.mp3",
+				"/res/audio/sounds/collect-coin.wav",
+				"/res/audio/sounds/collect-item-1.wav",
+				"/res/audio/sounds/collect-item-2.wav", 
+				"/res/audio/musics/once-around-the-kingdom.mp3",
 				// fonts
-				"/res/fonts/Prince Valiant.ttf", "/res/fonts/lilliput steps.ttf",
+				"/res/fonts/Prince Valiant.ttf", 
+				"/res/fonts/lilliput steps.ttf",
 				// scripts
 				"/res/scripts/enemy_update.lua" });
 
@@ -135,7 +141,7 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
-		soundSystem.setMute(true);
+		soundSystem.setMute(g.config.mute);
 
 		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[] { "/res/scripts/enemy_update.lua" });
 
@@ -231,6 +237,9 @@ public class DemoState extends AbstractState implements State {
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
 			addObject(cam);
+			// start game music background
+			soundSystem = g.sysMan.getSystem(SoundSystem.class);
+			soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 
 		}
 	}
@@ -238,9 +247,6 @@ public class DemoState extends AbstractState implements State {
 	@Override
 	public void onFocus(Game g) {
 		super.onFocus(g);
-		// start game music background
-		soundSystem = g.sysMan.getSystem(SoundSystem.class);
-		soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 	}
 
 	@Override
@@ -369,9 +375,9 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				if (scriptingOn) {
+				/*if (scriptingOn) {
 					executeScriptUpdate(g, go);
-				}
+				}*/
 			}
 		}
 
@@ -389,12 +395,13 @@ public class DemoState extends AbstractState implements State {
 	 * @param go the GameObject to be updated by its own scripts.
 	 */
 	private void executeScriptUpdate(Game g, GameObject go) {
+		Map<String,GameObject> objects = g.sysMan.getSystem(ObjectManager.class).objects;
 		if (go.attributes.containsKey("scripts")) {
 			List<String> scripts = (List<String>) go.attributes.get("scripts");
 			for (String script : scripts) {
 				LuaScriptSystem luas = g.sysMan.getSystem(LuaScriptSystem.class);
 				try {
-					luas.execute(g, world, script, go, null);
+ 					luas.execute(g, world, script, go, objects);
 					
 				} catch (ScriptException e) {
 					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());

@@ -39,7 +39,6 @@ public class LuaScriptSystem extends AbstractSystem implements System {
 
 	public LuaScriptSystem(Game g) {
 		super(g);
-
 		PrintStream printStream;
 		ByteArrayOutputStream baos;
 		globals = JsePlatform.standardGlobals();
@@ -66,6 +65,8 @@ public class LuaScriptSystem extends AbstractSystem implements System {
 		for (String path : paths) {
 			try {
 				load(path);
+				LuaValue chunk = globals.load(scripts.get(path), path);
+				chunk.call();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -84,10 +85,8 @@ public class LuaScriptSystem extends AbstractSystem implements System {
 		log.debug("load script {}", path);
 	}
 
-	public Object execute(Game g, World world, String scriptName, Object o, Map<String, Object> map)
+	public Object execute(Game g, World world, String scriptName, Object o, Map<String, GameObject> map)
 			throws ScriptException {
-		LuaValue chunk = globals.load(scripts.get(scriptName), scriptName);
-		chunk.call();
 		log.debug("execute script {} on object {}", scriptName, ((GameObject) o).name);
 
 		LuaValue gameLua = CoerceJavaToLua.coerce(g);

@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.snapgames</groupId>
-    <artifactId>DemoGame</artifactId>
+    <artifactId>demogame</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>core.Game</name>
     <description>This is a sample implementation of a Game with Java JRE only</description>
@@ -31,16 +31,16 @@
     </organization>
     <scm>
         <url>https://snapgames.github.io/</url>
-        <connection>scm:git:https://github.com/mcgivrer/DemoGame.git</connection>
-        <developerConnection>scm:git:github.com/mcgivrer/DemoGame.git</developerConnection>
+        <connection>scm:git:git@github.com:mcgivrer/demogame.git</connection>
+        <developerConnection>scm:git:git@github.com/mcgivrer/demogame.git</developerConnection>
         <tag>${project.id}-0.0.1-SNAPSHOT</tag>
     </scm>
     <issueManagement>
         <system>Issues tracker</system>
-        <url>https://github.com/mcgivrer/DemoGame/issues</url>
+        <url>https://github.com/mcgivrer/demogame/issues</url>
     </issueManagement>
     <ciManagement>
-        <url>https://travis-ci.org/mcgivrer//DemoGame</url>
+        <url>https://travis-ci.org/mcgivrer/mcgivrer/demogame</url>
         <system>travis-ci.org</system>
     </ciManagement>
 

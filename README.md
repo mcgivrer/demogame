@@ -1,9 +1,8 @@
 # DemoGame
 
+## Badges
+
 [![demogame](https://api.travis-ci.org/mcgivrer/demogame.svg?branch=develop)](https://travis-ci.org/mcgivrer/demogame "visit Travis-CI demogame project build page") [![Codacy Badge](https://api.codacy.com/project/badge/Grade/631ddda85cc24966bd29b8c1fcba10c5)](https://www.codacy.com/manual/SnapGames/demogame?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mcgivrer/demogame&amp;utm_campaign=Badge_Grade "visit Codacy demogame project quality page") [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmcgivrer%2Fdemogame.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmcgivrer%2Fdemogame?ref=badge_shield) [![Known Vulnerabilities](https://snyk.io//test/github/mcgivrer/demogame/badge.svg?targetFile=pom.xml)](https://snyk.io//test/github/mcgivrer/demogame?targetFile=pom.xml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![pipeline status](https://framagit.org/mcgivrer/demogame/badges/develop/pipeline.svg)](https://framagit.org/mcgivrer/demogame/commits/develop) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/631ddda85cc24966bd29b8c1fcba10c5)](https://www.codacy.com/manual/SnapGames/demogame?utm_source=github.com&utm_medium=referral&utm_content=mcgivrer/demogame&utm_campaign=Badge_Coverage)
-
-
-
 
 ## Description
 
@@ -22,7 +21,6 @@ Build with :
 
     $> mvn clean install
 
-
 ## execute ?
 
 Play with :
@@ -33,9 +31,7 @@ Or after a build, just execute:
 
     $> java -jar target/DemoGame-0.0.1-SNAPSHOT-shaded.jar
 
-
 ## Some screenshot
-
 
 ![Screenshot of the old demo](src/docs/images/screen-1.png "An old view of the prototype !")
 
@@ -52,5 +48,13 @@ Or after a build, just execute:
 ![A lot of new things like lights !](src/docs/images/screen-4.png "Adding lights and text")
 
 *figure 4 - A lot of new things like lights, Gothic Score, Items and Text!*
+
+![One other just for fun](src/docs/images/screen-5.png "One other just for fun")
+
+*figure 5 - One other just for fun*
+
+![So much debug information !](src/docs/images/screen-7.png "So much debug information !")
+
+*figure 6 - So much debug information !*
 
 McG.
