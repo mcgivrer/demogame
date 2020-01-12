@@ -1,6 +1,14 @@
-local target = {}
-target = objects:get("player")
-if target:getX() > o:getX() or target:getX() < o:getX() :
-    o:setDx( o:getDx()* -1)
+local m ={}
+function init(game,world)
+  m.world = world;
 end
-return o
+
+function update(game, world, object, context)
+  local player = {}
+  player = context:get("player")
+  println (player:getName())
+  if( player:getX() > object:getX() or player:getX() < object:getX() ) then
+      object:setDx( object:getDx() * -1)
+  end
+  return object
+end

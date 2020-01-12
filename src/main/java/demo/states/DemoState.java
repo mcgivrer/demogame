@@ -25,6 +25,7 @@ import core.object.GameObject;
 import core.object.GameObject.GameAction;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
+import core.object.World;
 import core.resource.ProgressListener;
 import core.resource.ResourceManager;
 import core.scripts.LuaScriptSystem;
@@ -68,7 +69,9 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
-	private boolean scriptingOn = false;
+	private boolean scriptingOn = true;
+
+	private World world = new 	World();
 
 	public DemoState() {
 		this.name = "DemoState";
@@ -134,7 +137,7 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
 		soundSystem.setMute(true);
 
-		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[]{"/res/scripts/enemy_update.lua"});
+		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[] { "/res/scripts/enemy_update.lua" });
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
@@ -366,7 +369,7 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				if(scriptingOn){
+				if (scriptingOn) {
 					executeScriptUpdate(g, go);
 				}
 			}
@@ -379,8 +382,10 @@ public class DemoState extends AbstractState implements State {
 	}
 
 	/**
-	 * Parse object's attribute "scripts", and if exists, execute all defined lua scripts.
-	 * @param g the parent Game
+	 * Parse object's attribute "scripts", and if exists, execute all defined lua
+	 * scripts.
+	 * 
+	 * @param g  the parent Game
 	 * @param go the GameObject to be updated by its own scripts.
 	 */
 	private void executeScriptUpdate(Game g, GameObject go) {
@@ -389,9 +394,10 @@ public class DemoState extends AbstractState implements State {
 			for (String script : scripts) {
 				LuaScriptSystem luas = g.sysMan.getSystem(LuaScriptSystem.class);
 				try {
-					luas.execute(script, go, null);
+					luas.execute(g, world, script, go, null);
+					
 				} catch (ScriptException e) {
-					log.error("unable to update game object {} with its own LUA scripts : {}",go.name, e.getMessage());
+					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
 				}
 			}
 
