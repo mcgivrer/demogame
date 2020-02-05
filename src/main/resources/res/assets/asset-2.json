@@ -28,6 +28,31 @@
 				"coins": 5
 			}
 		},
+		"F": {
+			"id": "E",
+			"type": "enemy",
+			"name": "enemy_#",
+			"clazz": "core.object.GameObject",
+			"image": "todo",
+			"offset": "6,1",
+			"size": "32,32",
+			"priority": 2,
+			"layer": 2,
+			"bbox": {
+				"top": 8.0,
+				"bottom": 0.0,
+				"left": 4.0,
+				"right": 4.0
+			},
+			"color": "RED",
+			"canCollect": false,
+			"attributes": {
+				"energy": 100.0,
+				"damage": 10.0,
+				"coins": 5,
+				"scripts":["/res/scripts/enemy_update.lua"]
+			}
+		},
 		"P": {
 			"id": "P",
 			"type": "player",
@@ -82,9 +107,9 @@
 			"layer": 5,
 			"color": "[0.9,0.9,0.12,1.0]",
 			"attributes": {
-				"intensity": 0.6,
-				"radius": 130,
-				"glittering": 0.4
+				"intensity": 0.5,
+				"radius": 160,
+				"glittering": 0.8
 			}
 		},
 		"1": {

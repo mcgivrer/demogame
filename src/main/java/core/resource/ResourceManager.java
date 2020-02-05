@@ -125,6 +125,15 @@ public class ResourceManager implements System {
                 }
                 log.debug("'{}' added as a JSON resource", path);
             }
+            if(path.contains(".lua")) {
+                InputStream stream = ResourceManager.class.getResourceAsStream(path);
+                String luas = new BufferedReader(new InputStreamReader(stream)).lines().parallel()
+                        .collect(Collectors.joining("\n"));
+                if (luas != null && !luas.equals("")) {
+                    instance.resources.put(path, luas);
+                }
+                log.debug("'{}' added as a LUA script resource", path);
+            }
             if (path.contains(".wav") || path.contains(".mp3") || path.contains(".aiff")) {
                 InputStream sndStream = ResourceManager.class.getResourceAsStream(path);
                 SoundClip sc = new SoundClip(path, sndStream);

@@ -198,7 +198,7 @@ public class SoundSystem extends AbstractSystem implements System {
 
     @Override
     public String getName() {
-        return "sound";
+        return this.getClass().getCanonicalName();
     }
 
     @Override

@@ -98,6 +98,7 @@ public class ObjectManager extends AbstractSystem implements System {
 		if (go.enable) {
 			// Update object
 			go.update(game, elapsed);
+			
 			computeDuration(go, elapsed);
 		}
 	}

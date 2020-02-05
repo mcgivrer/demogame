@@ -6,6 +6,10 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Map;
+
+import javax.script.ScriptException;
 
 import core.Game;
 import core.audio.SoundSystem;
@@ -20,10 +24,13 @@ import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
+import core.object.ObjectManager;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
+import core.object.World;
 import core.resource.ProgressListener;
 import core.resource.ResourceManager;
+import core.scripts.LuaScriptSystem;
 import core.state.AbstractState;
 import core.state.State;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +71,9 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
+	private boolean scriptingOn = true;
+
+	private World world = new 	World();
 
 	public DemoState() {
 		this.name = "DemoState";
@@ -86,11 +96,22 @@ public class DemoState extends AbstractState implements State {
 			}
 		});
 
-		ResourceManager.add(new String[] { "/res/maps/map_2.json", "/res/assets/asset-2.json",
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png", "/res/audio/sounds/collect-coin.wav",
-				"/res/audio/sounds/collect-item-1.wav", "/res/audio/sounds/collect-item-2.wav",
-				"/res/audio/musics/once-around-the-kingdom.mp3", "/res/fonts/Prince Valiant.ttf",
-				"/res/fonts/lilliput steps.ttf" });
+		ResourceManager.add(new String[] {
+				// level game
+				"/res/maps/map_2.json", "/res/assets/asset-2.json",
+				// graphics
+				"/res/images/background-1.jpg", 
+				"/res/images/tileset-1.png",
+				// audio
+				"/res/audio/sounds/collect-coin.wav",
+				"/res/audio/sounds/collect-item-1.wav",
+				"/res/audio/sounds/collect-item-2.wav", 
+				"/res/audio/musics/once-around-the-kingdom.mp3",
+				// fonts
+				"/res/fonts/Prince Valiant.ttf", 
+				"/res/fonts/lilliput steps.ttf",
+				// scripts
+				"/res/scripts/enemy_update.lua" });
 
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
 		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
@@ -121,6 +142,8 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
 		soundSystem.setMute(g.config.mute);
+
+		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[] { "/res/scripts/enemy_update.lua" });
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
@@ -214,6 +237,9 @@ public class DemoState extends AbstractState implements State {
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
 			addObject(cam);
+			// start game music background
+			soundSystem = g.sysMan.getSystem(SoundSystem.class);
+			soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 
 		}
 	}
@@ -221,9 +247,6 @@ public class DemoState extends AbstractState implements State {
 	@Override
 	public void onFocus(Game g) {
 		super.onFocus(g);
-		// start game music background
-		soundSystem = g.sysMan.getSystem(SoundSystem.class);
-		soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 	}
 
 	@Override
@@ -352,12 +375,39 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
+				/*if (scriptingOn) {
+					executeScriptUpdate(g, go);
+				}*/
 			}
 		}
 
 		// active core.object.Camera update
 		if (this.camera != null) {
 			((Camera) camera).update(g, elapsed);
+		}
+	}
+
+	/**
+	 * Parse object's attribute "scripts", and if exists, execute all defined lua
+	 * scripts.
+	 * 
+	 * @param g  the parent Game
+	 * @param go the GameObject to be updated by its own scripts.
+	 */
+	private void executeScriptUpdate(Game g, GameObject go) {
+		Map<String,GameObject> objects = g.sysMan.getSystem(ObjectManager.class).objects;
+		if (go.attributes.containsKey("scripts")) {
+			List<String> scripts = (List<String>) go.attributes.get("scripts");
+			for (String script : scripts) {
+				LuaScriptSystem luas = g.sysMan.getSystem(LuaScriptSystem.class);
+				try {
+ 					luas.execute(g, world, script, go, objects);
+					
+				} catch (ScriptException e) {
+					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
+				}
+			}
+
 		}
 	}
 
@@ -407,7 +457,7 @@ public class DemoState extends AbstractState implements State {
 			if (player.items.size() > 0 && itmNb - 1 < player.items.size()) {
 				item = player.items.get(itmNb - 1);
 			}
-			BufferedImage holder = switchSelector(itmNb, item, selectedItem);
+			BufferedImage holder = switchItem(itmNb, item, selectedItem);
 			g.drawImage(holder, ga.config.screenWidth - offsetX - posX,
 					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(), holder.getHeight(), null);
 
@@ -418,7 +468,7 @@ public class DemoState extends AbstractState implements State {
 		}
 	}
 
-	private BufferedImage switchSelector(int itmNb, MapObject item, double selectedItem) {
+	private BufferedImage switchItem(int itmNb, MapObject item, double selectedItem) {
 		BufferedImage holder;
 		if (((double) itmNb) == selectedItem && (item != null)) {
 			holder = itemHolderSelectedImg;

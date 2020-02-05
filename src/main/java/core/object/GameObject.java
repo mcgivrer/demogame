@@ -195,5 +195,4 @@ public class GameObject {
         this.height = height;
         bbox.fromGameObject(this);
     }
-
 }

@@ -31,6 +31,14 @@ Or after a build, just execute:
 
     $> java -jar target/DemoGame-0.0.1-SNAPSHOT-shaded.jar
 
+## latest
+
+- start adding Lua scripting capability
+- add Lights
+- add items collect and display
+- update collision between `GameObject` and `TileMap`.
+
+
 ## Some screenshot
 
 ![Screenshot of the old demo](src/docs/images/screen-1.png "An old view of the prototype !")

@@ -67,6 +67,7 @@ public class Renderer extends AbstractSystem implements System {
 	private List<GameObject> renderingObjectPipeline = new ArrayList<>();
 	private MapRenderer mapRenderer;
 	private boolean renderingPause = false;
+	private int realFPS;
 
 	/**
 	 * Create the Game renderer.
@@ -161,7 +162,7 @@ public class Renderer extends AbstractSystem implements System {
 			dg.stateManager.getCurrent().drawHUD(dg, this, g);
 			g.dispose();
 			// render image to real screen (applying scale factor)
-			renderToScreen(dg);
+			renderToScreen(dg, realFPS);
 		}
 	}
 
@@ -298,10 +299,10 @@ public class Renderer extends AbstractSystem implements System {
 					new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
 							l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
 					new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-			l.rgp = new RadialGradientPaint(new Point((int) (l.x + (10 * Math.random() * l.glitterEffect)),
-					(int) (l.y + (10 * Math.random() * l.glitterEffect))), (int) l.width, l.dist, l.colors);
+			l.rgp = new RadialGradientPaint(new Point((int) (l.x + (20 * Math.random() * l.glitterEffect)),
+					(int) (l.y + (20 * Math.random() * l.glitterEffect))), (int)(l.width*2), l.dist, l.colors);
 			g.setPaint(l.rgp);
-			g.fill(new Ellipse2D.Double(l.x - l.width, l.y - l.width, l.width * 2, l.width * 2));
+			g.fill(new Ellipse2D.Double(l.x , l.y , l.width, l.width ));
 			break;
 
 		case LIGHT_CONE:
@@ -348,13 +349,17 @@ public class Renderer extends AbstractSystem implements System {
 		}
 	}
 
+	public void setRealFPS(int realFPS) {
+		this.realFPS=realFPS;
+	}
+
 	public class Layer {
 		int index;
 		boolean fixed;
 		List<GameObject> objects = new ArrayList<>();
 	}
 
-	private void renderToScreen(Game dg) {
+	private void renderToScreen(Game dg, int realFPS) {
 		BufferStrategy bs = jf.getBufferStrategy();
 		Camera camera = dg.stateManager.getCurrent().getActiveCamera();
 		if (bs != null) {
@@ -368,7 +373,7 @@ public class Renderer extends AbstractSystem implements System {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(String.format("debug:%d | cam:(%03.1f,%03.1f)", dg.config.debug, camera.x, camera.y),
+					g.drawString(String.format("debug:%01d | FPS: %03d | cam:(%03.1f,%03.1f)", dg.config.debug, realFPS, camera.x, camera.y),
 							4, jf.getHeight() - 20);
 
 					if (dg.config.debug > 2) {
