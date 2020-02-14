@@ -71,7 +71,7 @@ public class SoundSystem extends AbstractSystem implements System {
      *         .
      */
     public String load(String code, String filename) {
-        if (!soundBank.containsKey(code)) {
+        if (!soundBank.containsKey(code) && !mute) {
             SoundClip sc = ResourceManager.getSoundClip(filename);
             if (sc != null) {
                 soundBank.put(code, sc);
@@ -96,7 +96,6 @@ public class SoundSystem extends AbstractSystem implements System {
             soundBank.put(code, sc);
             log.debug("Load sound {} to Sound Bank", sc.getCode(), code);
         }
-        soundBank.put(code, sc);
         return code;
     }
 
@@ -153,8 +152,8 @@ public class SoundSystem extends AbstractSystem implements System {
 
             if (soundBank.containsKey(code)) {
                 SoundClip sc = soundBank.get(code);
-                sc.play(pan, volume);
-                if (loop) {
+                if (loop && sc !=null) {
+                    sc.play(pan, volume);
                     sc.loop();
                 }
                 log.debug("Play sound {} with volume {} and pan {}", code, volume, pan);

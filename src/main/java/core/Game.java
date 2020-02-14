@@ -31,10 +31,6 @@ public class Game {
 	public InputHandler inputHandler;
 	public Renderer renderer;
 	public StateManager stateManager;
-	private SoundSystem soundSystem;
-	private MapCollidingService mapCollider;
-	private ObjectManager objectManager;
-	private LuaScriptSystem luaSystem;
 
 	/**
 	 * Create the Game container.
@@ -73,7 +69,7 @@ public class Game {
 		sysMan.add(inputHandler);
 
 		// GameObject manager system
-		objectManager = new ObjectManager(this);
+		ObjectManager objectManager = new ObjectManager(this);
 		sysMan.add(objectManager);
 
 		// rendering pipeline
@@ -81,18 +77,18 @@ public class Game {
 		sysMan.add(renderer);
 
 		// Massive Sound system
-		soundSystem = new SoundSystem(this);
+		SoundSystem soundSystem = new SoundSystem(this);
 		sysMan.add(soundSystem);
 
 		// Start some more advanced systems.
-		mapCollider = new MapCollidingService(this);
+		MapCollidingService mapCollider = new MapCollidingService(this);
 		sysMan.add(mapCollider);
 
 		// start State manager system
 		stateManager = new StateManager(this);
 		sysMan.add(stateManager);
 
-		luaSystem = new LuaScriptSystem(this);
+		LuaScriptSystem luaSystem = new LuaScriptSystem(this);
 		sysMan.add(luaSystem);
 
 

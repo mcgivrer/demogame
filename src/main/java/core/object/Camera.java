@@ -1,12 +1,14 @@
 package core.object;
 
 import core.Game;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 
 /**
  * A 2D core.object.Camera to render scene from a constrained point of view.
  */
+@Slf4j
 public class Camera extends GameObject {
 
     public GameObject target;
@@ -38,10 +40,11 @@ public class Camera extends GameObject {
      * @param elapsed the elapsed time since previous update.
      */
     public void update(Game dg, double elapsed) {
-        this.x += (target.x + (target.width) - ((double) (viewport.width) * 0.5f) - this.x) * tween * elapsed;
-        this.y += (target.y + (target.height) - ((double) (viewport.height) * 0.5f) - this.y) * tween * elapsed;
+        this.x += Math.round((target.x + (target.width) - ((double) (viewport.width) * 0.5f) - this.x) * tween * Math.min(elapsed,10));
+        this.y += Math.round((target.y + (target.height) - ((double) (viewport.height) * 0.5f) - this.y) * tween * Math.min(elapsed,10));
         viewport.height *= zoom;
         viewport.width *= zoom;
+        log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
     }
 
     /**

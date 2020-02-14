@@ -8,7 +8,6 @@ import java.util.Map;
 
 import core.gfx.Animation;
 import core.object.BBox;
-import core.object.Light;
 import core.object.Light.LightType;
 import lombok.ToString;
 
@@ -36,7 +35,6 @@ public class MapObject {
     public double intensity;
     public double radius;
 
-    
     public MapObjectAsset asset;
 
     public Animation animation;

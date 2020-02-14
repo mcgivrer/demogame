@@ -13,9 +13,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import core.map.MapObject;
-import core.map.MapObjectAsset;
-
 /**
  * TheAnimation component is used to switch between frames according to a
  * sequence of images and wait some frame delay.

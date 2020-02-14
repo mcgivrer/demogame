@@ -46,7 +46,7 @@ public class Config {
         this.fps = 60;
         this.debug = 0;
         this.statesPath = "/res/game.json";
-        this.mute = false;
+        this.mute = true;
     }
 
 	/**
@@ -64,7 +64,7 @@ public class Config {
 		config.screenScale = 2.0f;
 		config.debug = 0;
         config.fps = 60;
-        config.mute = false;
+        config.mute = true;
 
 		for (String arg : argc) {
 			System.out.println(String.format("arg: %s", arg));

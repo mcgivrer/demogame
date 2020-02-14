@@ -24,7 +24,6 @@ import core.map.MapReader;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
-import core.object.ObjectManager;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
 import core.object.World;
@@ -71,7 +70,7 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
-	private boolean scriptingOn = true;
+	private boolean scriptingOn = false;
 
 	private World world = new 	World();
 
@@ -375,9 +374,9 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				/*if (scriptingOn) {
+				if (scriptingOn) {
 					executeScriptUpdate(g, go);
-				}*/
+				}
 			}
 		}
 
@@ -395,7 +394,7 @@ public class DemoState extends AbstractState implements State {
 	 * @param go the GameObject to be updated by its own scripts.
 	 */
 	private void executeScriptUpdate(Game g, GameObject go) {
-		Map<String,GameObject> objects = g.sysMan.getSystem(ObjectManager.class).objects;
+		Map<String,GameObject> objects = objectManager.objects;
 		if (go.attributes.containsKey("scripts")) {
 			List<String> scripts = (List<String>) go.attributes.get("scripts");
 			for (String script : scripts) {

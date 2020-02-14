@@ -199,9 +199,11 @@ public class SoundClip {
      * Loop the clip continuously
      */
     public void loop() {
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
-        while (!clip.isRunning()) {
-            clip.start();
+        if(clip!=null) {
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            while (!clip.isRunning()) {
+                clip.start();
+            }
         }
     }
 

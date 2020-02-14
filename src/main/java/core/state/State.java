@@ -1,13 +1,10 @@
 package core.state;
 
+import java.awt.Graphics2D;
+
 import core.Game;
 import core.gfx.Renderer;
 import core.object.Camera;
-import core.object.GameObject;
-
-import java.awt.*;
-import java.util.Collection;
-import java.util.Map;
 
 
 /**
