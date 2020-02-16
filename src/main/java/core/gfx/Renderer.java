@@ -151,7 +151,7 @@ public class Renderer extends AbstractSystem implements System {
 				if (camera != null && !layer.fixed) {
 					g.translate(-camera.x, -camera.y);
 				}
-				drawObjects(dg, elapsed, g, camera, layer);
+				renderObjects(dg, elapsed, g, camera, layer);
 				// if a camera is set, use it.
 				if (camera != null && !layer.fixed) {
 					g.translate(camera.x, camera.y);
@@ -166,7 +166,7 @@ public class Renderer extends AbstractSystem implements System {
 		}
 	}
 
-	private void drawObjects(Game dg, double elapsed, Graphics2D g, Camera camera, Layer layer) {
+	private void renderObjects(Game dg, double elapsed, Graphics2D g, Camera camera, Layer layer) {
 		// draw all objects
 		for (GameObject go : layer.objects) {
 			if (go.enable && go.displayed) {
@@ -181,14 +181,14 @@ public class Renderer extends AbstractSystem implements System {
 
 				} else if (go instanceof TextObject) {
 					TextObject to = (TextObject) go;
-					renderText(g, to);
+					drawText(g, to);
 
 				} else if (go instanceof Light) {
 					Light l = (Light) go;
-					renderLight(dg, g, l);
+					drawLight(dg, g, l);
 
 				} else if (go instanceof GameObject) {
-					renderObject(dg, g, go);
+					drawObject(dg, g, go);
 				}
 
 				// if debug mode activated, draw debug info
@@ -204,7 +204,7 @@ public class Renderer extends AbstractSystem implements System {
 	 * @param g
 	 * @param to
 	 */
-	private void renderText(Graphics2D g, TextObject to) {
+	private void drawText(Graphics2D g, TextObject to) {
 		if (to.font != null && to.text != null) {
 			Font b = g.getFont();
 			g.setFont(to.font);
@@ -225,7 +225,7 @@ public class Renderer extends AbstractSystem implements System {
 				ox = to.x;
 				break;
 			}
-			int boxPadding=4;
+			int boxPadding = 4;
 
 			// draw Background rectangle.
 			drawBackgroundBox(g, to, fm, ox, oy, boxPadding);
@@ -261,24 +261,24 @@ public class Renderer extends AbstractSystem implements System {
 	public void drawBackgroundBox(Graphics2D g, TextObject to, FontMetrics fm, double ox, double oy, int boxPadding) {
 		if (to.backgroundColor != null) {
 			g.setColor(to.shadowColor);
-			g.fillRect((int) (ox), (int) (oy - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
-					(int) (to.height + boxPadding*2));
+			g.fillRect((int) (ox), (int) (oy - (fm.getMaxAscent())), (int) (to.width + boxPadding * 2),
+					(int) (to.height + boxPadding * 2));
 			g.setColor(to.backgroundColor);
-			g.fillRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
-					(int) (to.height + boxPadding*2));
+			g.fillRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())),
+					(int) (to.width + boxPadding * 2), (int) (to.height + boxPadding * 2));
 		}
 		if (to.borderColor != null) {
 			g.setColor(to.borderColor);
-			g.drawRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())), (int) (to.width + boxPadding*2),
-					(int) (to.height + boxPadding*2));
+			g.drawRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())),
+					(int) (to.width + boxPadding * 2), (int) (to.height + boxPadding * 2));
 
 			g.setColor(to.shadowColor);
-			g.drawRect((int) (ox - boxPadding + 1), (int) (oy - boxPadding - (fm.getMaxAscent()) + 1), (int) (to.width - 2 + boxPadding*2),
-					(int) (to.height - 2 + boxPadding*2));
+			g.drawRect((int) (ox - boxPadding + 1), (int) (oy - boxPadding - (fm.getMaxAscent()) + 1),
+					(int) (to.width - 2 + boxPadding * 2), (int) (to.height - 2 + boxPadding * 2));
 
 			g.setColor(Color.BLACK);
-			g.drawRect((int) (ox - (boxPadding+1)), (int) (oy - (boxPadding+1) - (fm.getMaxAscent())), (int) (to.width + (boxPadding*2)+2),
-					(int) (to.height + (boxPadding*2)+2));
+			g.drawRect((int) (ox - (boxPadding + 1)), (int) (oy - (boxPadding + 1) - (fm.getMaxAscent())),
+					(int) (to.width + (boxPadding * 2) + 2), (int) (to.height + (boxPadding * 2) + 2));
 		}
 	}
 
@@ -289,7 +289,7 @@ public class Renderer extends AbstractSystem implements System {
 	 * @param g  the graphics API.
 	 * @param l  the Light to be rendered.
 	 */
-	private void renderLight(Game dg, Graphics2D g, Light l) {
+	private void drawLight(Game dg, Graphics2D g, Light l) {
 		Composite c = g.getComposite();
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
@@ -299,10 +299,12 @@ public class Renderer extends AbstractSystem implements System {
 					new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
 							l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
 					new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-			l.rgp = new RadialGradientPaint(new Point((int) (l.x + (20 * Math.random() * l.glitterEffect)),
-					(int) (l.y + (20 * Math.random() * l.glitterEffect))), (int)(l.width*2), l.dist, l.colors);
+			l.rgp = new RadialGradientPaint(
+					new Point((int) (l.x + (20 * Math.random() * l.glitterEffect)),
+							(int) (l.y + (20 * Math.random() * l.glitterEffect))),
+					(int) (l.width * 2), l.dist, l.colors);
 			g.setPaint(l.rgp);
-			g.fill(new Ellipse2D.Double(l.x , l.y , l.width, l.width ));
+			g.fill(new Ellipse2D.Double(l.x, l.y, l.width, l.width));
 			break;
 
 		case LIGHT_CONE:
@@ -329,7 +331,7 @@ public class Renderer extends AbstractSystem implements System {
 	 * @param g  the graphics API.
 	 * @param go the GameObject to be rendered.
 	 */
-	private void renderObject(Game dg, Graphics2D g, GameObject go) {
+	private void drawObject(Game dg, Graphics2D g, GameObject go) {
 		switch (go.type) {
 		case RECTANGLE:
 			g.setColor(go.foregroundColor);
@@ -350,7 +352,7 @@ public class Renderer extends AbstractSystem implements System {
 	}
 
 	public void setRealFPS(int realFPS) {
-		this.realFPS=realFPS;
+		this.realFPS = realFPS;
 	}
 
 	public class Layer {
@@ -373,8 +375,8 @@ public class Renderer extends AbstractSystem implements System {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(String.format("debug:%01d | FPS: %03d | cam:(%03.1f,%03.1f)", dg.config.debug, realFPS, camera.x, camera.y),
-							4, jf.getHeight() - 20);
+					g.drawString(String.format("debug:%01d | FPS: %03d | cam:(%03.1f,%03.1f)", dg.config.debug, realFPS,
+							camera.x, camera.y), 4, jf.getHeight() - 20);
 
 					if (dg.config.debug > 2) {
 						g.setColor(Color.ORANGE);
@@ -563,6 +565,9 @@ public class Renderer extends AbstractSystem implements System {
 
 	}
 
+	/**
+	 * Clear all rendering pipeline and objects.
+	 */
 	public void clear() {
 		layers.clear();
 		renderingObjectPipeline.clear();

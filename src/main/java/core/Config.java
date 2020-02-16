@@ -3,7 +3,6 @@ package core;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,7 +35,7 @@ public class Config {
 	public float musicVolume;
 	public String screenshotPath;
 
-    public Map<String, Object> attributes = new HashMap<>();
+	public Map<String, Object> attributes = new HashMap<>();
 
 	/**
 	 * Initialization of default values for configuraiton.
@@ -64,64 +63,64 @@ public class Config {
 	 */
 	public static Config analyzeArgc(String[] argc) {
 		Config config = new Config();
-		config.title = "DemoGame";
-		config.screenWidth = 360;
-		config.screenHeight = 200;
-		config.screenScale = 2.0f;
-		config.debug = 0;
-        config.fps = 60;
-        config.mute = true;
+		config.load();
 
 		for (String arg : argc) {
 			System.out.println(String.format("arg: %s", arg));
 			String[] parts = arg.split("=");
 			switch (parts[0]) {
-                case "f":
-                case "fps":
-                    config.fps = Integer.parseInt(parts[1]);
-                    log.debug("fps request:{}", config.fps);
+			case "f":
+			case "fps":
+				config.fps = Integer.parseInt(parts[1]);
+				log.info("fps request:{}", config.fps);
 
-                    break;
-                case "t":
-                case "title":
-                    config.title = parts[1];
-                    log.debug("window title:{}", config.title);
+				break;
+			case "t":
+			case "title":
+				config.title = parts[1];
+				log.info("window title:{}", config.title);
 
-                    break;
-                case "h":
-                case "height":
-                    config.screenHeight = Integer.parseInt(parts[1]);
-                    log.debug("Screen height:{}", config.screenHeight);
+				break;
+			case "h":
+			case "height":
+				config.screenHeight = Integer.parseInt(parts[1]);
+				log.info("Screen height:{}", config.screenHeight);
 
-                    break;
-                case "w":
-                case "width":
-                    config.screenWidth = Integer.parseInt(parts[1]);
-                    log.debug("Screen width:{}", config.screenWidth);
+				break;
+			case "w":
+			case "width":
+				config.screenWidth = Integer.parseInt(parts[1]);
+				log.info("Screen width:{}", config.screenWidth);
 
-                    break;
-                case "s":
-                case "scale":
-                    config.screenScale = Float.parseFloat(parts[1]);
-                    log.debug("screen scale:{}", config.screenScale);
-                    break;
-                case "d":
-                case "debug":
-                    config.debug = Integer.parseInt(parts[1]);
-                    log.debug("debug mode:{}", config.debug);
-                    break;
-                case "m":
-                case "mute":
-                    config.mute = Boolean.parseBoolean(parts[1]);
-                    log.debug("sound mute:{}", config.mute);
-                    break;
-                case "sv":
-                case "soundVolume":
-                    config.soundVolume = Float.parseFloat(parts[1]);
-                    break;
-                default:
-                    System.out.println(String.format("Unknown arguments '%s'", arg));
-                    break;
+				break;
+			case "s":
+			case "scale":
+				config.screenScale = Float.parseFloat(parts[1]);
+				log.info("screen scale:{}", config.screenScale);
+				break;
+			case "d":
+			case "debug":
+				config.debug = Integer.parseInt(parts[1]);
+				log.info("debug mode:{}", config.debug);
+				break;
+			case "m":
+			case "mute":
+				config.mute = Boolean.parseBoolean(parts[1]);
+				log.info("sound mute:{}", config.mute);
+				break;
+			case "sv":
+			case "soundVolume":
+				config.soundVolume = Float.parseFloat(parts[1]);
+				log.info("sound volume:{}", config.soundVolume);
+				break;
+			case "mv":
+			case "usicVolume":
+				config.musicVolume = Float.parseFloat(parts[1]);
+				log.info("music volume:{}", config.musicVolume);
+				break;
+			default:
+				System.out.println(String.format("Unknown arguments '%s'", arg));
+				break;
 			}
 		}
 		return config;
