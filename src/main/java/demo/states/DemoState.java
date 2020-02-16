@@ -70,7 +70,7 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
-	private boolean scriptingOn = false;
+	private boolean scriptingOn = true;
 
 	private World world = new 	World();
 
@@ -102,10 +102,10 @@ public class DemoState extends AbstractState implements State {
 				"/res/images/background-1.jpg", 
 				"/res/images/tileset-1.png",
 				// audio
-				"/res/audio/sounds/collect-coin.wav",
-				"/res/audio/sounds/collect-item-1.wav",
-				"/res/audio/sounds/collect-item-2.wav", 
-				"/res/audio/musics/once-around-the-kingdom.mp3",
+				"/res/audio/sounds/collect-coin.ogg",
+				"/res/audio/sounds/collect-item-1.ogg",
+				"/res/audio/sounds/collect-item-2.ogg", 
+				"/res/audio/musics/once-around-the-kingdom.ogg",
 				// fonts
 				"/res/fonts/Prince Valiant.ttf", 
 				"/res/fonts/lilliput steps.ttf",
@@ -136,10 +136,10 @@ public class DemoState extends AbstractState implements State {
 
 		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingService.class);
-		soundSystem.load("coins", "/res/audio/sounds/collect-coin.wav");
-		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.wav");
-		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.wav");
-		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.mp3");
+		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
+		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.ogg");
+		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.ogg");
+		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
 		soundSystem.setMute(g.config.mute);
 
 		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[] { "/res/scripts/enemy_update.lua" });
@@ -374,9 +374,9 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				/*if (scriptingOn) {
+				if (scriptingOn) {
 					executeScriptUpdate(g, go);
-				}*/
+				}
 			}
 		}
 

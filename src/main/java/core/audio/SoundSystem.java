@@ -46,7 +46,7 @@ public class SoundSystem extends AbstractSystem implements System {
     /**
      * mute the full soudsystem
      */
-    private boolean mute = true;
+    private boolean mute = false;
 
     /**
      * Internal constructor.
