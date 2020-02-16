@@ -50,7 +50,7 @@ public class StateManager extends AbstractSystem implements System {
      */
     public void loadFromFile(final String path) {
         try {
-            final String gameStates = ResourceManager.getString("/res/game.json");
+            final String gameStates = ResourceManager.getString(path);
             final Gson gs = new Gson();
             final StatesMap statesMap = gs.fromJson(gameStates, StatesMap.class);
             for (final Entry<String, String> stateItem : statesMap.states.entrySet()) {
