@@ -364,6 +364,7 @@ public class DemoState extends AbstractState implements State {
 		TextObject s = (TextObject) objectManager.get("score");
 		if (s != null) {
 			s.setText("%06d", this.score);
+			this.score++;
 		}
 
 		MapLayer frontLayer = mapLevel.layers.get("front");

@@ -1,9 +1,10 @@
 package core;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -23,31 +24,36 @@ import java.util.Map;
  */
 @Slf4j
 public class Config {
-    public int screenWidth;
-    public int screenHeight;
-    public float screenScale;
-    public int fps;
-    public String title;
-    public int debug;
-    public String statesPath;
-    public boolean mute;
-    public float soundVolume;
+	public int screenWidth;
+	public int screenHeight;
+	public float screenScale;
+	public int fps;
+	public String title;
+	public int debug;
+	public String statesPath;
+	public boolean mute;
+	public float soundVolume;
+	public float musicVolume;
+	public String screenshotPath;
 
     public Map<String, Object> attributes = new HashMap<>();
 
-    /**
-     * Initialization of default values for configuraiton.
-     */
-    public Config() {
-        this.title = "notitle";
-        this.screenWidth = 360;
-        this.screenHeight = 200;
-        this.screenScale = 2.0f;
-        this.fps = 60;
-        this.debug = 0;
-        this.statesPath = "/res/game.json";
-        this.mute = true;
-    }
+	/**
+	 * Initialization of default values for configuraiton.
+	 */
+	public Config() {
+		this.title = "notitle";
+		this.screenWidth = 360;
+		this.screenHeight = 200;
+		this.screenScale = 2.0f;
+		this.fps = 60;
+		this.debug = 0;
+		this.statesPath = "/res/game.json";
+		this.mute = false;
+		this.soundVolume = 0.0f;
+		this.musicVolume = 0.0f;
+		this.screenshotPath = "";
+	}
 
 	/**
 	 * Parse all arguments form the main methods,and set the corresponding values.
@@ -119,5 +125,19 @@ public class Config {
 			}
 		}
 		return config;
+	}
+
+	private void load() {
+		ResourceBundle cfgFromFile = ResourceBundle.getBundle("res.config");
+
+		this.screenWidth = Integer.parseInt(cfgFromFile.getString("screen.width"));
+		this.screenWidth = Integer.parseInt(cfgFromFile.getString("screen.height"));
+		this.screenScale = Float.parseFloat(cfgFromFile.getString("screen.scale"));
+		this.debug = Integer.parseInt(cfgFromFile.getString("debug.mode"));
+		this.fps = Integer.parseInt(cfgFromFile.getString("screen.fps"));
+		this.mute = Boolean.parseBoolean(cfgFromFile.getString("audio.mute"));
+		this.soundVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.sound"));
+		this.musicVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.music"));
+		this.statesPath = cfgFromFile.getString("game.states.path");
 	}
 }

@@ -492,9 +492,17 @@ public class Renderer extends AbstractSystem implements System {
 
 	/**
 	 * Save a screenshot of the current buffer.
+	 * 
+	 * @param config the config object to retrieve the path where to store
+	 *               screenshots.
 	 */
 	public void saveScreenshot(Config config) {
-		final String path = this.getClass().getResource("/").getFile();
+		String path=""; 
+		if(config.screenshotPath.equals("")) {
+			path = this.getClass().getResource("/").getFile();
+		}else {
+			path = this.getClass().getResource(config.screenshotPath).getFile();
+		}
 		Path targetDir = Paths.get(path + File.separator);
 		String filename = path + File.separator + config.title + "-screenshot-" + java.lang.System.nanoTime() + "-"
 				+ (screenShotIndex++) + ".png";
