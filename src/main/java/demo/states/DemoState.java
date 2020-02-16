@@ -374,9 +374,9 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				if (scriptingOn) {
+				/*if (scriptingOn) {
 					executeScriptUpdate(g, go);
-				}
+				}*/
 			}
 		}
 
