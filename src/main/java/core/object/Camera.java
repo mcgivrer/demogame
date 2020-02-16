@@ -44,7 +44,7 @@ public class Camera extends GameObject {
         this.y += Math.round((target.y + (target.height) - ((double) (viewport.height) * 0.5f) - this.y) * tween * Math.min(elapsed,10));
         viewport.height *= zoom;
         viewport.width *= zoom;
-        log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
+        //log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
     }
 
     /**

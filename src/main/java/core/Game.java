@@ -123,15 +123,16 @@ public class Game {
 				frames=0;
 				elapsedFrameTime=0;
 				realFPS=frames;
+				log.debug("elapsed:{}, wait:{}",elapsed,wait);
 			}
 
-			if (wait > 0) {
+			/*if (wait > 0) {
 				try {
 					Thread.sleep((int) wait);
 				} catch (InterruptedException e) {
 					log.error("Unable to wait {} wait ms", wait, e);
 				}
-			}
+			}*/
 			previousTime = startTime;
 		}
 	}
