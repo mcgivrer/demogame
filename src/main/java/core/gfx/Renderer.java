@@ -4,9 +4,12 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
@@ -46,7 +49,6 @@ import core.object.Light;
 import core.object.TextObject;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
-import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -57,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
  * @year 2019
  */
 @Slf4j
-public class Renderer extends AbstractSystem implements System {
+public class Renderer extends AbstractSystem implements core.system.System {
 
 	private static int screenShotIndex = 0;
 	public BufferedImage screenBuffer;
@@ -93,6 +95,9 @@ public class Renderer extends AbstractSystem implements System {
 	 * @return a JFrame initialized conforming to config attributes.
 	 */
 	private JFrame createWindow(Game dg) {
+		log.info("Java Library Path: {}",System.getProperty("java.library.path"));
+		log.info(getMonitorSizes());
+
 		jf = new JFrame(dg.config.title);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jf.setBackground(Color.BLACK);
@@ -101,7 +106,6 @@ public class Renderer extends AbstractSystem implements System {
 				(int) (dg.config.screenHeight * dg.config.screenScale) - (ins.top + ins.bottom));
 		jf.setSize(dim);
 		jf.setPreferredSize(dim);
-
 		jf.pack();
 		InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
 		jf.addKeyListener(kih);
@@ -118,6 +122,7 @@ public class Renderer extends AbstractSystem implements System {
 				jf.pack();
 			}
 		});
+
 		jf.setIgnoreRepaint(true);
 		jf.enableInputMethods(true);
 		jf.setLocationByPlatform(true);
@@ -128,6 +133,17 @@ public class Renderer extends AbstractSystem implements System {
 			jf.createBufferStrategy(4);
 		}
 		return jf;
+	}
+
+	private String getMonitorSizes() {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < gs.length; i++) {
+			DisplayMode dm = gs[i].getDisplayMode();
+			sb.append(i + ", width: " + dm.getWidth() + ", height: " + dm.getHeight() + "\n");
+		}
+		return sb.toString();
 	}
 
 	/**
