@@ -72,7 +72,7 @@ public class DemoState extends AbstractState implements State {
 	private Font messageFont;
 	private boolean scriptingOn = true;
 
-	private World world = new 	World();
+	private World world = new World();
 
 	public DemoState() {
 		this.name = "DemoState";
@@ -99,16 +99,12 @@ public class DemoState extends AbstractState implements State {
 				// level game
 				"/res/maps/map_2.json", "/res/assets/asset-2.json",
 				// graphics
-				"/res/images/background-1.jpg", 
-				"/res/images/tileset-1.png",
+				"/res/images/background-1.jpg", "/res/images/tileset-1.png",
 				// audio
-				"/res/audio/sounds/collect-coin.ogg",
-				"/res/audio/sounds/collect-item-1.ogg",
-				"/res/audio/sounds/collect-item-2.ogg", 
-				"/res/audio/musics/once-around-the-kingdom.ogg",
+				"/res/audio/sounds/collect-coin.ogg", "/res/audio/sounds/collect-item-1.ogg",
+				"/res/audio/sounds/collect-item-2.ogg", "/res/audio/musics/once-around-the-kingdom.ogg",
 				// fonts
-				"/res/fonts/Prince Valiant.ttf", 
-				"/res/fonts/lilliput steps.ttf",
+				"/res/fonts/Prince Valiant.ttf", "/res/fonts/lilliput steps.ttf",
 				// scripts
 				"/res/scripts/enemy_update.lua" });
 
@@ -364,6 +360,7 @@ public class DemoState extends AbstractState implements State {
 		TextObject s = (TextObject) objectManager.get("score");
 		if (s != null) {
 			s.setText("%06d", this.score);
+			this.score++;
 		}
 
 		MapLayer frontLayer = mapLevel.layers.get("front");
@@ -394,14 +391,14 @@ public class DemoState extends AbstractState implements State {
 	 * @param go the GameObject to be updated by its own scripts.
 	 */
 	private void executeScriptUpdate(Game g, GameObject go) {
-		Map<String,GameObject> objects = objectManager.objects;
+		Map<String, GameObject> objects = objectManager.objects;
 		if (go.attributes.containsKey("scripts")) {
 			List<String> scripts = (List<String>) go.attributes.get("scripts");
 			for (String script : scripts) {
 				LuaScriptSystem luas = g.sysMan.getSystem(LuaScriptSystem.class);
 				try {
- 					luas.execute(g, world, script, go, objects);
-					
+					luas.execute(g, world, script, go, objects);
+
 				} catch (ScriptException e) {
 					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
 				}

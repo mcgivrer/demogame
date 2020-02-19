@@ -1,10 +1,9 @@
 package core;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -34,6 +33,7 @@ public class Config {
 	public boolean mute;
 	public float soundVolume;
 	public float musicVolume;
+	public String screenshotPath;
 
 	public Map<String, Object> attributes = new HashMap<>();
 
@@ -51,6 +51,7 @@ public class Config {
 		this.mute = false;
 		this.soundVolume = 0.0f;
 		this.musicVolume = 0.0f;
+		this.screenshotPath = "";
 	}
 
 	/**
@@ -136,7 +137,6 @@ public class Config {
 		this.mute = Boolean.parseBoolean(cfgFromFile.getString("audio.mute"));
 		this.soundVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.sound"));
 		this.musicVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.music"));
-		this.statesPath= cfgFromFile.getString("game.states.path");
+		this.statesPath = cfgFromFile.getString("game.states.path");
 	}
-
 }

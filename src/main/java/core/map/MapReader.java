@@ -117,12 +117,12 @@ public class MapReader {
 		GameObject go = null;
 		go = generateGameObjectFromMapObject(mapLevel, ml, mo, x, y);
 		if (mapLevel.child == null) {
-			mapLevel.child = new HashMap<String,GameObject>();
+			mapLevel.child = new HashMap<String, GameObject>();
 		}
 		switch (mo.type) {
 		case "enemy":
 		case "player":
-			mapLevel.child.put(go.name,go);
+			mapLevel.child.put(go.name, go);
 			break;
 		case "light":
 			mapLevel.lights.add((Light) go);
@@ -274,17 +274,25 @@ public class MapReader {
 
 	private static GameObject populateGameObjectAttributes(MapObjectAsset moa, GameObject go, MapObject mo) {
 		if (mo.offset != null && !mo.offset.equals("") && mo.size != null && !mo.size.equals("")) {
+			// set object's offset
 			String[] values = mo.offset.split(",");
 			int ox = Integer.parseInt(values[1]);
 			int oy = Integer.parseInt(values[0]);
+			// set object size.
 			values = mo.size.split(",");
 			go.width = Integer.parseInt(values[0]);
 			go.height = Integer.parseInt(values[1]);
+			// set velocity if exists.
+			if (mo.velocity != null && !mo.velocity.contentEquals("")) {
+				values = mo.velocity.split(",");
+				go.dx = Float.parseFloat(values[0]);
+				go.dy = Float.parseFloat(values[1]);
+			}
 			// get image
-
 			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth, (oy - 1) * moa.tileHeight, (int) go.width,
 					(int) go.height);
 			go.type = GameObjectType.IMAGE;
+			// compute object's BoundingBox
 			go.bbox = mo.bbox;
 			go.bbox.fromGameObject(go);
 		}

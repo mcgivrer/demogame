@@ -44,6 +44,7 @@ import core.object.Camera;
 import core.object.GameObject;
 import core.object.Light;
 import core.object.TextObject;
+import core.object.particle.Particle;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
@@ -494,9 +495,17 @@ public class Renderer extends AbstractSystem implements System {
 
 	/**
 	 * Save a screenshot of the current buffer.
+	 * 
+	 * @param config the config object to retrieve the path where to store
+	 *               screenshots.
 	 */
 	public void saveScreenshot(Config config) {
-		final String path = this.getClass().getResource("/").getFile();
+		String path=""; 
+		if(config.screenshotPath.equals("")) {
+			path = this.getClass().getResource("/").getFile();
+		}else {
+			path = this.getClass().getResource(config.screenshotPath).getFile();
+		}
 		Path targetDir = Paths.get(path + File.separator);
 		String filename = path + File.separator + config.title + "-screenshot-" + java.lang.System.nanoTime() + "-"
 				+ (screenShotIndex++) + ".png";
@@ -563,6 +572,17 @@ public class Renderer extends AbstractSystem implements System {
 	public void clear() {
 		layers.clear();
 		renderingObjectPipeline.clear();
+	}
+
+	/**
+	 * Draw a Particle from a ParticleSystem
+	 * @param dg the core.Game containing the object.
+	 * @param g  the graphics API.
+	 * @param p the Particle to be rendered.
+	 */
+	public void drawParticle(Graphics2D g,Particle p) {
+		
+		
 	}
 
 }

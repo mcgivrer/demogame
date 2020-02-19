@@ -30,6 +30,8 @@ public class MapObject {
     public String size;
     public int priority;
     public int layer;
+    
+    public String velocity;
 
     public LightType lightType;
     public double intensity;
