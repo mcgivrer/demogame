@@ -44,6 +44,7 @@ import core.object.Camera;
 import core.object.GameObject;
 import core.object.Light;
 import core.object.TextObject;
+import core.object.particle.Particle;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import core.system.System;
@@ -571,6 +572,17 @@ public class Renderer extends AbstractSystem implements System {
 	public void clear() {
 		layers.clear();
 		renderingObjectPipeline.clear();
+	}
+
+	/**
+	 * Draw a Particle from a ParticleSystem
+	 * @param dg the core.Game containing the object.
+	 * @param g  the graphics API.
+	 * @param p the Particle to be rendered.
+	 */
+	public void drawParticle(Graphics2D g,Particle p) {
+		
+		
 	}
 
 }
