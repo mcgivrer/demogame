@@ -21,8 +21,8 @@ public class MapLayer {
 	public String name;
 	public MapLevel parent;
 
-	public int width;
-	public int height;
+	public double width;
+	public double height;
 
 	public List<String> assets;
 

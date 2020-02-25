@@ -85,7 +85,7 @@ public class MapReader {
 	}
 
 	public static MapLevel generateTilesAndObject(MapLevel mapLevel, MapLayer ml) {
-		ml.tiles = new MapObject[ml.width][ml.height];
+		ml.tiles = new MapObject[(int)ml.width][(int)ml.height];
 
 		// generate all objects.
 		ml = createAssetMapObjects(ml);
@@ -151,8 +151,8 @@ public class MapReader {
 			switch (mo.type) {
 			case "player":
 				go = createObjectFromClass(mapLevel, layer, mo, x, y);
-				mapLevel.playerInitialX = go.x;
-				mapLevel.playerInitialY = go.y;
+				mapLevel.playerInitialX = go.pos.x;
+				mapLevel.playerInitialY = go.pos.y;
 				break;
 			case "enemy":
 				go = createObjectFromClass(mapLevel, layer, mo, x, y);
@@ -189,8 +189,8 @@ public class MapReader {
 
 		go = (GameObject) class1.newInstance();
 		go = populateGameObjectAttributes(layer.assetsObjects.get(0), go, mo);
-		go.x = (x - 1) * layer.assetsObjects.get(0).tileWidth;
-		go.y = (y - 1) * layer.assetsObjects.get(0).tileHeight;
+		go.pos.x = (x - 1) * layer.assetsObjects.get(0).tileWidth;
+		go.pos.y = (y - 1) * layer.assetsObjects.get(0).tileHeight;
 		go.bbox.fromGameObject(go);
 		return go;
 	}
@@ -278,12 +278,12 @@ public class MapReader {
 			int ox = Integer.parseInt(values[1]);
 			int oy = Integer.parseInt(values[0]);
 			values = mo.size.split(",");
-			go.width = Integer.parseInt(values[0]);
-			go.height = Integer.parseInt(values[1]);
+			go.size.x = Integer.parseInt(values[0]);
+			go.size.y = Integer.parseInt(values[1]);
 			// get image
 
-			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth, (oy - 1) * moa.tileHeight, (int) go.width,
-					(int) go.height);
+			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth, (oy - 1) * moa.tileHeight, (int) go.size.x,
+					(int) go.size.y);
 			go.type = GameObjectType.IMAGE;
 			go.bbox = mo.bbox;
 			go.bbox.fromGameObject(go);
@@ -342,18 +342,18 @@ public class MapReader {
 			}
 			switch (l.lightType) {
 			case LIGHT_CONE:
-				l.width = (double) mo.attributes.get("radius");
-				l.height = (double) mo.attributes.get("size");
+				l.size.x = (double) mo.attributes.get("radius");
+				l.size.y = (double) mo.attributes.get("size");
 				break;
 			case LIGHT_SPHERE:
-				l.width = (double) mo.attributes.get("radius");
-				l.height = (double) mo.attributes.get("radius");
+				l.size.x = (double) mo.attributes.get("radius");
+				l.size.y = (double) mo.attributes.get("radius");
 				break;
 			case LIGHT_AMBIANT:
 				break;
 			}
 			l.intensity = (double) mo.attributes.get("intensity");
-			l.y += (3 * moa.tileHeight);
+			l.size.y += (3 * moa.tileHeight);
 			if (mo.attributes.containsKey("glittering")) {
 				l.glitterEffect = (double) mo.attributes.get("glittering");
 			}

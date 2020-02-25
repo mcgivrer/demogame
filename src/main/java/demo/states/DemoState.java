@@ -264,8 +264,8 @@ public class DemoState extends AbstractState implements State {
 
 		player.setSpeed(0.0f, 0.0f);
 		if (player.action == GameAction.FALL) {
-			player.dx = 0.0f;
-			player.dy = 0.25f;
+			player.vel.x = 0.0f;
+			player.vel.y = 0.25f;
 		} else {
 			player.action = idleAction;
 			randomNextIdleAction();
@@ -273,20 +273,20 @@ public class DemoState extends AbstractState implements State {
 
 		// reset horizontal speed if falling.
 		if (inputHandler.keys[KeyEvent.VK_UP]) {
-			player.dy = -0.2f;
+			player.vel.y = -0.2f;
 			player.action = GameAction.JUMP;
 		}
 		if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-			player.dy = 0.1f;
+			player.vel.y = 0.1f;
 			player.action = GameAction.DOWN;
 		}
 
 		if (inputHandler.keys[KeyEvent.VK_LEFT]) {
-			player.dx = -0.2f;
+			player.vel.x = -0.2f;
 			player.direction = -1;
 			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
 		} else if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
-			player.dx = 0.2f;
+			player.vel.x = 0.2f;
 			player.direction = 1;
 			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
 		}

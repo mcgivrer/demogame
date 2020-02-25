@@ -19,11 +19,11 @@ public class Vector2D {
 	/**
 	 * X axe factor.
 	 */
-	public float x = 0.0f;
+	public double x = 0.0f;
 	/**
 	 * Y axe factor.
 	 */
-	public float y = 0.0f;
+	public double y = 0.0f;
 
 	public final static Vector2D ZERO = new Vector2D(0.0f, 0.0f);
 	public final static Vector2D UNITY = new Vector2D(1.0f, 1.0f);
@@ -43,7 +43,7 @@ public class Vector2D {
 	 * @param x
 	 * @param y
 	 */
-	public Vector2D(String name, float x, float y) {
+	public Vector2D(String name, double x, double y) {
 		this.name = name;
 		this.x = x;
 		this.y = y;
@@ -55,7 +55,7 @@ public class Vector2D {
 	 * @param x
 	 * @param y
 	 */
-	public Vector2D(float x, float y) {
+	public Vector2D(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -109,10 +109,10 @@ public class Vector2D {
 	 * @param v the vector to compute distance with.
 	 * @return
 	 */
-	public float distance(Vector2D v) {
-		float v0 = x - v.x;
-		float v1 = y - v.y;
-		return (float) Math.sqrt(v0 * v0 + v1 * v1);
+	public double distance(Vector2D v) {
+		double v0 = x - v.x;
+		double v1 = y - v.y;
+		return Math.sqrt(v0 * v0 + v1 * v1);
 	}
 
 	/**
@@ -124,7 +124,7 @@ public class Vector2D {
 		double length = Math.sqrt(x * x + y * y);
 
 		if (length != 0.0) {
-			float s = 1.0f / (float) length;
+			double s = 1.0f / length;
 			x = x * s;
 			y = y * s;
 		}
@@ -179,6 +179,10 @@ public class Vector2D {
 		return (x == 1.0f && y == 1.0f);
 	}
 
+	public boolean greaterThan(Vector2D nextPosition) {
+		return x > nextPosition.x && y > nextPosition.y;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -193,9 +197,9 @@ public class Vector2D {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
 			return false;
 		return true;
 	}
@@ -205,13 +209,12 @@ public class Vector2D {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + Float.floatToIntBits(x);
-		result = prime * result + Float.floatToIntBits(y);
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
-	}
-
-	public boolean greaterThan(Vector2D nextPosition) {
-		return x > nextPosition.x && y > nextPosition.y;
 	}
 
 }

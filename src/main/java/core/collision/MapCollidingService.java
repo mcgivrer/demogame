@@ -58,24 +58,24 @@ public class MapCollidingService extends AbstractSystem implements System {
      */
     public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
         MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
-        int ox = (int) (go.bbox.x / asset.tileWidth);
-        int ow = (int) (go.bbox.width / asset.tileWidth);
-        int oy = (int) ((go.oldY + go.bbox.height) / asset.tileHeight);
+        int ox = (int) (go.bbox.pos.x / asset.tileWidth);
+        int ow = (int) (go.bbox.size.x / asset.tileWidth);
+        int oy = (int) ((go.newPos.y + go.bbox.size.y) / asset.tileHeight);
         //int oy2 = (int) ((go.bbox.y + go.bbox.height) / asset.tileHeight);
-        int oh = (int) (go.bbox.height / asset.tileHeight);
+        int oh = (int) (go.bbox.size.y / asset.tileHeight);
 
         go.collidingZone.clear();
 
-        if (go.dx > 0) {
+        if (go.vel.x > 0) {
             testMoveRight(frontLayer, go, ox, ow, oy, oh);
         }
-        if (go.dx < 0) {
+        if (go.vel.x < 0) {
             testMoveLeft(frontLayer, go, ox, oy, oh);
         }
-        if (go.dy < 0) {
+        if (go.vel.y < 0) {
             testMoveUp(frontLayer, go);
         }
-        if (go.dy > 0) {
+        if (go.vel.y > 0) {
             testIfMoveDown(frontLayer, go);
         }
         testIfFall(frontLayer, go, true);
@@ -91,11 +91,11 @@ public class MapCollidingService extends AbstractSystem implements System {
         /**
          * Compute bottom coordinate of bottom corners tiles.
          */
-        int y0 = (int) ((go.oldY + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
-        int x1 = (int) (go.bbox.x / layer.assetsObjects.get(0).tileWidth);
+        int y0 = (int) ((go.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileWidth) + dy;
+        int x1 = (int) (go.bbox.pos.x / layer.assetsObjects.get(0).tileWidth);
 
-        int y1 = (int) ((go.bbox.y + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
-        int x2 = (int) ((go.bbox.x + go.bbox.width) / layer.assetsObjects.get(0).tileWidth);
+        int y1 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileWidth) + dy;
+        int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / layer.assetsObjects.get(0).tileWidth);
         //int y2 = (int) ((go.bbox.y + go.bbox.height) / layer.assetsObjects.get(0).tileWidth) + dy;
 
         // test all tiles from old to new position
@@ -106,7 +106,7 @@ public class MapCollidingService extends AbstractSystem implements System {
             // if those are not null and are blocking ones tiles, let's stop move on Y.
             if (((m1 != null && m1.block) || (m2 != null && m2.block)) && go.action == GameAction.FALL) {
                 // go.action = GameAction.IDLE;
-                go.y = (int) (go.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
+                go.pos.y = (int) (go.pos.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
                 go.bbox.fromGameObject(go);
                 break;
             }
@@ -120,22 +120,22 @@ public class MapCollidingService extends AbstractSystem implements System {
         }
         // if Go is not falling and not on a tile, recompute right Y value according to
         // tile height.
-        if (go.action != GameAction.FALL && (go.y % layer.assetsObjects.get(0).tileHeight) > 0) {
-            go.y = (int) (go.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
+        if (go.action != GameAction.FALL && (go.pos.y % layer.assetsObjects.get(0).tileHeight) > 0) {
+            go.pos.y = (int) (go.pos.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
             go.bbox.fromGameObject(go);
         }
     }
 
     public void testMoveUp(MapLayer map, GameObject go) {
-        int x1 = (int) (go.bbox.x / map.assetsObjects.get(0).tileWidth);
-        int y1 = (int) ((go.bbox.y) / map.assetsObjects.get(0).tileWidth);
-        int x2 = (int) ((go.bbox.x + go.bbox.width) / map.assetsObjects.get(0).tileWidth);
-        int y2 = (int) ((go.bbox.y) / map.assetsObjects.get(0).tileWidth);
+        int x1 = (int) (go.bbox.pos.x / map.assetsObjects.get(0).tileWidth);
+        int y1 = (int) ((go.bbox.pos.y) / map.assetsObjects.get(0).tileWidth);
+        int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / map.assetsObjects.get(0).tileWidth);
+        int y2 = (int) ((go.bbox.pos.y) / map.assetsObjects.get(0).tileWidth);
         MapObject m1 = getTileInMap(map, x1, y1);
         MapObject m2 = getTileInMap(map, x2, y2);
 
         if (go.action == GameAction.JUMP && ((m1 != null && m1.block) || (m2 != null && m2.block))) {
-            go.y = go.oldY;
+            go.newPos.y = go.pos.y;
             createDebugInfo(go, map, m1, x1, y1);
         }
         createDebugInfo(go, map, m1, x1, y1);
@@ -149,8 +149,8 @@ public class MapCollidingService extends AbstractSystem implements System {
             createDebugInfo(go, map, mo, ox, iy);
             if (mo != null) {
                 if (mo.block) {
-                    go.dx = 0.0f;
-                    go.x = go.oldX;
+                    go.vel.x = 0.0f;
+                    go.newPos.x = go.pos.x;
                     break;
                 } else
                     collide(go, map, mo, ox, iy);

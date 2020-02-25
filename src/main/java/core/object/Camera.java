@@ -26,7 +26,7 @@ public class Camera extends GameObject {
      * @param viewPort the size of the display window.
      */
     public Camera(String name, GameObject target, float tween, Dimension viewPort) {
-        super(name, target.x, target.y, viewPort.width, viewPort.height);
+        super(name, target.pos.x, target.pos.y, viewPort.width, viewPort.height);
         this.target = target;
         this.tween = tween;
         this.viewport = viewPort;
@@ -40,8 +40,8 @@ public class Camera extends GameObject {
      * @param elapsed the elapsed time since previous update.
      */
     public void update(Game dg, double elapsed) {
-        this.x += Math.round((target.x + (target.width) - ((double) (viewport.width) * 0.5f) - this.x) * tween * Math.min(elapsed,10));
-        this.y += Math.round((target.y + (target.height) - ((double) (viewport.height) * 0.5f) - this.y) * tween * Math.min(elapsed,10));
+        this.pos.x += Math.round((target.pos.x + (target.size.x) - ((double) (viewport.width) * 0.5f) - this.pos.x) * tween * Math.min(elapsed,10));
+        this.pos.y += Math.round((target.pos.y + (target.size.y) - ((double) (viewport.height) * 0.5f) - this.pos.y) * tween * Math.min(elapsed,10));
         viewport.height *= zoom;
         viewport.width *= zoom;
         //log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
@@ -56,7 +56,7 @@ public class Camera extends GameObject {
     public void render(Game dg, Graphics2D g) {
         if (dg.config.debug > 1) {
             g.setColor(Color.YELLOW);
-            g.drawRect((int) this.x, (int) this.y, viewport.width, viewport.height);
+            g.drawRect((int) this.pos.x, (int) this.pos.y, viewport.width, viewport.height);
         }
     }
 }

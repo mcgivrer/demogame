@@ -35,8 +35,8 @@ public class DebugInfo {
 		int maxWidth = 60;
 		int maxLinePerColumn = 4;
 		int fontHeight = fm.getHeight();
-		double offsetX = go.x + go.width + 2;
-		double offsetY = go.y;
+		double offsetX = go.pos.x + go.size.x + 2;
+		double offsetY = go.pos.y;
 
 		List<String> debugInfo = prepareDebugInfo(go);
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
@@ -49,15 +49,15 @@ public class DebugInfo {
 
 		// draw object size
 		g.setColor(Color.BLUE);
-		g.fillRect(0, 0, (int) go.width, (int) go.height);
+		g.fillRect(0, 0, (int) go.size.x, (int) go.size.y);
 
 	}
 
 	private static List<String> prepareDebugInfo(GameObject go) {
 		List<String> debugInfo = new ArrayList<>();
 		debugInfo.add(String.format("name:%s", go.name));
-		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.x, go.y));
-		debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.dx, go.dy));
+		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.pos.x, go.pos.y));
+		debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.vel.x, go.vel.y));
 		debugInfo.add(String.format("debug:%d", go.debugLevel));
 		debugInfo.add(String.format("action:%s", go.action.toString()));
 
@@ -91,18 +91,18 @@ public class DebugInfo {
 	}
 
 	public static void displayCollisionTest(Graphics2D g, GameObject go) {
-		int ox = (int) (go.bbox.x / 16);
-		int ow = (int) (go.bbox.width / 16);
-		int oy = (int) (go.bbox.y / 16);
-		int oh = (int) (go.bbox.height / 16);
+		int ox = (int) (go.bbox.pos.x / 16);
+		int ow = (int) (go.bbox.size.x / 16);
+		int oy = (int) (go.bbox.pos.y / 16);
+		int oh = (int) (go.bbox.size.y / 16);
 		// draw GameObject in the Map Tiles coordinates
 		g.setColor(Color.ORANGE);
 		g.drawRect(ox * 16, oy * 16, ow * 16, oh * 16);
 		// draw the bounding box
 		g.setColor(Color.RED);
-		g.drawRect((int) (go.bbox.x + go.bbox.left), (int) (go.bbox.y + go.bbox.top),
-				(int) (go.bbox.width - go.bbox.left - go.bbox.right),
-				(int) (go.bbox.height - go.bbox.top - go.bbox.bottom));
+		g.drawRect((int) (go.bbox.pos.x + go.bbox.left), (int) (go.bbox.pos.y + go.bbox.top),
+				(int) (go.bbox.size.x - go.bbox.left - go.bbox.right),
+				(int) (go.bbox.size.y - go.bbox.top - go.bbox.bottom));
 		// draw the tested Tiles to detect Fall action.
 		g.setColor(Color.BLUE);
 		if (!go.collidingZone.isEmpty()) {
