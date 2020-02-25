@@ -41,15 +41,13 @@ public class GameObject {
 
     public boolean enable = true;
 
-    public double x;
-    public double y;
-    public double oldX;
-    public double oldY;
-    public double width;
-    public double height;
+	public Vector2D pos;
+	public Vector2D nextPos;
+	public Vector2D vel;
+	public Vector2D acc;
+	public Vector2D forces;
 
-    public double dx = 0;
-    public double dy = 0;
+	public Vector2D size;
 
     public int direction = 1;
 
@@ -91,12 +89,12 @@ public class GameObject {
      */
     public GameObject() {
         this.name = "gameObjectName";
-        this.x = 0;
-        this.y = 0;
-        this.width = 0;
-        this.height = 0;
+        this.pos = new Vector2D();
+        this.vel = new Vector2D();
+        this.acc = new Vector2D();
+        this.forces = new Vector2D();
         this.type = GameObjectType.RECTANGLE;
-        bbox = new BBox(x, y, width, height);
+        bbox = new BBox(this);
     }
 
     /**
@@ -112,10 +110,10 @@ public class GameObject {
     public GameObject(String name, double x, double y, double width, double height) {
         this();
         this.name = name;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        this.pos.x = x;
+        this.pos.y = y;
+        this.size.x = width;
+        this.size.y = height;
         this.type = GameObjectType.RECTANGLE;
         bbox.fromGameObject(this);
     }
@@ -128,29 +126,29 @@ public class GameObject {
      * @see core.state.State#update(Game, double)
      */
     public void update(Game dg, double elapsed) {
-        oldX = x;
-        oldY = y;
+        pos.x = newPos.x;
+        pos.y = newPos.y;
         // compute action and move to be performed.
         switch (action) {
             case IDLE:
             case IDLE2:
-                dy = 0.0f;
-                dx = 0.0f;
+                vel.y = 0.0f;
+                vel.x = 0.0f;
                 break;
             case WALK:
-                x += (dx * elapsed);
+                pos.x += (vel.x * elapsed);
                 break;
             case RUN:
-                x += (dx * 2.0f * elapsed);
+                pos.x += (vel.x * 2.0f * elapsed);
                 break;
             case FALL:
             case DOWN:
-                y += (dy * elapsed);
+                pos.y += (vel.y * elapsed);
                 break;
             case JUMP:
-                y += (dy*3 * elapsed);
+                pos.y += (vel.y*3 * elapsed);
             case UP:
-            	
+
                 break;
 			default:
 				break;
@@ -179,20 +177,20 @@ public class GameObject {
 
     /*------- Setters ---------------*/
     public void setPosition(double x, double y) {
-        this.x = x;
-        this.y = y;
+        this.pos.x = x;
+        this.pos.y = y;
         bbox.fromGameObject(this);
     }
 
     public void setSpeed(double dx, double dy) {
-        this.dx = dx;
-        this.dy = dy;
+        this.vel.x = dx;
+        this.vel.y = dy;
         bbox.fromGameObject(this);
     }
 
     public void setSize(double width, double height) {
-        this.width = width;
-        this.height = height;
+        this.size.x = width;
+        this.size.y = height;
         bbox.fromGameObject(this);
     }
 }

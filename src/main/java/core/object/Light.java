@@ -1,6 +1,6 @@
 /**
  * SnapGames
- * 
+ *
  * Game Development Java
  *
  * DemoGame
@@ -46,7 +46,7 @@ public class Light extends GameObject {
 	 *
 	 */
 	public Light() {
-
+		super();
 	}
 
 	/**

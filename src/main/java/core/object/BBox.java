@@ -1,32 +1,41 @@
 package core.object;
 
 public class BBox {
-    public double x;
-    public double y;
-    public double width;
-    public double height;
+	Vector2D pos;
+	Vector2D size;
 
     public double top, bottom, left, right;
 
+	public BBox(){
+		this.pos = new Vector2D();
+		this.size = new Vector2D();
+	};
+
     public BBox(double x, double y, double w, double h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
+		this();
+        this.pos.x = x;
+        this.pos.y = y;
+        this.size.x = w;
+        this.size.y = h;
+    }
+    public BBox(GameObject go) {
+		this();
+        this.pos = go.pos;
+  		this.size = go.size;
     }
 
     public void fromGameObject(GameObject g) {
-        this.x = g.x + left;
-        this.y = g.y + top;
-        this.width = g.width - (left + right);
-        this.height = g.height - (top + bottom);
+        this.pos.x = g.pos.x + left;
+        this.pos.y = g.pos.y + top;
+        this.size.x = g.size.x - (left + right);
+        this.size.y = g.size.y - (top + bottom);
     }
 
     public boolean intersect(BBox other) {
         return other != null
-                && this.x + this.right >= other.x + other.left
-                && this.x + this.left <= other.x + other.right
-                && this.y + this.top >= other.y + other.bottom
-                && this.y + this.bottom <= other.y + other.top;
+                && this.pos.x + this.right >= other.pos.x + other.left
+                && this.pos.x + this.left <= other.pos.x + other.right
+                && this.pos.y + this.top >= other.pos.y + other.bottom
+                && this.pos.y + this.bottom <= other.pos.y + other.top;
     }
 }

@@ -5,7 +5,7 @@
     <groupId>fr.snapgames</groupId>
     <artifactId>demogame</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>core.Game</name>
+    <name>DemoGame</name>
     <description>This is a sample implementation of a Game with Java JRE only</description>
     <url>https://github.com/mcgivrer/demogame</url>
     <inceptionYear>2019</inceptionYear>
@@ -33,7 +33,7 @@
         <url>https://snapgames.github.io/</url>
         <connection>scm:git:git@github.com:mcgivrer/demogame.git</connection>
         <developerConnection>scm:git:git@github.com/mcgivrer/demogame.git</developerConnection>
-        <tag>${project.id}-0.0.1-SNAPSHOT</tag>
+        <tag>${project.id}-${project.version}</tag>
     </scm>
     <issueManagement>
         <system>Issues tracker</system>
@@ -75,6 +75,12 @@
             <groupId>org.luaj</groupId>
             <artifactId>luaj-jse</artifactId>
             <version>3.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.10</version>
         </dependency>
 
         <dependency>
@@ -121,11 +127,7 @@
             <version>1.2.5</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
-        </dependency>
+
     </dependencies>
 
     <build>
@@ -323,7 +325,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <projectName>core.Game</projectName>
+                            <projectName>${project.name}</projectName>
                             <outputDirectory>${project.build.directory}/site/cucumber-reports</outputDirectory>
                             <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
                             <skippedFails>true</skippedFails>
