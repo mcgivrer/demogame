@@ -8,10 +8,10 @@ import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
 import core.object.World;
 import core.resource.ResourceManager;
+import core.scene.Scene;
 import core.scripts.LuaScriptSystem;
-import core.state.AbstractState;
-import core.state.State;
-import core.state.StateManager;
+import core.scene.AbstractScene;
+import core.scene.SceneManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,8 +34,8 @@ public class Game {
 	public SystemManager sysMan;
 	public InputHandler inputHandler;
 	public Renderer renderer;
-	PhysicEngineSystem physicEngine;
-	public StateManager stateManager;
+	public PhysicEngineSystem physicEngine;
+	public SceneManager sceneManager;
 
 	/**
 	 * Create the Game container.
@@ -94,8 +94,8 @@ public class Game {
 		sysMan.add(mapCollider);
 
 		// start State manager system
-		stateManager = new StateManager(this);
-		sysMan.add(stateManager);
+		sceneManager = new SceneManager(this);
+		sysMan.add(sceneManager);
 
 		LuaScriptSystem luaSystem = new LuaScriptSystem(this);
 		sysMan.add(luaSystem);
@@ -106,27 +106,30 @@ public class Game {
 	 * Main loop for the game.
 	 */
 	private void loop() {
-		stateManager.startState(this);
+		sceneManager.startState(this);
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
 		int frames = 0;
 		int realFPS = 0;
 		int elapsedFrameTime = 0;
+		double waitFrameDuration = config.fps * 0.001f;
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
 
-			float elapsed = startTime - previousTime;
+			double elapsed = startTime - previousTime;
 
-			stateManager.input(this);
-			State current = stateManager.getCurrent();
-			physicEngine.update(this, (AbstractState) current, elapsed);
-			stateManager.update(this, elapsed);
+			Scene current = sceneManager.getCurrent();
+
+			//sceneManager.input(this);
+			physicEngine.update(this, (AbstractScene) current, elapsed);
+			sceneManager.update(this, elapsed);
 			renderer.setRealFPS(realFPS);
-			stateManager.render(this, renderer, elapsed);
+			sceneManager.render(this, renderer, elapsed);
 
-			float wait = (elapsed - (config.fps * 0.001f));
+			double wait = (elapsed - waitFrameDuration);
+
 			frames++;
 			elapsedFrameTime += elapsed;
 			if (elapsedFrameTime > 1000) {
@@ -136,10 +139,14 @@ public class Game {
 				log.debug("elapsed:{}, wait:{}", elapsed, wait);
 			}
 
-			/*
-			 * if (wait > 0) { try { Thread.sleep((int) wait); } catch (InterruptedException
-			 * e) { log.error("Unable to wait {} wait ms", wait, e); } }
-			 */
+			if (wait > 0 && wait < waitFrameDuration) {
+				try {
+					Thread.sleep((int) wait);
+				} catch (InterruptedException e) {
+					log.error("Unable to wait {} wait ms", wait, e);
+				}
+			}
+
 			previousTime = startTime;
 		}
 	}
