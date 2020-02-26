@@ -13,6 +13,8 @@ import core.collision.MapTileCollision;
 import core.gfx.Animation;
 import core.gfx.Renderer;
 import core.map.MapObject;
+import core.math.Material;
+import core.math.PhysicEngineSystem.PhysicType;
 import core.math.Vector2D;
 import lombok.Data;
 import lombok.ToString;
@@ -45,8 +47,13 @@ public class GameObject {
 	public Vector2D pos;
 	public Vector2D newPos;
 	public Vector2D vel;
+
 	public Vector2D acc;
-	public Vector2D forces;
+	public List<Vector2D> forces;
+
+	public double mass;
+	public Material material;
+	public PhysicType physicType = PhysicType.DYNAMIC;
 
 	public Vector2D size;
 
@@ -93,9 +100,12 @@ public class GameObject {
 		this.pos = new Vector2D();
 		this.vel = new Vector2D();
 		this.acc = new Vector2D();
-		this.forces = new Vector2D();
+		this.size = new Vector2D();
+		this.forces = new ArrayList<>();
 		this.type = GameObjectType.RECTANGLE;
-		bbox = new BBox(this);
+		this.mass = 1;
+		this.material = Material.NONE;
+		this.bbox = new BBox(this);
 	}
 
 	/**
@@ -115,7 +125,6 @@ public class GameObject {
 		this.pos.y = y;
 		this.size.x = width;
 		this.size.y = height;
-		this.type = GameObjectType.RECTANGLE;
 		bbox.fromGameObject(this);
 	}
 
@@ -131,28 +140,28 @@ public class GameObject {
 		pos.y = newPos.y;
 		// compute action and move to be performed.
 		switch (action) {
-		case IDLE:
-		case IDLE2:
-			vel.y = 0.0f;
-			vel.x = 0.0f;
-			break;
-		case WALK:
-			pos.x += (vel.x * elapsed);
-			break;
-		case RUN:
-			pos.x += (vel.x * 2.0f * elapsed);
-			break;
-		case FALL:
-		case DOWN:
-			pos.y += (vel.y * elapsed);
-			break;
-		case JUMP:
-			pos.y += (vel.y * 3 * elapsed);
-		case UP:
+			case IDLE:
+			case IDLE2:
+				vel.y = 0.0f;
+				vel.x = 0.0f;
+				break;
+			case WALK:
+				vel.x = vel.x;
+				break;
+			case RUN:
+				vel.x = vel.x * 2.0;
+				break;
+			case FALL:
+			case DOWN:
+				vel.y = vel.y;
+				break;
+			case JUMP:
+				vel.y = vel.y * 3.0;
+			case UP:
 
-			break;
-		default:
-			break;
+				break;
+			default:
+				break;
 		}
 		// update the bounding box for this GameObject
 		if (bbox != null) {
@@ -176,7 +185,11 @@ public class GameObject {
 		IDLE, IDLE2, WALK, RUN, FALL, JUMP, UP, DOWN, DEAD1, DEAD2;
 	}
 
-	/*------- Setters ---------------*/
+	/*------- Getters & Setters ---------------*/
+	public Vector2D getPOsition(){
+		return this.pos;
+	}
+
 	public void setPosition(double x, double y) {
 		this.pos.x = x;
 		this.pos.y = y;

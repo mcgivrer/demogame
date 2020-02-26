@@ -97,7 +97,7 @@ public class Vector2D {
 	 *
 	 * @param f
 	 */
-	public Vector2D multiply(float f) {
+	public Vector2D multiply(double f) {
 		this.x *= f;
 		this.y *= f;
 		return this;

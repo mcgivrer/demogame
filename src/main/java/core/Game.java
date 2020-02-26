@@ -4,9 +4,13 @@ import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
 import core.gfx.Renderer;
 import core.io.InputHandler;
+import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
+import core.object.World;
 import core.resource.ResourceManager;
 import core.scripts.LuaScriptSystem;
+import core.state.AbstractState;
+import core.state.State;
 import core.state.StateManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +34,7 @@ public class Game {
 	public SystemManager sysMan;
 	public InputHandler inputHandler;
 	public Renderer renderer;
+	PhysicEngineSystem physicEngine;
 	public StateManager stateManager;
 
 	/**
@@ -72,9 +77,13 @@ public class Game {
 		ObjectManager objectManager = new ObjectManager(this);
 		sysMan.add(objectManager);
 
-		// rendering pipeline
+		// Renderer pipeline system
 		renderer = new Renderer(this);
 		sysMan.add(renderer);
+
+		// Physic Engine system
+		physicEngine = new PhysicEngineSystem(this, new World(this));
+		sysMan.add(physicEngine);
 
 		// Massive Sound system
 		SoundSystem soundSystem = new SoundSystem(this);
@@ -91,7 +100,6 @@ public class Game {
 		LuaScriptSystem luaSystem = new LuaScriptSystem(this);
 		sysMan.add(luaSystem);
 
-
 	}
 
 	/**
@@ -102,9 +110,9 @@ public class Game {
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		int frames=0;
+		int frames = 0;
 		int realFPS = 0;
-		int elapsedFrameTime=0;
+		int elapsedFrameTime = 0;
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
@@ -112,27 +120,26 @@ public class Game {
 			float elapsed = startTime - previousTime;
 
 			stateManager.input(this);
+			State current = stateManager.getCurrent();
+			physicEngine.update(this, (AbstractState) current, elapsed);
 			stateManager.update(this, elapsed);
 			renderer.setRealFPS(realFPS);
 			stateManager.render(this, renderer, elapsed);
 
-			float wait = (elapsed-(config.fps * 0.001f));
+			float wait = (elapsed - (config.fps * 0.001f));
 			frames++;
-			elapsedFrameTime+=elapsed;
-			if(elapsedFrameTime>1000){
-				frames=0;
-				elapsedFrameTime=0;
-				realFPS=frames;
-				log.debug("elapsed:{}, wait:{}",elapsed,wait);
+			elapsedFrameTime += elapsed;
+			if (elapsedFrameTime > 1000) {
+				frames = 0;
+				elapsedFrameTime = 0;
+				realFPS = frames;
+				log.debug("elapsed:{}, wait:{}", elapsed, wait);
 			}
 
-			/*if (wait > 0) {
-				try {
-					Thread.sleep((int) wait);
-				} catch (InterruptedException e) {
-					log.error("Unable to wait {} wait ms", wait, e);
-				}
-			}*/
+			/*
+			 * if (wait > 0) { try { Thread.sleep((int) wait); } catch (InterruptedException
+			 * e) { log.error("Unable to wait {} wait ms", wait, e); } }
+			 */
 			previousTime = startTime;
 		}
 	}

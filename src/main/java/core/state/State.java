@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import core.Game;
 import core.gfx.Renderer;
 import core.object.Camera;
+import core.object.ObjectManager;
 
 
 /**
@@ -27,6 +28,8 @@ import core.object.Camera;
 public interface State {
 
     String getName();
+
+    ObjectManager getObjectManager();
 
     void load(Game g);
 

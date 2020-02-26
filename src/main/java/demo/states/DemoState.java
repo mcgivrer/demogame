@@ -21,12 +21,12 @@ import core.map.MapLayer;
 import core.map.MapLevel;
 import core.map.MapObject;
 import core.map.MapReader;
+import core.math.PhysicEngineSystem;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
-import core.object.World;
 import core.resource.ProgressListener;
 import core.resource.ResourceManager;
 import core.scripts.LuaScriptSystem;
@@ -49,6 +49,8 @@ public class DemoState extends AbstractState implements State {
 
 	public MapLevel mapLevel;
 	public MapCollidingService mapCollider;
+	public LuaScriptSystem luas;
+	public PhysicEngineSystem physicEngine;
 
 	public int score = 0;
 	public int life = 4;
@@ -70,9 +72,7 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
-	private boolean scriptingOn = true;
-
-	private World world = new 	World();
+	private boolean scriptingOn = false;
 
 	public DemoState() {
 		this.name = "DemoState";
@@ -99,16 +99,12 @@ public class DemoState extends AbstractState implements State {
 				// level game
 				"/res/maps/map_2.json", "/res/assets/asset-2.json",
 				// graphics
-				"/res/images/background-1.jpg", 
-				"/res/images/tileset-1.png",
+				"/res/images/background-1.jpg", "/res/images/tileset-1.png",
 				// audio
-				"/res/audio/sounds/collect-coin.ogg",
-				"/res/audio/sounds/collect-item-1.ogg",
-				"/res/audio/sounds/collect-item-2.ogg", 
-				"/res/audio/musics/once-around-the-kingdom.ogg",
+				"/res/audio/sounds/collect-coin.ogg", "/res/audio/sounds/collect-item-1.ogg",
+				"/res/audio/sounds/collect-item-2.ogg", "/res/audio/musics/once-around-the-kingdom.ogg",
 				// fonts
-				"/res/fonts/Prince Valiant.ttf", 
-				"/res/fonts/lilliput steps.ttf",
+				"/res/fonts/Prince Valiant.ttf", "/res/fonts/lilliput steps.ttf",
 				// scripts
 				"/res/scripts/enemy_update.lua" });
 
@@ -142,7 +138,10 @@ public class DemoState extends AbstractState implements State {
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
 		soundSystem.setMute(g.config.mute);
 
-		g.sysMan.getSystem(LuaScriptSystem.class).loadAll(new String[] { "/res/scripts/enemy_update.lua" });
+		luas = g.sysMan.getSystem(LuaScriptSystem.class);
+		luas.loadAll(new String[] { "/res/scripts/enemy_update.lua" });
+
+		physicEngine = g.sysMan.getSystem(PhysicEngineSystem.class);
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new OnCollision() {
@@ -154,14 +153,14 @@ public class DemoState extends AbstractState implements State {
 			public void collide(CollisionEvent e) {
 				if (e.m2.collectible && e.o1.canCollect) {
 					switch (e.m2.type) {
-					case "object":
-						collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
-						break;
-					case "item":
-						collectItem(e.map, e.o1, e.m2, e.mapX, e.mapY);
-						break;
-					default:
-						break;
+						case "object":
+							collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
+							break;
+						case "item":
+							collectItem(e.map, e.o1, e.m2, e.mapX, e.mapY);
+							break;
+						default:
+							break;
 					}
 				}
 			}
@@ -327,18 +326,18 @@ public class DemoState extends AbstractState implements State {
 		super.keyReleased(e);
 		boolean control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_R:
-			if (control) {
-				resetState();
-			}
-			break;
-		case KeyEvent.VK_Z:
-			if (control) {
-				resetState();
-			}
-			break;
-		default:
-			break;
+			case KeyEvent.VK_R:
+				if (control) {
+					resetState();
+				}
+				break;
+			case KeyEvent.VK_Z:
+				if (control) {
+					resetState();
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -394,14 +393,13 @@ public class DemoState extends AbstractState implements State {
 	 * @param go the GameObject to be updated by its own scripts.
 	 */
 	private void executeScriptUpdate(Game g, GameObject go) {
-		Map<String,GameObject> objects = objectManager.objects;
+		Map<String, GameObject> objects = objectManager.objects;
 		if (go.attributes.containsKey("scripts")) {
-			List<String> scripts = (List<String>) go.attributes.get("scripts");
+			List<String> scripts = (List<String>) (go.attributes.get("scripts"));
 			for (String script : scripts) {
-				LuaScriptSystem luas = g.sysMan.getSystem(LuaScriptSystem.class);
 				try {
- 					luas.execute(g, world, script, go, objects);
-					
+					luas.execute(g, physicEngine.getWorld(), script, go, objects);
+
 				} catch (ScriptException e) {
 					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
 				}

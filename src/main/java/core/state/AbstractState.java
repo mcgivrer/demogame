@@ -33,7 +33,7 @@ public abstract class AbstractState implements State, KeyListener {
 	// a State must have a Camera.
 	public Camera camera;
 	public Map<String, Camera> cameras = new ConcurrentHashMap<>();
-	public ObjectManager objectManager;
+	protected ObjectManager objectManager;
 	protected InputHandler inputHandler;
 	protected SoundSystem soundSystem;
 
@@ -126,6 +126,11 @@ public abstract class AbstractState implements State, KeyListener {
 		return camera;
 	}
 
+	@Override
+	public ObjectManager getObjectManager() {
+		return objectManager;
+	}
+
 	/**
 	 * Define the parent Game.
 	 *
@@ -164,14 +169,14 @@ public abstract class AbstractState implements State, KeyListener {
 	public void keyReleased(KeyEvent e) {
 		Renderer r = game.sysMan.getSystem(Renderer.class);
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_D:
-			// roll the debug level.
-			game.config.debug = (game.config.debug < 6 ? game.config.debug + 1 : 0);
-			break;
-		case KeyEvent.VK_F3:
-			r.saveScreenshot(game.config);
-		default:
-			break;
+			case KeyEvent.VK_D:
+				// roll the debug level.
+				game.config.debug = (game.config.debug < 6 ? game.config.debug + 1 : 0);
+				break;
+			case KeyEvent.VK_F3:
+				r.saveScreenshot(game.config);
+			default:
+				break;
 		}
 	}
 }
