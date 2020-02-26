@@ -29,6 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 public class MapReader {
 	private static int idxEnemy = 0;
 
+	private static final String TYPE_PLAYER = "player";
+	private static final String TYPE_ENEMY = "enemy";
+	private static final String TYPE_LIGHT = "light";
+
+	private static final String TYPE_OBJECT = "object";
+	private static final String TYPE_TILE = "item";
+
 	/**
 	 * Read the json file fileMap to renegare al tiles and object for a level map.
 	 *
@@ -39,31 +46,38 @@ public class MapReader {
 		MapLevel mapLevel = null;
 		// load level from json file
 		String jsonDataString = ResourceManager.getString(fileMap);
+
 		if (jsonDataString != null && !jsonDataString.equals("")) {
+
 			log.debug("parse the {} json file as e map level", fileMap);
+
 			Gson gson = new Gson();
 			mapLevel = gson.fromJson(jsonDataString, MapLevel.class);
+
 			for (MapLayer ml : mapLevel.layers.values()) {
 
 				switch (ml.type) {
-				case LAYER_BACKGROUND_IMAGE:
-					if (ml.background != null && !ml.background.equals("")) {
-						ml.backgroundImage = ResourceManager.getImage(ml.background);
-						log.debug("Load a specific background image {}", ml.background);
-					}
-					break;
-				case LAYER_TILEMAP:
-					ml.width = ml.map.get(0).length();
-					ml.height = ml.map.size();
-					// load asset from json file.
-					for (String assetStr : ml.assets) {
-						createAsset(gson, ml, assetStr);
-					}
-					mapLevel = generateTilesAndObject(mapLevel, ml);
-					// generate tiles
-					break;
-				default:
-					break;
+
+					case LAYER_BACKGROUND_IMAGE:
+						if (ml.background != null && !ml.background.equals("")) {
+							ml.backgroundImage = ResourceManager.getImage(ml.background);
+							log.debug("Load a specific background image {}", ml.background);
+						}
+						break;
+
+					case LAYER_TILEMAP:
+						ml.width = ml.map.get(0).length();
+						ml.height = ml.map.size();
+						// load asset from json file.
+						for (String assetStr : ml.assets) {
+							createAsset(gson, ml, assetStr);
+						}
+						// generate tiles
+						mapLevel = generateTilesAndObject(mapLevel, ml);
+						break;
+
+					default:
+						break;
 				}
 			}
 
@@ -84,8 +98,14 @@ public class MapReader {
 		}
 	}
 
+	/**
+	 * Generate Tiles and Objects in the map.
+	 * 
+	 * @param mapLevel the MapLevel object to be created.
+	 * @param ml       the MapLevel where to create the tiles and objects.
+	 */
 	public static MapLevel generateTilesAndObject(MapLevel mapLevel, MapLayer ml) {
-		ml.tiles = new MapObject[(int)ml.width][(int)ml.height];
+		ml.tiles = new MapObject[(int) ml.width][(int) ml.height];
 
 		// generate all objects.
 		ml = createAssetMapObjects(ml);
@@ -98,9 +118,9 @@ public class MapReader {
 				if (ml.assetsObjects.get(0).objects.containsKey(code)) {
 					MapObject mo = ml.assetsObjects.get(0).objects.get(code);
 					// those MapObject is tile
-					if ("player,enemy,light".contains(mo.type)) {
+					if ((TYPE_PLAYER + TYPE_ENEMY + TYPE_LIGHT).contains(mo.type)) {
 						// those MapObject are GameObject !
-						createGameObject(mapLevel, ml, y, x, mo);
+						createGameObject(mapLevel, ml, x, y, mo);
 					} else {
 						ml.tiles[x][y] = mo;
 					}
@@ -113,59 +133,47 @@ public class MapReader {
 		return mapLevel;
 	}
 
-	public static void createGameObject(MapLevel mapLevel, MapLayer ml, int y, int x, MapObject mo) {
-		GameObject go = null;
-		go = generateGameObjectFromMapObject(mapLevel, ml, mo, x, y);
-		if (mapLevel.child == null) {
-			mapLevel.child = new HashMap<String,GameObject>();
-		}
-		switch (mo.type) {
-		case "enemy":
-		case "player":
-			mapLevel.child.put(go.name,go);
-			break;
-		case "light":
-			mapLevel.lights.add((Light) go);
-			break;
-		default:
-			log.error(String.format("Unknown object type %s", mo.type));
-			break;
-		}
-		mapLevel.child.put(go.name, go);
-	}
-
 	/**
-	 * Generate a GameObject into the mapLevel map from a MapObject mo at a specific
-	 * position x,y.
-	 *
-	 * @param mapLevel the MapLevel reading
-	 * @param mo       the MapObject to be translated to a GameObject
-	 * @param x        the horizontal position
-	 * @param y        the vertical position
-	 * @return a well fitted GameObject.
+	 * Create a GameObject from a MapObject int the MapLevel at (x,y)
+	 * 
+	 * @param mapLevel the map where to generate object from
+	 * @param ml       the MapLayer object to extract the MapObject from
+	 * @param x        the x coordinate in MapLayer
+	 * @param y        the y coordinate in MapLayer
+	 * @param mo       the MapObject containing the MapObject definition.
 	 */
-	private static GameObject generateGameObjectFromMapObject(MapLevel mapLevel, MapLayer layer, MapObject mo, int x,
-			int y) {
-		GameObject go = null;
-		try {
-			switch (mo.type) {
-			case "player":
-				go = createObjectFromClass(mapLevel, layer, mo, x, y);
-				mapLevel.playerInitialX = go.pos.x;
-				mapLevel.playerInitialY = go.pos.y;
-				break;
-			case "enemy":
-				go = createObjectFromClass(mapLevel, layer, mo, x, y);
-				break;
-			case "light":
-				go = createObjectFromClass(mapLevel, layer, mo, x, y);
-			default:
-				break;
-			}
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			System.out.println("Unable to instantiate the " + mo.clazz + " object.");
+	public static void createGameObject(MapLevel mapLevel, MapLayer ml, int x, int y, MapObject mo) {
+		// Initialize MapLevel.child attribute if not.
+		if (mapLevel.child == null) {
+			mapLevel.child = new HashMap<String, GameObject>();
 		}
-		return go;
+
+		try {
+			// create GameObject from MapOpbject
+			GameObject go = createObjectFromClass(ml, mo, x, y);
+
+			switch (mo.type) {
+				case TYPE_ENEMY:
+					// add the object to the MapLevel object.
+					mapLevel.child.put(go.name, go);
+					break;
+				case TYPE_PLAYER:
+					mapLevel.playerInitialX = go.pos.x;
+					mapLevel.playerInitialY = go.pos.y;
+					// add the object to the MapLevel object.
+					mapLevel.child.put(go.name, go);
+					break;
+				case TYPE_LIGHT:
+					mapLevel.lights.add((Light) go);
+					break;
+				default:
+					log.error(String.format("Unknown object type %s", mo.type));
+					break;
+			}
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			log.error("Unable to instantiate the {}  object.", mo.clazz);
+		}
 	}
 
 	/**
@@ -181,10 +189,11 @@ public class MapReader {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
-	private static GameObject createObjectFromClass(MapLevel mapLevel, MapLayer layer, MapObject mo, int x, int y)
+	private static GameObject createObjectFromClass(MapLayer layer, MapObject mo, int x, int y)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 
 		GameObject go;
+
 		Class<?> class1 = Class.forName(mo.clazz);
 
 		go = (GameObject) class1.newInstance();
@@ -210,29 +219,29 @@ public class MapReader {
 					mo.asset = asset;
 					if (mo != null) {
 						switch (mo.type) {
-						case "tile":
-						case "object":
-						default:
-							if (mo.size != null && !mo.size.equals("")) {
-								String[] sizeValue = mo.offset.split(",");
-								mo.width = Integer.parseInt(sizeValue[0]);
-								mo.height = Integer.parseInt(sizeValue[1]);
-							} else {
-								mo.width = asset.tileWidth;
-								mo.height = asset.tileHeight;
-							}
-							if (mo.offset != null && !mo.offset.equals("")) {
-								String[] offsetValue = mo.offset.split(",");
-								mo.offsetX = Integer.parseInt(offsetValue[0]);
-								mo.offsetY = Integer.parseInt(offsetValue[1]);
-								mo = getImageBufferFromAsset(asset, mo, mo.offsetX, mo.offsetY);
-							}
-							if (mo.frameSet.size() > 0) {
-								mo = createAnimation(asset, mo);
-							}
+							case TYPE_TILE:
+							case TYPE_OBJECT:
+							default:
+								if (mo.size != null && !mo.size.equals("")) {
+									String[] sizeValue = mo.offset.split(",");
+									mo.width = Integer.parseInt(sizeValue[0]);
+									mo.height = Integer.parseInt(sizeValue[1]);
+								} else {
+									mo.width = asset.tileWidth;
+									mo.height = asset.tileHeight;
+								}
+								if (mo.offset != null && !mo.offset.equals("")) {
+									String[] offsetValue = mo.offset.split(",");
+									mo.offsetX = Integer.parseInt(offsetValue[0]);
+									mo.offsetY = Integer.parseInt(offsetValue[1]);
+									mo = getImageBufferFromAsset(asset, mo, mo.offsetX, mo.offsetY);
+								}
+								if (mo.frameSet.size() > 0) {
+									mo = createAnimation(asset, mo);
+								}
 
-							asset.objects.put(emo.getKey(), mo);
-							break;
+								asset.objects.put(emo.getKey(), mo);
+								break;
 						}
 					}
 				}
@@ -285,7 +294,7 @@ public class MapReader {
 			go.image = moa.imageBuffer.getSubimage((ox - 1) * moa.tileWidth, (oy - 1) * moa.tileHeight, (int) go.size.x,
 					(int) go.size.y);
 			go.type = GameObjectType.IMAGE;
-			go.bbox = mo.bbox;
+			// go.bbox = mo.bbox;
 			go.bbox.fromGameObject(go);
 		}
 		go.priority = mo.priority;
@@ -304,27 +313,27 @@ public class MapReader {
 				go.foregroundColor = new Color(v[0], v[1], v[2], v[3]);
 			} else {
 				switch (mo.color) {
-				case "RED":
-					go.foregroundColor = Color.RED;
-					break;
-				case "YELLOW":
-					go.foregroundColor = Color.YELLOW;
-					break;
-				case "BLUE":
-					go.foregroundColor = Color.BLUE;
-					break;
-				case "GREEN":
-					go.foregroundColor = Color.GREEN;
-					break;
-				case "WHITE":
-					go.foregroundColor = Color.WHITE;
-					break;
-				case "BLACK":
-					go.foregroundColor = Color.BLACK;
-					break;
-				default:
-					go.foregroundColor = null;
-					break;
+					case "RED":
+						go.foregroundColor = Color.RED;
+						break;
+					case "YELLOW":
+						go.foregroundColor = Color.YELLOW;
+						break;
+					case "BLUE":
+						go.foregroundColor = Color.BLUE;
+						break;
+					case "GREEN":
+						go.foregroundColor = Color.GREEN;
+						break;
+					case "WHITE":
+						go.foregroundColor = Color.WHITE;
+						break;
+					case "BLACK":
+						go.foregroundColor = Color.BLACK;
+						break;
+					default:
+						go.foregroundColor = null;
+						break;
 
 				}
 			}
@@ -341,16 +350,16 @@ public class MapReader {
 				l.lightType = mo.lightType;
 			}
 			switch (l.lightType) {
-			case LIGHT_CONE:
-				l.size.x = (double) mo.attributes.get("radius");
-				l.size.y = (double) mo.attributes.get("size");
-				break;
-			case LIGHT_SPHERE:
-				l.size.x = (double) mo.attributes.get("radius");
-				l.size.y = (double) mo.attributes.get("radius");
-				break;
-			case LIGHT_AMBIANT:
-				break;
+				case LIGHT_CONE:
+					l.size.x = (double) mo.attributes.get("radius");
+					l.size.y = (double) mo.attributes.get("size");
+					break;
+				case LIGHT_SPHERE:
+					l.size.x = (double) mo.attributes.get("radius");
+					l.size.y = (double) mo.attributes.get("radius");
+					break;
+				case LIGHT_AMBIANT:
+					break;
 			}
 			l.intensity = (double) mo.attributes.get("intensity");
 			l.size.y += (3 * moa.tileHeight);

@@ -147,19 +147,19 @@ public class Vector2D {
 		return String.format("(%03.4f,%03.4f)", x, y);
 	}
 
-	public Vector2D maximize(float max) {
+	public Vector2D maximize(double max) {
 		x = (Math.abs(x) > Math.abs(max) ? Math.signum(x) * max : x);
 		y = (Math.abs(y) > Math.abs(max) ? Math.signum(y) * max : y);
 		return this;
 	}
 
-	public Vector2D minimize(float min) {
+	public Vector2D minimize(double min) {
 		x = (Math.abs(x) < Math.abs(min) ? Math.signum(x) * min : x);
 		y = (Math.abs(y) < Math.abs(min) ? Math.signum(y) * min : y);
 		return this;
 	}
 
-	public Vector2D threshold(float thresholdValue) {
+	public Vector2D threshold(double thresholdValue) {
 		x = (Math.abs(x) < Math.abs(thresholdValue) ? 0.0f : x);
 		y = (Math.abs(y) < Math.abs(thresholdValue) ? 0.0f : y);
 

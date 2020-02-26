@@ -1,14 +1,14 @@
 package core.object;
 
-import core.Game;
-import lombok.extern.slf4j.Slf4j;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 
-import java.awt.*;
+import core.Game;
 
 /**
  * A 2D core.object.Camera to render scene from a constrained point of view.
  */
-@Slf4j
 public class Camera extends GameObject {
 
     public GameObject target;
@@ -17,8 +17,9 @@ public class Camera extends GameObject {
     public float zoom = 1.0f;
 
     /**
-     * Create a core.object.Camera <code>name</code> focusing on <code>target</code>, with a <code>tween</code> factor to
-     * manage camera sensitivity, and in a <code>viewport</code> size.
+     * Create a core.object.Camera <code>name</code> focusing on
+     * <code>target</code>, with a <code>tween</code> factor to manage camera
+     * sensitivity, and in a <code>viewport</code> size.
      *
      * @param name     name of the new camera.
      * @param target   the core.object.GameObject to be followed by the camera.
@@ -33,18 +34,21 @@ public class Camera extends GameObject {
     }
 
     /**
-     * Update the camera according to the <code>elapsed</code> time.
-     * Position is relative to the <code>target</code> object and the camera speed is computed through the <code>tween</code> factor.
+     * Update the camera according to the <code>elapsed</code> time. Position is
+     * relative to the <code>target</code> object and the camera speed is computed
+     * through the <code>tween</code> factor.
      *
      * @param dg      the core.Game container for this camera
      * @param elapsed the elapsed time since previous update.
      */
     public void update(Game dg, double elapsed) {
-        this.pos.x += Math.round((target.pos.x + (target.size.x) - ((double) (viewport.width) * 0.5f) - this.pos.x) * tween * Math.min(elapsed,10));
-        this.pos.y += Math.round((target.pos.y + (target.size.y) - ((double) (viewport.height) * 0.5f) - this.pos.y) * tween * Math.min(elapsed,10));
+        this.pos.x += Math.round((target.pos.x + (target.size.x) - ((double) (viewport.width) * 0.5f) - this.pos.x)
+                * tween * Math.min(elapsed, 10));
+        this.pos.y += Math.round((target.pos.y + (target.size.y) - ((double) (viewport.height) * 0.5f) - this.pos.y)
+                * tween * Math.min(elapsed, 10));
         viewport.height *= zoom;
         viewport.width *= zoom;
-        //log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
+        // log.debug("elapsed: {}, camera position : {},{}",elapsed, this.x,this.y);
     }
 
     /**

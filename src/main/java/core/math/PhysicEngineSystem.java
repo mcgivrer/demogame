@@ -3,14 +3,15 @@
  */
 package core.math;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import core.Game;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.World;
-import core.state.AbstractState;
-import core.state.State;
+import core.scene.Scene;
 import core.system.AbstractSystem;
-import core.system.System;
 
 /**
  * <p>
@@ -29,7 +30,7 @@ import core.system.System;
  * 
  * @author Frédéric Delorme<frederic.Delorme@gmail.com>
  */
-public class PhysicEngineSystem extends AbstractSystem implements System {
+public class PhysicEngineSystem extends AbstractSystem {
 
 	public enum PhysicType {
 		STATIC, // object move without collision and limitation
@@ -37,8 +38,13 @@ public class PhysicEngineSystem extends AbstractSystem implements System {
 		DYNAMIC // object will move according to a full physic simulation.
 	}
 
-	private State state;
+	private static final double TIME_ACCURATY = 0.05;
+	private static final double VELOCITY_THRESHOLD_MIN = 0.001;
+
+	private Scene state;
 	private World world;
+
+	private List<GameObject> objects = new ArrayList<>();
 
 	/**
 	 * Create the Physic engine to process objetcs.
@@ -57,7 +63,7 @@ public class PhysicEngineSystem extends AbstractSystem implements System {
 	 * @param scn     the Scene containing all the objects
 	 * @param elapsed the elapsed time since previous call.
 	 */
-	public void update(Game game, State scn, double elapsed) {
+	public void update(Game game, Scene scn, double elapsed) {
 		this.state = scn;
 
 		for (GameObject o : scn.getObjectManager().objects.values()) {
@@ -83,29 +89,31 @@ public class PhysicEngineSystem extends AbstractSystem implements System {
 				switch (o.physicType) {
 					case DYNAMIC:
 
-						double t = elapsed * 0.05;
+						double t = elapsed;
 						vForces.addAll(o.forces);
 						vForces.addAll(world.getForces());
 
 						// acceleration = acceleration.add(game.getWorld().getGravity());
 						acceleration = acceleration.add(vForces);
 
-						acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(50.0 * elapsed);
+						acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(elapsed);
 
 						// TODO add contact detection
-						/*if (o.isContact()) {
+						if (o.isContact) {
 							acceleration = acceleration.multiply(o.getMaterial().friction);
-						}*/
+						}
+
 						speed = speed.add(acceleration.multiply(t * t)).threshold(1f);
 						nextPosition = position.add(speed.multiply(0.5f * t)).threshold(1);
 						break;
 
 					case KINETIC:
 						// TODO add contact detection
-						/*if (o.isContact()) {
+
+						if (o.isContact) {
 							speed = speed.multiply(friction);
-						}*/
-						speed = speed.threshold(0.001f);
+						}
+						speed = speed.threshold(VELOCITY_THRESHOLD_MIN);
 						// objectGameSpeed = speed.multiply(game.getGameSpeed());
 						nextPosition = position.add(objectGameSpeed);
 
@@ -128,9 +136,22 @@ public class PhysicEngineSystem extends AbstractSystem implements System {
 		return "physic_engine";
 	}
 
+	public void run() {
+
+	}
+
 	@Override
 	public int initialize(Game game) {
 		return 0;
+	}
+
+	/**
+	 * Add a new GameObject to the update system.
+	 */
+	public void add(GameObject o) {
+		if (!objects.contains(o)) {
+			objects.add(o);
+		}
 	}
 
 	@Override
@@ -138,7 +159,7 @@ public class PhysicEngineSystem extends AbstractSystem implements System {
 
 	}
 
-	public World getWorld(){
+	public World getWorld() {
 		return world;
 	}
 }

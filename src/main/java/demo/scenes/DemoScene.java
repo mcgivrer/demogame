@@ -1,4 +1,4 @@
-package demo.states;
+package demo.scenes;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -29,9 +29,9 @@ import core.object.TextObject;
 import core.object.TextObject.TextAlign;
 import core.resource.ProgressListener;
 import core.resource.ResourceManager;
+import core.scene.AbstractScene;
+import core.scene.Scene;
 import core.scripts.LuaScriptSystem;
-import core.state.AbstractState;
-import core.state.State;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,12 +40,12 @@ import lombok.extern.slf4j.Slf4j;
  * .
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
- * @see State
- * @see AbstractState
+ * @see Scene
+ * @see AbstractScene
  * @since 2019
  */
 @Slf4j
-public class DemoState extends AbstractState implements State {
+public class DemoScene extends AbstractScene {
 
 	public MapLevel mapLevel;
 	public MapCollidingService mapCollider;
@@ -72,13 +72,12 @@ public class DemoState extends AbstractState implements State {
 	private Font scoreFont;
 	private Font infoFont;
 	private Font messageFont;
-	private boolean scriptingOn = false;
 
-	public DemoState() {
+	public DemoScene() {
 		this.name = "DemoState";
 	}
 
-	public DemoState(Game g) {
+	public DemoScene(Game g) {
 		super(g);
 	}
 
@@ -151,37 +150,34 @@ public class DemoState extends AbstractState implements State {
 			 * @param e Collision Event to manage.
 			 */
 			public void collide(CollisionEvent e) {
-				if (e.m2.collectible && e.o1.canCollect) {
-					switch (e.m2.type) {
-						case "object":
-							collectCoin(e.map, e.o1, e.m2, e.mapX, e.mapY);
-							break;
-						case "item":
-							collectItem(e.map, e.o1, e.m2, e.mapX, e.mapY);
-							break;
-						default:
-							break;
-					}
+				switch (e.type) {
+					case COLLISION_OBJECT:
+						collectCoin(e);
+						break;
+					case COLLISION_ITEM:
+						collectItem(e);
+						break;
+					case COLLISION_MAP:
+						manageTileCollision(e);
+						break;
+					default:
+						break;
 				}
 			}
 
 			/**
 			 * A GameObject <code>go</code> collects a MapObject <code>mo</code> item
 			 *
-			 * @param map the MapLayer where the GameObject is moving
-			 * @param go  the GameObject having collision
-			 * @param mo  the Item to be collected by the GameObject
-			 * @param x   tilemap horizontal position
-			 * @param y   tilemap vertical position
+			 * @param e the CollisionEvent when the GameObject is moving
 			 */
-			private void collectItem(MapLayer map, GameObject go, MapObject mo, int x, int y) {
-				if (go.attributes.containsKey("maxItems")) {
-					double maxItems = (Double) go.attributes.get("maxItems");
-					if (go.items.size() <= maxItems) {
-						go.items.add(mo);
-						map.tiles[x][y] = null;
+			private void collectItem(CollisionEvent e) {
+				if (e.o1.attributes.containsKey("maxItems") && e.m2.collectible && e.o1.canCollect) {
+					double maxItems = (Double) e.o1.attributes.get("maxItems");
+					if (e.o1.items.size() <= maxItems) {
+						e.o1.items.add(e.m2);
+						e.map.tiles[e.mapX][e.mapY] = null;
 						soundSystem.play("item-1", (float) game.config.attributes.get("sound_volume"));
-						log.debug("Collect {}:{} at {},{}", mo.type, mo.name, x, y);
+						log.debug("Collect {}:{} at {},{}", e.m2.type, e.m2.name, e.mapX, e.mapY);
 					}
 				}
 			}
@@ -189,22 +185,34 @@ public class DemoState extends AbstractState implements State {
 			/**
 			 * A GameObject <code>go</code> collect a MapObject <code>mo</code> as Coins.
 			 *
-			 * @param map the MapLayer where the GameObject is moving
-			 * @param go  the GameObject having collision
-			 * @param mo  the coins to be collected by the GameObject
-			 * @param x   tilemap horizontal position
-			 * @param y   tilemap vertical position
+			 * @param e the CollisionEvent when the GameObject is moving
 			 */
-			private void collectCoin(MapLayer map, GameObject go, MapObject mo, int x, int y) {
+			private void collectCoin(CollisionEvent e) {
 
-				if (mo.money > 0) {
-					double value = (double) (go.attributes.get("coins"));
-					go.attributes.put("coins", (double) mo.money + value);
-					map.tiles[x][y] = null;
+				if (e.m2.collectible && e.o1.canCollect && e.m2.money > 0) {
+					double value = (double) (e.o1.attributes.get("coins"));
+					e.o1.attributes.put("coins", (double) e.m2.money + value);
+					e.map.tiles[e.mapX][e.mapY] = null;
 					soundSystem.play("coins", (float) game.config.attributes.get("sound_volume"));
-					log.debug("Collect {}:{} at {},{}", mo.type, mo.money, x, y);
+					log.debug("Collect {}:{} at {},{}", e.m2.type, e.m2.money, e.mapX, e.mapY);
 				}
 			}
+
+			private void manageTileCollision(CollisionEvent e) {
+				if (e.m2.block) {
+					if (Math.abs(e.o1.vel.x) > 0) {
+						e.o1.vel.x = 0;
+					}
+					if (Math.abs(e.o1.vel.y) > 0) {
+						e.o1.vel.y = 0;
+						e.o1.pos.y = (int) (e.o1.pos.y / e.map.assetsObjects.get(0).tileHeight)
+								* e.map.assetsObjects.get(0).tileHeight;
+						e.o1.bbox.fromGameObject(e.o1);
+					}
+
+				}
+			}
+
 		});
 
 		if (mapLevel != null) {
@@ -234,12 +242,14 @@ public class DemoState extends AbstractState implements State {
 			GameObject player = objectManager.get("player");
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
+
 			addObject(cam);
 			// start game music background
 			soundSystem = g.sysMan.getSystem(SoundSystem.class);
 			soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 
 		}
+
 	}
 
 	@Override
@@ -373,9 +383,7 @@ public class DemoState extends AbstractState implements State {
 				objectManager.updateObject(game, go, elapsed);
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				if (scriptingOn) {
-					executeScriptUpdate(g, go);
-				}
+				executeScriptUpdate(g, go);
 			}
 		}
 

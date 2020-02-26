@@ -1,4 +1,4 @@
-package core.state;
+package core.scene;
 
 import java.awt.Graphics2D;
 
@@ -9,8 +9,8 @@ import core.object.ObjectManager;
 
 
 /**
- * The `State` interface define all steps to manage a game play loop.
- * The `StateManager` wil call all the steps in this order :
+ * The `Scene` interface define all steps to manage a game play loop.
+ * The `SceneManager` wil call all the steps in this order :
  * <p>
  * ```Text
  * - load(Game)
@@ -25,7 +25,7 @@ import core.object.ObjectManager;
  * @author Frédéric Delorme<frederic.delorme@gmailcom>
  * @since 2019
  */
-public interface State {
+public interface Scene {
 
     String getName();
 
@@ -41,7 +41,7 @@ public interface State {
 
     void update(Game g, double elapsed);
 
-    void render(Game g, Renderer r,double elapsed);
+    void render(Game g, Renderer r, double elapsed);
 
     void dispose(Game g);
 

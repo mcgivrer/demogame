@@ -1,6 +1,6 @@
 {
-  "defaultState": "test",
-  "states": {
-    "test": "demo.states.TestState"
+  "defaultScene": "test",
+  "scenes": {
+    "test": "demo.scene.TestScene"
   }
 }

@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import core.Game;
 import core.system.AbstractSystem;
-import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2019
  */
 @Slf4j
-public class ObjectManager extends AbstractSystem implements System {
+public class ObjectManager extends AbstractSystem {
 
 	public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 
@@ -98,7 +97,7 @@ public class ObjectManager extends AbstractSystem implements System {
 		if (go.enable) {
 			// Update object
 			go.update(game, elapsed);
-			
+
 			computeDuration(go, elapsed);
 		}
 	}

@@ -1,4 +1,4 @@
-package core.state;
+package core.scene;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,11 +20,11 @@ import lombok.extern.slf4j.Slf4j;
  * specifics would be implemented in the inheriting class.
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
- * @see core.state.State
+ * @see core.state.Scene
  * @since 2019
  */
 @Slf4j
-public abstract class AbstractState implements State, KeyListener {
+public abstract class AbstractScene implements Scene, KeyListener {
 
 	// the parent game.
 	protected Game game;
@@ -40,7 +40,7 @@ public abstract class AbstractState implements State, KeyListener {
 	/**
 	 * the default constructor.
 	 */
-	public AbstractState() {
+	public AbstractScene() {
 
 	}
 
@@ -49,7 +49,7 @@ public abstract class AbstractState implements State, KeyListener {
 	 *
 	 * @param g the parent game.
 	 */
-	public AbstractState(Game g) {
+	public AbstractScene(Game g) {
 		this.game = g;
 	}
 

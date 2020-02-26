@@ -1,4 +1,4 @@
-package core.state;
+package core.scene;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,20 +9,18 @@ import com.google.gson.Gson;
 import core.Game;
 import core.gfx.Renderer;
 import core.resource.ResourceManager;
-import core.scene.Scene;
-import core.scene.ScenesMap;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * The class StateManager manege all states for the parent game.
+ * The class SceneManager manege all states for the parent game.
  *
  * @author Frédéric Delorme<fredeic.delorme@gmail.com>
  * @see Scene
  * @see AbstractScene
  */
 @Slf4j
-public class StateManager extends AbstractSystem {
+public class SceneManager extends AbstractSystem {
 
     /**
      * List of all states managed for the game.
@@ -35,11 +33,11 @@ public class StateManager extends AbstractSystem {
     private Scene current;
 
     /**
-     * Create the StateManager for the Game.
+     * Create the SceneManager for the Game.
      *
      * @param g the parent game.
      */
-    public StateManager(final Game g) {
+    public SceneManager(final Game g) {
         super(g);
         loadFromFile(g.config.statesPath);
     }
@@ -82,11 +80,11 @@ public class StateManager extends AbstractSystem {
 
     @Override
     public String getName() {
-        return StateManager.class.getCanonicalName();
+        return SceneManager.class.getCanonicalName();
     }
 
     public int initialize(final Game g) {
-        log.debug("StateManager system initialized");
+        log.debug("SceneManager system initialized");
         return 0;
     }
 

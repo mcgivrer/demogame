@@ -74,6 +74,8 @@ public class GameObject {
 
 	public double duration = -1;
 
+	public boolean isContact = false;
+
 	public Map<GameAction, Animation> animations = new HashMap<>();
 
 	public Color foregroundColor;
@@ -133,36 +135,11 @@ public class GameObject {
 	 *
 	 * @param dg      the core.Game containing the object.
 	 * @param elapsed the elapsed time since previous call.
-	 * @see core.state.State#update(Game, double)
+	 * @see core.state.Scene#update(Game, double)
 	 */
 	public void update(Game dg, double elapsed) {
 		pos.x = newPos.x;
 		pos.y = newPos.y;
-		// compute action and move to be performed.
-		switch (action) {
-			case IDLE:
-			case IDLE2:
-				vel.y = 0.0f;
-				vel.x = 0.0f;
-				break;
-			case WALK:
-				vel.x = vel.x;
-				break;
-			case RUN:
-				vel.x = vel.x * 2.0;
-				break;
-			case FALL:
-			case DOWN:
-				vel.y = vel.y;
-				break;
-			case JUMP:
-				vel.y = vel.y * 3.0;
-			case UP:
-
-				break;
-			default:
-				break;
-		}
 		// update the bounding box for this GameObject
 		if (bbox != null) {
 			bbox.fromGameObject(this);
@@ -186,7 +163,7 @@ public class GameObject {
 	}
 
 	/*------- Getters & Setters ---------------*/
-	public Vector2D getPOsition(){
+	public Vector2D getPOsition() {
 		return this.pos;
 	}
 

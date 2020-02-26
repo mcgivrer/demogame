@@ -1,15 +1,14 @@
-package demo.states;
+package demo.scenes;
+
+import java.awt.Graphics2D;
 
 import core.Game;
 import core.gfx.Renderer;
-import core.state.AbstractState;
-import core.state.State;
+import core.scene.AbstractScene;
 
-import java.awt.*;
+public class TestScene extends AbstractScene {
 
-public class TestState extends AbstractState implements State {
-
-    public TestState(Game g) {
+    public TestScene(Game g) {
         super(g);
     }
 

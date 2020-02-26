@@ -59,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
  * @year 2019
  */
 @Slf4j
-public class Renderer extends AbstractSystem implements core.system.System {
+public class Renderer extends AbstractSystem {
 
 	private static int screenShotIndex = 0;
 	public BufferedImage screenBuffer;
@@ -95,7 +95,7 @@ public class Renderer extends AbstractSystem implements core.system.System {
 	 * @return a JFrame initialized conforming to config attributes.
 	 */
 	private JFrame createWindow(Game dg) {
-		log.info("Java Library Path: {}",System.getProperty("java.library.path"));
+		// log.info("Java Library Path: {}", System.getProperty("java.library.path"));
 		log.info(getMonitorSizes());
 
 		jf = new JFrame(dg.config.title);
@@ -154,7 +154,7 @@ public class Renderer extends AbstractSystem implements core.system.System {
 			Graphics2D g = screenBuffer.createGraphics();
 			DebugInfo.debugFont = g.getFont().deriveFont(9.0f);
 
-			Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+			Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 
 			// activate Anti-aliasing for image and text rendering.
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -175,7 +175,7 @@ public class Renderer extends AbstractSystem implements core.system.System {
 			}
 
 			// draw HUD
-			dg.stateManager.getCurrent().drawHUD(dg, this, g);
+			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
 			g.dispose();
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg, realFPS);
@@ -230,16 +230,16 @@ public class Renderer extends AbstractSystem implements core.system.System {
 
 			double ox = to.pos.x, oy = to.pos.y;
 			switch (to.align) {
-			case CENTER:
-				ox = to.pos.x - (to.size.x / 2);
-				break;
-			case RIGHT:
-				ox = to.pos.x - to.size.x;
-				break;
-			case LEFT:
-			default:
-				ox = to.pos.x;
-				break;
+				case CENTER:
+					ox = to.pos.x - (to.size.x / 2);
+					break;
+				case RIGHT:
+					ox = to.pos.x - to.size.x;
+					break;
+				case LEFT:
+				default:
+					ox = to.pos.x;
+					break;
 			}
 			int boxPadding = 4;
 
@@ -309,35 +309,33 @@ public class Renderer extends AbstractSystem implements core.system.System {
 		Composite c = g.getComposite();
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
-		case LIGHT_SPHERE:
-			l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-			l.colors = new Color[] { l.foregroundColor,
-					new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
-							l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
-					new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-			l.rgp = new RadialGradientPaint(
-					new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
-							(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-					(int) (l.size.x * 2), l.dist, l.colors);
-			g.setPaint(l.rgp);
-			g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.x));
-			break;
+			case LIGHT_SPHERE:
+				l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+				l.colors = new Color[] { l.foregroundColor,
+						new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+								l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
+						new Color(0.0f, 0.0f, 0.0f, 0.0f) };
+				l.rgp = new RadialGradientPaint(
+						new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+								(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
+						(int) (l.size.x * 2), l.dist, l.colors);
+				g.setPaint(l.rgp);
+				g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.x));
+				break;
 
-		case LIGHT_CONE:
-			// TODO implement the CONE light type
-			break;
+			case LIGHT_CONE:
+				// TODO implement the CONE light type
+				break;
 
-		case LIGHT_AMBIANT:
-			final Area ambientArea = new Area(
-					new Rectangle2D.Double(
-							dg.stateManager.getCurrent().getActiveCamera().pos.x,
-							dg.stateManager.getCurrent().getActiveCamera().pos.y, 
-							dg.config.screenWidth, 
-							dg.config.screenHeight));
-			g.setColor(l.foregroundColor);
+			case LIGHT_AMBIANT:
+				final Area ambientArea = new Area(
+						new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+								dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth,
+								dg.config.screenHeight));
+				g.setColor(l.foregroundColor);
 
-			g.fill(ambientArea);
-			break;
+				g.fill(ambientArea);
+				break;
 		}
 
 		g.setComposite(c);
@@ -353,21 +351,22 @@ public class Renderer extends AbstractSystem implements core.system.System {
 	 */
 	private void drawObject(Game dg, Graphics2D g, GameObject go) {
 		switch (go.type) {
-		case RECTANGLE:
-			g.setColor(go.foregroundColor);
-			g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-			break;
-		case CIRCLE:
-			g.setColor(go.foregroundColor);
-			g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-			break;
-		case IMAGE:
-			if (go.direction < 0) {
-				g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x), (int) go.size.y, null);
-			} else {
-				g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
-			}
-			break;
+			case RECTANGLE:
+				g.setColor(go.foregroundColor);
+				g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+				break;
+			case CIRCLE:
+				g.setColor(go.foregroundColor);
+				g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+				break;
+			case IMAGE:
+				if (go.direction < 0) {
+					g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x),
+							(int) go.size.y, null);
+				} else {
+					g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
+				}
+				break;
 		}
 	}
 
@@ -383,7 +382,7 @@ public class Renderer extends AbstractSystem implements core.system.System {
 
 	private void renderToScreen(Game dg, int realFPS) {
 		BufferStrategy bs = jf.getBufferStrategy();
-		Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+		Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 		if (bs != null) {
 			Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 			float sX = jf.getWidth() / dg.config.screenWidth;
