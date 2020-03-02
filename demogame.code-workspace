@@ -10,5 +10,7 @@
 			"path": "/home/frederic/projects/prototypes/oneclassgame"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
 }

@@ -66,7 +66,7 @@ public class PhysicEngineSystem extends AbstractSystem {
 	public void update(Game game, Scene scn, double elapsed) {
 		this.state = scn;
 
-		for (GameObject o : scn.getObjectManager().objects.values()) {
+		for (GameObject o : objects) {
 			// Process Camera or other object update
 			if (o instanceof Camera) {
 

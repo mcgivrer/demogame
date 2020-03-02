@@ -377,6 +377,7 @@ public class DemoScene extends AbstractScene {
 
 		MapLayer frontLayer = mapLevel.layers.get("front");
 
+		game.physicEngine.update(game, this, elapsed);
 		// update all objects
 		for (GameObject go : objectManager.getAll()) {
 			if (!(go instanceof Camera) && !(go instanceof MapLevel)) {

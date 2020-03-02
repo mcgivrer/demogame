@@ -108,6 +108,7 @@ public abstract class AbstractScene implements Scene, KeyListener {
 		} else {
 			objectManager.add(go);
 			game.renderer.add(go);
+			game.physicEngine.add(go);
 		}
 	}
 
