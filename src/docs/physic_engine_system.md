@@ -8,7 +8,7 @@ Any object to be managed by the physic engine must be added ad scene level, duri
 
 Here is an overview of needed modification:
 
-![Phsysic Engine system integration](http://www.plantuml.com/plantuml/proxy?src=https://raw.github.com/mcgivrer/demogame/master/src/docs/resources/diagrams/physic_engine_system.iuml)
+![Physic Engine system integration](http://www.plantuml.com/plantuml/proxy?src=https://raw.github.com/mcgivrer/demogame/blob/feature/add-physic-system/src/docs/resources/diagrams/physic_engine_system.iuml)
 
 ## The classes
 
