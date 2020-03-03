@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import core.Game;
+import core.behaviors.Behavior;
 import core.collision.MapTileCollision;
 import core.gfx.Animation;
 import core.gfx.Renderer;
@@ -53,7 +54,7 @@ public class GameObject {
 
 	public double mass;
 	public Material material;
-	public PhysicType physicType = PhysicType.DYNAMIC;
+	public PhysicType physicType = PhysicType.STATIC;
 
 	public Vector2D size;
 
@@ -89,6 +90,8 @@ public class GameObject {
 
 	public List<MapTileCollision> collidingZone = new ArrayList<>();
 
+	public List<Behavior> behaviors = new ArrayList<>();
+
 	/**
 	 * If the object is active it will be processed as other, but not rendered.
 	 */
@@ -100,6 +103,7 @@ public class GameObject {
 	public GameObject() {
 		this.name = "gameObjectName";
 		this.pos = new Vector2D();
+		this.newPos = new Vector2D();
 		this.vel = new Vector2D();
 		this.acc = new Vector2D();
 		this.size = new Vector2D();
@@ -125,8 +129,11 @@ public class GameObject {
 		this.name = name;
 		this.pos.x = x;
 		this.pos.y = y;
+		this.newPos.x = x;
+		this.newPos.y = y;
 		this.size.x = width;
 		this.size.y = height;
+
 		bbox.fromGameObject(this);
 	}
 

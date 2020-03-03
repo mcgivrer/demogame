@@ -32,8 +32,8 @@ public class DebugInfo {
 		FontMetrics fm = g.getFontMetrics(debugFont);
 
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		int maxWidth = 60;
-		int maxLinePerColumn = 4;
+		int maxWidth = 70;
+		int maxLinePerColumn = 5;
 		int fontHeight = fm.getHeight();
 		double offsetX = go.pos.x + go.size.x + 2;
 		double offsetY = go.pos.y;
@@ -49,15 +49,20 @@ public class DebugInfo {
 
 		// draw object size
 		g.setColor(Color.BLUE);
-		g.fillRect(0, 0, (int) go.size.x, (int) go.size.y);
+		g.drawRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+		// draw bounding box
+		g.setColor(Color.RED);
+		g.drawRect((int) go.bbox.pos.x, (int) go.bbox.pos.y, (int) go.bbox.size.x, (int) go.bbox.size.y);
 
 	}
 
 	private static List<String> prepareDebugInfo(GameObject go) {
 		List<String> debugInfo = new ArrayList<>();
 		debugInfo.add(String.format("name:%s", go.name));
-		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.pos.x, go.pos.y));
+		debugInfo.add(String.format("acc:(%03.1f,%03.1f)", go.acc.x, go.acc.y));
 		debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.vel.x, go.vel.y));
+		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.pos.x, go.pos.y));
+		debugInfo.add(String.format("npo:(%03.1f,%03.1f)", go.newPos.x, go.newPos.y));
 		debugInfo.add(String.format("debug:%d", go.debugLevel));
 		debugInfo.add(String.format("action:%s", go.action.toString()));
 

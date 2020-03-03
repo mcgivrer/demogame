@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import core.math.PhysicEngineSystem.PhysicType;
 import core.object.GameObject;
 import core.object.Light;
 import lombok.ToString;
@@ -37,6 +38,11 @@ public class MapLevel extends GameObject {
 
 	// Lights in the level.
 	public List<Light> lights = new ArrayList<>();
+
+	public MapLevel() {
+		super();
+		this.physicType = PhysicType.STATIC;
+	}
 
 	/**
 	 * This method is used to constrain GameObject in the MapLevel bounding box.

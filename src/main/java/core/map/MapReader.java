@@ -10,11 +10,12 @@ import javax.imageio.ImageIO;
 
 import com.google.gson.Gson;
 
-import core.resource.ResourceManager;
 import core.gfx.Animation;
+import core.math.PhysicEngineSystem.PhysicType;
 import core.object.GameObject;
 import core.object.GameObjectType;
 import core.object.Light;
+import core.resource.ResourceManager;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -156,15 +157,18 @@ public class MapReader {
 				case TYPE_ENEMY:
 					// add the object to the MapLevel object.
 					mapLevel.child.put(go.name, go);
+					go.physicType = PhysicType.DYNAMIC;
 					break;
 				case TYPE_PLAYER:
 					mapLevel.playerInitialX = go.pos.x;
 					mapLevel.playerInitialY = go.pos.y;
+					go.physicType = PhysicType.DYNAMIC;
 					// add the object to the MapLevel object.
 					mapLevel.child.put(go.name, go);
 					break;
 				case TYPE_LIGHT:
 					mapLevel.lights.add((Light) go);
+					go.physicType = PhysicType.STATIC;
 					break;
 				default:
 					log.error(String.format("Unknown object type %s", mo.type));
@@ -200,6 +204,7 @@ public class MapReader {
 		go = populateGameObjectAttributes(layer.assetsObjects.get(0), go, mo);
 		go.pos.x = (x - 1) * layer.assetsObjects.get(0).tileWidth;
 		go.pos.y = (y - 1) * layer.assetsObjects.get(0).tileHeight;
+		go.newPos = go.pos;
 		go.bbox.fromGameObject(go);
 		return go;
 	}

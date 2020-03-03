@@ -42,16 +42,16 @@ public class PhysicEngineSystem extends AbstractSystem {
 	private static final double VELOCITY_THRESHOLD_MIN = 0.001;
 
 	private Scene state;
-	private World world;
+	private final World world;
 
-	private List<GameObject> objects = new ArrayList<>();
+	private final List<GameObject> objects = new ArrayList<>();
 
 	/**
 	 * Create the Physic engine to process objetcs.
 	 * 
 	 * @param game the parent game instance
 	 */
-	public PhysicEngineSystem(Game game, World world) {
+	public PhysicEngineSystem(final Game game, final World world) {
 		super(game);
 		this.world = world;
 	}
@@ -63,10 +63,10 @@ public class PhysicEngineSystem extends AbstractSystem {
 	 * @param scn     the Scene containing all the objects
 	 * @param elapsed the elapsed time since previous call.
 	 */
-	public void update(Game game, Scene scn, double elapsed) {
+	public void update(final Game game, final Scene scn, final double elapsed) {
 		this.state = scn;
 
-		for (GameObject o : objects) {
+		for (final GameObject o : objects) {
 			// Process Camera or other object update
 			if (o instanceof Camera) {
 
@@ -76,20 +76,20 @@ public class PhysicEngineSystem extends AbstractSystem {
 			} else if (o != null && o.pos != null && o.vel != null) {
 
 				// This is a standard obect, must be updated.
-				Vector2D position = o.pos;
+				final Vector2D position = o.pos;
 				Vector2D nextPosition = o.newPos;
 				Vector2D speed = o.vel;
 				Vector2D acceleration = o.acc;
-				Vector2D objectGameSpeed = o.vel;
-				double friction = o.material.friction;
-				double mass = o.mass;
+				final Vector2D objectGameSpeed = o.vel;
+				final double friction = o.material.friction;
+				final double mass = o.mass;
 
-				Vector2D vForces = new Vector2D(0.0f, 0.0f);
+				final Vector2D vForces = new Vector2D(0.0f, 0.0f);
 
 				switch (o.physicType) {
 					case DYNAMIC:
 
-						double t = elapsed;
+						final double t = elapsed;
 						vForces.addAll(o.forces);
 						vForces.addAll(world.getForces());
 
@@ -126,6 +126,7 @@ public class PhysicEngineSystem extends AbstractSystem {
 				o.acc = acceleration;
 				o.vel = speed;
 				o.newPos = nextPosition;
+				o.forces.clear();
 			}
 		}
 
@@ -141,16 +142,21 @@ public class PhysicEngineSystem extends AbstractSystem {
 	}
 
 	@Override
-	public int initialize(Game game) {
+	public int initialize(final Game game) {
 		return 0;
 	}
 
 	/**
 	 * Add a new GameObject to the update system.
 	 */
-	public void add(GameObject o) {
+	public void add(final GameObject o) {
 		if (!objects.contains(o)) {
 			objects.add(o);
+			if (!o.child.isEmpty()) {
+				o.child.values().forEach(go -> {
+					objects.add(go);
+				});
+			}
 		}
 	}
 

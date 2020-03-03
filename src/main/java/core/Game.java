@@ -122,8 +122,9 @@ public class Game {
 
 			Scene current = sceneManager.getCurrent();
 
-			//sceneManager.input(this);
 			physicEngine.update(this, (AbstractScene) current, elapsed);
+
+			sceneManager.input(this);
 			sceneManager.update(this, elapsed);
 			renderer.setRealFPS(realFPS);
 			sceneManager.render(this, renderer, elapsed);

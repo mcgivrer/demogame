@@ -98,14 +98,17 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	 *           list.
 	 */
 	public void addObject(GameObject go) {
+		// If camera, add it to the camera list
 		if (go instanceof Camera) {
 			if (!cameras.containsKey(go.name)) {
 				cameras.put(go.name, (Camera) go);
 			}
+			// if no defaut caera, set it as default one.
 			if (this.camera == null) {
 				this.camera = (Camera) go;
 			}
 		} else {
+			// this is a simple GameObject, just add-it.
 			objectManager.add(go);
 			game.renderer.add(go);
 			game.physicEngine.add(go);

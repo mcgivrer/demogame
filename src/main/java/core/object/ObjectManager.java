@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import core.Game;
+import core.behaviors.Behavior;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,8 +42,9 @@ public class ObjectManager extends AbstractSystem {
 
 	@Override
 	public int initialize(Game game) {
+		int i = super.initialize(game);
 		log.info("ObjectManager ready");
-		return 1;
+		return i;
 	}
 
 	@Override
@@ -56,11 +58,20 @@ public class ObjectManager extends AbstractSystem {
 		return ObjectManager.class.getCanonicalName();
 	}
 
+	/**
+	 * add a GameObject to the manager. Initialize all behaviors if needed.
+	 */
 	public void add(GameObject go) {
+		// initialize all beahaviors for this GameObject if any.
+		if (go.behaviors.size() > 0) {
+			go.behaviors.forEach(b -> b.initialize(game));
+		}
 		if (!objects.containsKey(go.name)) {
 			objects.put(go.name, go);
 			if (!go.child.isEmpty()) {
-				putAll(go.child);
+				go.child.values().forEach(g -> {
+					add(g);
+				});
 			}
 		} else {
 			log.error("object '{}' as {} is already managed", go.name, go.getClass().getCanonicalName());
@@ -97,8 +108,18 @@ public class ObjectManager extends AbstractSystem {
 		if (go.enable) {
 			// Update object
 			go.update(game, elapsed);
-
+			if (go.behaviors != null && go.behaviors.size() > 0) {
+				go.behaviors.forEach(b -> b.update(game, go, elapsed));
+			}
 			computeDuration(go, elapsed);
+		}
+	}
+
+	public void inputObject(Game g, GameObject go) {
+		if (go.enable) {
+			if (go.behaviors != null && go.behaviors.size() > 0) {
+				go.behaviors.forEach(b -> b.input(game, go));
+			}
 		}
 	}
 
@@ -246,6 +267,18 @@ public class ObjectManager extends AbstractSystem {
 	 */
 	public boolean contains(String name) {
 		return objects.containsKey(name);
+	}
+
+	/**
+	 * Add a Behavior b to the GameObject go. and intialize this behavior.
+	 * 
+	 * @param go
+	 * @param b
+	 */
+	public void addBehavior(GameObject go, Behavior b) {
+		// initialize all beahaviors for this GameObject if any.
+		go.behaviors.add(b);
+		b.initialize(game);
 	}
 
 }

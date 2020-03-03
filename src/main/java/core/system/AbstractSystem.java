@@ -38,4 +38,13 @@ public abstract class AbstractSystem implements System {
      */
     public abstract String getName();
 
+    /**
+     * Initialize the parent game attribute.
+     */
+    @Override
+    public int initialize(Game game) {
+        this.game = game;
+        return 1;
+    }
+
 }

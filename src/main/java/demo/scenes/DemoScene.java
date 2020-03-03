@@ -13,6 +13,7 @@ import javax.script.ScriptException;
 
 import core.Game;
 import core.audio.SoundSystem;
+import core.behaviors.PlayerInputBehavior;
 import core.collision.CollisionEvent;
 import core.collision.MapCollidingService;
 import core.collision.OnCollision;
@@ -61,10 +62,6 @@ public class DemoScene extends AbstractScene {
 	private BufferedImage lifeImg;
 	private BufferedImage itemHolderImg;
 	private BufferedImage itemHolderSelectedImg;
-
-	private static int lastIdleChange = 0;
-	private static int lastIdleChangePace = 120;
-	private static GameAction idleAction = GameAction.IDLE;
 
 	private TextObject scoreObject;
 	private TextObject welcomeText;
@@ -232,7 +229,7 @@ public class DemoScene extends AbstractScene {
 			welcomeText = new TextObject("welcome", g.config.screenWidth / 2, g.config.screenHeight * 2 / 3,
 					Color.WHITE, Color.BLACK, new Color(0.1f, 0.1f, 0.1f, 0.8f), messageFont, true, 10,
 					TextAlign.CENTER);
-			welcomeText.duration = 10000;
+			welcomeText.duration = 5000;
 			welcomeText.backgroundColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
 			welcomeText.borderColor = Color.GRAY;
 			welcomeText.setText("Welcome to this Basic Game Demonstration");
@@ -240,6 +237,8 @@ public class DemoScene extends AbstractScene {
 
 			// Create camera
 			GameObject player = objectManager.get("player");
+			objectManager.addBehavior(player, new PlayerInputBehavior());
+
 			Camera cam = new Camera("camera", player, 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
 
@@ -265,70 +264,12 @@ public class DemoScene extends AbstractScene {
 	@Override
 	public void input(Game g) {
 
-		GameObject player = objectManager.get("player");
-
 		if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
 		}
-
-		player.setSpeed(0.0f, 0.0f);
-		if (player.action == GameAction.FALL) {
-			player.vel.x = 0.0f;
-			player.vel.y = 0.25f;
-		} else {
-			player.action = idleAction;
-			randomNextIdleAction();
-		}
-
-		// reset horizontal speed if falling.
-		if (inputHandler.keys[KeyEvent.VK_UP]) {
-			player.vel.y = -0.2f;
-			player.action = GameAction.JUMP;
-		}
-		if (inputHandler.keys[KeyEvent.VK_DOWN]) {
-			player.vel.y = 0.1f;
-			player.action = GameAction.DOWN;
-		}
-
-		if (inputHandler.keys[KeyEvent.VK_LEFT]) {
-			player.vel.x = -0.2f;
-			player.direction = -1;
-			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
-		} else if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
-			player.vel.x = 0.2f;
-			player.direction = 1;
-			player.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
-		}
-
-		int itemsNb = player.items.size();
-		if (inputHandler.keys[KeyEvent.VK_1] && itemsNb <= 1) {
-			player.attributes.put("selectedItem", 1.0);
-		}
-		if (inputHandler.keys[KeyEvent.VK_2] && itemsNb <= 2) {
-			player.attributes.put("selectedItem", 2.0);
-		}
-		if (inputHandler.keys[KeyEvent.VK_3] && itemsNb <= 3) {
-			player.attributes.put("selectedItem", 3.0);
-		}
-		if (inputHandler.keys[KeyEvent.VK_4] && itemsNb <= 4) {
-			player.attributes.put("selectedItem", 4.0);
-		}
-		if (inputHandler.keys[KeyEvent.VK_5] && itemsNb <= 5) {
-			player.attributes.put("selectedItem", 5.0);
-		}
-	}
-
-	private void randomNextIdleAction() {
-
-		GameObject player = objectManager.get("player");
-		// compute next value for Idle
-		lastIdleChange++;
-		if (lastIdleChange > lastIdleChangePace) {
-			double rndAction = (Math.random() * 1.0) + 0.5;
-			idleAction = player.action = (rndAction > 1.0 ? GameAction.IDLE : GameAction.IDLE2);
-			lastIdleChange = 0;
-			lastIdleChangePace = (int) ((Math.random() * 100.0) + 100.0);
-		}
+		objectManager.objects.values().forEach(go -> {
+			objectManager.inputObject(game, go);
+		});
 	}
 
 	@Override

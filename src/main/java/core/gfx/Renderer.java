@@ -152,7 +152,7 @@ public class Renderer extends AbstractSystem {
 	public void render(Game dg, double elapsed) {
 		if (!renderingPause) {
 			Graphics2D g = screenBuffer.createGraphics();
-			DebugInfo.debugFont = g.getFont().deriveFont(9.0f);
+			DebugInfo.debugFont = g.getFont().deriveFont(7.0f);
 
 			Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 
@@ -320,7 +320,7 @@ public class Renderer extends AbstractSystem {
 								(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
 						(int) (l.size.x * 2), l.dist, l.colors);
 				g.setPaint(l.rgp);
-				g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.x));
+				g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
 				break;
 
 			case LIGHT_CONE:
