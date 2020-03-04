@@ -9,17 +9,30 @@ This interface could be :
 
 ```java
 interface Behavior{
-  void create(Game g, State s, GameObject go);
-  void update(Game g, State s, GameObject go, double elapsed);
-  void dispose(Game g, State s, GameObject go);
+  void initialize(Game g);
+  void create(Game g, Scene s, GameObject go);
+  void input(Game g);
+  void update(Game g, Scene s, GameObject go, double elapsed);
+  void render(Game g, Scene s, GameObject go, Renderer r);
+  void dispose(Game g, Scene s, GameObject go);
 }
 ```
+
+Those interface are hook where you can implement specific behavior to your `GameObject`.
+Ultimately, this behavior interface will help implmenting the ParticleSystem and their specific animations.
+
+- **initialize** the intiialize phase will implment any resources initialization
+- **create** the create phase will offer to automatically regenerate or create things. Particularly useful for Particle animation.
+- **input** where interaction with real-life player happened. here will be intercepted any key or mouse clicks and moves.
+- **update** to be animated or moved, some attrbutes of our GameObject must be modified according to some behavior. This is where all is processed.
+- **render** to render in a specific way the GameObject linked to your Behavior implementation.
+- **dispose** this when the GameObject is destroyed, to free specific resources previously initialized by *initialize*.
 
 ## Serving Behaviors
 
 The corresponding implementation could be :
 
-- a java class implementing the `Behavior` interface
+- a java class implementing the `Behavior` interface, like the `PlayerInputBehavior`, intercepting some of the keys pressed and released, to move and animate the player `GameObject`.
 
 - a `LuaScript` class implementing the Behavior interface, but delegating execution to a LUA script served through /res/scripts directory to process the required behavior. this script is defined in the "scripts" GameObject attributes in the level JSON definition file,
 
@@ -60,7 +73,7 @@ The "behaviors" attrobutes may contain one or more java class implmenting the Be
         "energy": 100.0,
         "damage": 10.0,
         "coins": 5,
-        "behaviors":["demo.behaviors.FollowingTargetBehavior"]
+        "behaviors":["demo.behaviors.PLayerInputBehavior"]
     },
 ```
 
@@ -102,4 +115,4 @@ The script naming will respect the following rules:
 where:
 
 - `[XXXXXXXX]` will describe the goal of the script,
-- `[phase]` is one of the "create", "update", "render", "input" or "dispose" phase keyword, corresponding to one of the gameloop or `GameObject` lifecycle phases.
+- `[phase]` is one of the "create", "update", "render", "input" or "dispose" phase keyword, corresponding to one of the gameloop or `GameObject` lifecycle phases. Today, only the "update" is implemented and usable.

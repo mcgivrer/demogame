@@ -318,13 +318,18 @@ public class DemoScene extends AbstractScene {
 
 		MapLayer frontLayer = mapLevel.layers.get("front");
 
-		game.physicEngine.update(game, this, elapsed);
 		// update all objects
 		for (GameObject go : objectManager.getAll()) {
 			if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
+				physicEngine.update(g,go,elapsed);
 				objectManager.updateObject(game, go, elapsed);
+
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
+				// TODO implement objects collisiion detection with an octree 
+				// objectCollider.checkCollision(go);
+				
+				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}
 		}

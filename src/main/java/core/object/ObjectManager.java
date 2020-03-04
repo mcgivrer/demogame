@@ -78,8 +78,25 @@ public class ObjectManager extends AbstractSystem {
 		}
 	}
 
+	/**
+	 * Remove the name object from the ObjectManager.
+	 * 
+	 * @param name
+	 */
 	public void remove(String name) {
 		objects.remove(name);
+	}
+
+	/**
+	 * Add a Behavior b to the GameObject go. and intialize this behavior.
+	 * 
+	 * @param go
+	 * @param b
+	 */
+	public void addBehavior(GameObject go, Behavior b) {
+		// initialize all beahaviors for this GameObject if any.
+		go.behaviors.add(b);
+		b.initialize(game);
 	}
 
 	/**
@@ -267,18 +284,6 @@ public class ObjectManager extends AbstractSystem {
 	 */
 	public boolean contains(String name) {
 		return objects.containsKey(name);
-	}
-
-	/**
-	 * Add a Behavior b to the GameObject go. and intialize this behavior.
-	 * 
-	 * @param go
-	 * @param b
-	 */
-	public void addBehavior(GameObject go, Behavior b) {
-		// initialize all beahaviors for this GameObject if any.
-		go.behaviors.add(b);
-		b.initialize(game);
 	}
 
 }

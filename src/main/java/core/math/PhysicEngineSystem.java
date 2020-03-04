@@ -38,10 +38,11 @@ public class PhysicEngineSystem extends AbstractSystem {
 		DYNAMIC // object will move according to a full physic simulation.
 	}
 
-	private static final double TIME_ACCURATY = 0.05;
+	private static final double TIME_SCALE_FACTOR = 0.05;
 	private static final double VELOCITY_THRESHOLD_MIN = 0.001;
 
-	private Scene state;
+
+	private Scene scene;
 	private final World world;
 
 	private final List<GameObject> objects = new ArrayList<>();
@@ -64,72 +65,76 @@ public class PhysicEngineSystem extends AbstractSystem {
 	 * @param elapsed the elapsed time since previous call.
 	 */
 	public void update(final Game game, final Scene scn, final double elapsed) {
-		this.state = scn;
+		this.scene = scn;
 
 		for (final GameObject o : objects) {
-			// Process Camera or other object update
-			if (o instanceof Camera) {
-
-				// This is a camera object, need to be updated !
-				((Camera) o).update(game, elapsed);
-
-			} else if (o != null && o.pos != null && o.vel != null) {
-
-				// This is a standard obect, must be updated.
-				final Vector2D position = o.pos;
-				Vector2D nextPosition = o.newPos;
-				Vector2D speed = o.vel;
-				Vector2D acceleration = o.acc;
-				final Vector2D objectGameSpeed = o.vel;
-				final double friction = o.material.friction;
-				final double mass = o.mass;
-
-				final Vector2D vForces = new Vector2D(0.0f, 0.0f);
-
-				switch (o.physicType) {
-					case DYNAMIC:
-
-						final double t = elapsed;
-						vForces.addAll(o.forces);
-						vForces.addAll(world.getForces());
-
-						// acceleration = acceleration.add(game.getWorld().getGravity());
-						acceleration = acceleration.add(vForces);
-
-						acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(elapsed);
-
-						// TODO add contact detection
-						if (o.isContact) {
-							acceleration = acceleration.multiply(o.getMaterial().friction);
-						}
-
-						speed = speed.add(acceleration.multiply(t * t)).threshold(1f);
-						nextPosition = position.add(speed.multiply(0.5f * t)).threshold(1);
-						break;
-
-					case KINETIC:
-						// TODO add contact detection
-
-						if (o.isContact) {
-							speed = speed.multiply(friction);
-						}
-						speed = speed.threshold(VELOCITY_THRESHOLD_MIN);
-						// objectGameSpeed = speed.multiply(game.getGameSpeed());
-						nextPosition = position.add(objectGameSpeed);
-
-						break;
-					case STATIC:
-
-						break;
-				}
-				// Set next position, speed and acceleration.
-				o.acc = acceleration;
-				o.vel = speed;
-				o.newPos = nextPosition;
-				o.forces.clear();
-			}
+			update(game, o, elapsed);
 		}
 
+	}
+
+	public void update(final Game game,final GameObject o, final double elapsed) {
+		// Process Camera or other object update
+		if (o instanceof Camera) {
+
+			// This is a camera object, need to be updated !
+			((Camera) o).update(game, elapsed);
+
+		} else if (o != null && o.pos != null && o.vel != null) {
+
+			// This is a standard obect, must be updated.
+			final Vector2D oldPosition = o.pos;
+			Vector2D nextPosition = o.pos;
+			Vector2D speed = o.vel;
+			Vector2D acceleration = o.acc;
+			final Vector2D objectGameSpeed = o.vel;
+			final double friction = o.material.friction;
+			final double mass = o.mass;
+
+			final Vector2D vForces = new Vector2D(0.0f, 0.0f);
+
+			switch (o.physicType) {
+				case DYNAMIC:
+
+					final double t = elapsed * TIME_SCALE_FACTOR;
+					vForces.addAll(o.forces);
+					vForces.addAll(world.getForces());
+
+					acceleration = acceleration.add(world.getGravity());
+					acceleration = acceleration.add(vForces);
+
+					acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(t);
+
+					// TODO add contact detection
+					if (o.isContact) {
+						acceleration = acceleration.multiply(o.getMaterial().friction);
+					}
+
+					speed = speed.add(acceleration.multiply(t * t)).threshold(1f);
+					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
+					break;
+
+				case KINETIC:
+					// TODO add contact detection
+
+					if (o.isContact) {
+						speed = speed.multiply(friction);
+					}
+					speed = speed.threshold(VELOCITY_THRESHOLD_MIN);
+					// objectGameSpeed = speed.multiply(game.getGameSpeed());
+					nextPosition = nextPosition.add(objectGameSpeed);
+
+					break;
+				case STATIC:
+					// NOTHING To DO !
+					break;
+			}
+			// Set next position, speed and acceleration.
+			o.acc = acceleration;
+			o.vel = speed;
+			o.newPos = nextPosition;
+			o.forces.clear();
+		}
 	}
 
 	@Override

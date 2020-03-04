@@ -33,9 +33,11 @@ public class PlayerInputBehavior implements Behavior {
     @Override
     public void input(Game dg, GameObject go) {
         go.forces.clear();
+
+        final double defaultAcc = 0.2;
         // go.setAcc(new Vector2D(0.0, 0.0));
         if (go.action == GameAction.FALL) {
-            go.forces.add(new Vector2D(0.0, 0.2));
+            go.forces.add(new Vector2D(0.0, defaultAcc*3));
         } else {
             go.action = idleAction;
         }
@@ -43,7 +45,7 @@ public class PlayerInputBehavior implements Behavior {
         if (inputHandler != null) {
             // reset horizontal speed if falling.
             if (inputHandler.keys[KeyEvent.VK_UP]) {
-                go.forces.add(new Vector2D(0.0, -0.2));
+                go.forces.add(new Vector2D(0.0, -defaultAcc));
                 go.action = GameAction.JUMP;
             }
             if (inputHandler.keys[KeyEvent.VK_DOWN]) {
@@ -52,11 +54,11 @@ public class PlayerInputBehavior implements Behavior {
             }
 
             if (inputHandler.keys[KeyEvent.VK_LEFT]) {
-                go.forces.add(new Vector2D(-0.2, 0.0));
+                go.forces.add(new Vector2D(-defaultAcc, 0.0));
                 go.direction = -1;
                 go.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
             } else if (inputHandler.keys[KeyEvent.VK_RIGHT]) {
-                go.forces.add(new Vector2D(0.2, 0.0));
+                go.forces.add(new Vector2D(defaultAcc, 0.0));
                 go.direction = 1;
                 go.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
             }
