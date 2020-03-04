@@ -111,16 +111,16 @@ public class DebugInfo {
 		// draw the tested Tiles to detect Fall action.
 		g.setColor(Color.BLUE);
 		if (!go.collidingZone.isEmpty()) {
-			for (MapTileCollision mo : go.collidingZone) {
-				if (mo.mo != null) {
+			for (MapTileCollision mtc : go.collidingZone) {
+				if (mtc.mo != null) {
 					Font d = g.getFont();
 					g.setFont(d.deriveFont(9.5f));
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 					g.setColor(Color.WHITE);
-					g.drawString(mo.mo.type, mo.rX + 2, mo.rY + (mo.h / 2) + 4);
+					g.drawString(mtc.mo.type, mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					g.setFont(d);
-					switch (mo.mo.type) {
+					switch (mtc.mo.type) {
 					case "tile":
 						g.setColor(Color.ORANGE);
 						break;
@@ -134,7 +134,7 @@ public class DebugInfo {
 				} else {
 					g.setColor(Color.BLUE);
 				}
-				g.drawRect(mo.rX, mo.rY, mo.w, mo.h);
+				g.drawRect(mtc.rX, mtc.rY, mtc.w, mtc.h);
 			}
 		}
 	}

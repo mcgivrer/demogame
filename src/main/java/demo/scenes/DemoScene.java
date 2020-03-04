@@ -197,14 +197,19 @@ public class DemoScene extends AbstractScene {
 
 			private void manageTileCollision(CollisionEvent e) {
 				if (e.m2.block) {
+					log.debug("player  pos:{},{} collide with {}", e.mapX, e.mapY,e.m2.type);
 					if (Math.abs(e.o1.vel.x) > 0) {
 						e.o1.vel.x = 0;
+						e.o1.forces.clear();
 					}
 					if (Math.abs(e.o1.vel.y) > 0) {
 						e.o1.vel.y = 0;
-						e.o1.pos.y = (int) (e.o1.pos.y / e.map.assetsObjects.get(0).tileHeight)
-								* e.map.assetsObjects.get(0).tileHeight;
+						e.o1.acc.y = 0;
+						e.o1.pos.y = e.mapY * e.map.assetsObjects.get(0).tileHeight;
 						e.o1.bbox.fromGameObject(e.o1);
+						if (e.o1.name.equals("player")) {
+							log.info("player  pos:{},{}", e.mapX, e.mapY);
+						}
 					}
 
 				}
@@ -321,14 +326,14 @@ public class DemoScene extends AbstractScene {
 		// update all objects
 		for (GameObject go : objectManager.getAll()) {
 			if (!(go instanceof Camera) && !(go instanceof MapLevel)) {
-				physicEngine.update(g,go,elapsed);
+				physicEngine.update(g, go, elapsed);
 				objectManager.updateObject(game, go, elapsed);
 
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				// TODO implement objects collisiion detection with an octree 
+				// TODO implement objects collisiion detection with an octree
 				// objectCollider.checkCollision(go);
-				
+
 				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}

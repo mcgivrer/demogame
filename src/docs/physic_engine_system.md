@@ -102,7 +102,101 @@ double mass;
 ```
 Now let's dive into the `PhysicEngineSystem` main `System` implementation.
 
-### PhsyicEngoneSystem
+### PhsyicEngineSystem
 
-The Core of our physic engine is the system itself.
+The Core of our physic engine is the system itself. It will propose 3 way to compute physics attributes to any `GameObject` entity. Those mode of computation re defined by the `GameObject`'s physic type:
 
+- **STATIC** the object is static and does not contribute to the physic world
+- **KINETIC** this particular physic type of computation will only update `GameObject` position according to its own velocity. No acceleration and or frictino, elasticity, material will be tae in account to compute physic moves.
+- **DYNAMIC** the most accurate physic computation way of thing, all (as far as this engine try to go) the physic parameters are engaged in the computation moves of the `GameObject` having this physc type. Acceleration is the sum of applied forces, velocity is based on acceleration and position is the resulting computation og velocity. All those computation are performed with the Material of the `GameObject`.
+
+These types are defined into the `PhysicType` enumeration in the `PhysicEngineSystem` class.
+
+```Java
+public enum PhysicType {
+  STATIC, // object move without collision and limitation
+  KINETIC, // object moves only on speed attributes with collision detection
+  DYNAMIC // object will move according to a full physic simulation.
+}
+```
+
+The main class of the system is as below:
+
+```java
+public class PhysicEngineSystem extends AbstractSystem {
+
+	public PhysicEngineSystem(final Game game, final World world) {
+		super(game);
+		this.world = world;
+	}
+
+	@Override
+	public int initialize(final Game game) {
+		if (objects == null) {
+			objects = new ArrayList<>();
+		}
+		objects.clear();
+		return 0;
+	}
+
+
+	public void update(final Game game, final Scene scn, final double elapsed) {
+		this.scene = scn;
+
+		objects.forEach(o -> {
+			update(game, o, elapsed);
+		});
+
+	}
+
+	public void update(final Game game,final GameObject o, final double elapsed) {
+		// Process Camera or other object update
+		if (o instanceof Camera) {
+
+			// This is a camera object, need to be updated !
+			((Camera) o).update(game, elapsed);
+
+		// This is not a camera object
+		} else if (o != null && o.pos != null && o.vel != null) {
+    
+    	switch (o.physicType) {
+				case DYNAMIC:
+          // compute for dynamic
+          // ...
+					break;
+
+				case KINETIC:
+          //compute for KINETIC
+          // ...
+          break;
+          
+				case STATIC:
+					// compute for STATIC
+          // ...
+					break;
+			}
+		}
+	}
+
+	public String getName() {
+		return "physic_engine";
+	}
+
+	public void add(final GameObject o) {
+		if (!objects.contains(o)) {
+			objects.add(o);
+			if (!o.child.isEmpty()) {
+				o.child.values().forEach(go -> {
+					objects.add(go);
+				});
+			}
+		}
+	}
+
+	public void dispose() {}
+
+}
+
+```
+
+As any [System](SystemManager), initialize(Game) is called at system initialization (sic:)), to clear the computed objects list.

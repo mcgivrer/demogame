@@ -41,11 +41,10 @@ public class PhysicEngineSystem extends AbstractSystem {
 	private static final double TIME_SCALE_FACTOR = 0.05;
 	private static final double VELOCITY_THRESHOLD_MIN = 0.001;
 
-
 	private Scene scene;
-	private final World world;
+	private World world;
 
-	private final List<GameObject> objects = new ArrayList<>();
+	private List<GameObject> objects;
 
 	/**
 	 * Create the Physic engine to process objetcs.
@@ -55,6 +54,15 @@ public class PhysicEngineSystem extends AbstractSystem {
 	public PhysicEngineSystem(final Game game, final World world) {
 		super(game);
 		this.world = world;
+	}
+
+	@Override
+	public int initialize(final Game game) {
+		if (objects == null) {
+			objects = new ArrayList<>();
+		}
+		objects.clear();
+		return 0;
 	}
 
 	/**
@@ -67,13 +75,13 @@ public class PhysicEngineSystem extends AbstractSystem {
 	public void update(final Game game, final Scene scn, final double elapsed) {
 		this.scene = scn;
 
-		for (final GameObject o : objects) {
+		objects.forEach(o -> {
 			update(game, o, elapsed);
-		}
+		});
 
 	}
 
-	public void update(final Game game,final GameObject o, final double elapsed) {
+	public void update(final Game game, final GameObject o, final double elapsed) {
 		// Process Camera or other object update
 		if (o instanceof Camera) {
 
@@ -144,11 +152,6 @@ public class PhysicEngineSystem extends AbstractSystem {
 
 	public void run() {
 
-	}
-
-	@Override
-	public int initialize(final Game game) {
-		return 0;
 	}
 
 	/**

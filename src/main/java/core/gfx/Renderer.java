@@ -228,7 +228,8 @@ public class Renderer extends AbstractSystem {
 			to.size.x = fm.stringWidth(to.text);
 			to.size.y = fm.getHeight();
 
-			double ox = to.pos.x, oy = to.pos.y;
+			double ox = to.pos.x;
+			double oy = to.pos.y;
 			switch (to.align) {
 				case CENTER:
 					ox = to.pos.x - (to.size.x / 2);

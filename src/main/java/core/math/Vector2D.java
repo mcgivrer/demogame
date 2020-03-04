@@ -168,8 +168,8 @@ public class Vector2D {
     }
 
     public Vector2D threshold(double thresholdValue) {
-        x = (Math.abs(x) < Math.abs(thresholdValue) ? 0.0f : x);
-        y = (Math.abs(y) < Math.abs(thresholdValue) ? 0.0f : y);
+        x = (Math.abs(x) < thresholdValue ? 0.0f : x);
+        y = (Math.abs(y) < thresholdValue ? 0.0f : y);
 
         return this;
 

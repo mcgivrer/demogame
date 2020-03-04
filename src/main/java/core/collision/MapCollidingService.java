@@ -58,8 +58,8 @@ public class MapCollidingService extends AbstractSystem {
     public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
         MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
         int ox = (int) (go.bbox.pos.x / asset.tileWidth);
-        int oy = (int) ((go.newPos.y + go.bbox.size.y) / asset.tileHeight);
-        int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y) / asset.tileHeight);
+        int oy = (int) ((go.newPos.y + go.bbox.size.y/2) / asset.tileHeight);
+        int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y/2) / asset.tileHeight);
 
         int ow = (int) (go.bbox.size.x / asset.tileWidth);
         int oh = (int) (go.bbox.size.y / asset.tileHeight);
@@ -86,7 +86,7 @@ public class MapCollidingService extends AbstractSystem {
     }
 
     public void testIfFall(MapLayer layer, GameObject go, boolean falling) {
-        int dy = +1;
+        int dy = 0;
 
         /**
          * Compute bottom coordinate of bottom corners tiles.
