@@ -67,6 +67,8 @@ public class GameObject {
 
 	public boolean canCollect;
 
+	public boolean collidable = true;
+
 	public boolean fixed = false;
 
 	public GameObjectType type;

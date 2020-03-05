@@ -168,8 +168,8 @@ public class Vector2D {
     }
 
     public Vector2D threshold(double thresholdValue) {
-        x = (Math.abs(x) < thresholdValue ? 0.0f : x);
-        y = (Math.abs(y) < thresholdValue ? 0.0f : y);
+        x = (Math.abs(x) < thresholdValue ? 0.0 : x);
+        y = (Math.abs(y) < thresholdValue ? 0.0 : y);
 
         return this;
 
@@ -187,8 +187,22 @@ public class Vector2D {
         return (x == 1.0f && y == 1.0f);
     }
 
+    /**
+     * Return true if nextPosition < this
+     * @param nextPosition
+     * @return
+     */
     public boolean greaterThan(Vector2D nextPosition) {
         return x > nextPosition.x && y > nextPosition.y;
+    }
+
+    /**
+     * Return true if nextPosition > this
+     * @param nextPosition
+     * @return
+     */
+    public boolean lowerThan(Vector2D nextPosition) {
+        return x < nextPosition.x && y < nextPosition.y;
     }
 
     @Override

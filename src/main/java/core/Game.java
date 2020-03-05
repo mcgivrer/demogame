@@ -129,26 +129,31 @@ public class Game {
 			renderer.setRealFPS(realFPS);
 			sceneManager.render(this, renderer, elapsed);
 
-			double wait = (elapsed - waitFrameDuration);
+			double wait = (waitFrameDuration - elapsed);
 
 			frames++;
 			elapsedFrameTime += elapsed;
 			if (elapsedFrameTime > 1000) {
+				realFPS = frames;
 				frames = 0;
 				elapsedFrameTime = 0;
-				realFPS = frames;
-				log.debug("elapsed:{}, wait:{}", elapsed, wait);
+				log.debug("elapsed:{}, wait:{}, FPS:{}", elapsed, wait, realFPS);
 			}
 
-			if (wait > 0 && wait < waitFrameDuration) {
-				try {
-					Thread.sleep((int) wait);
-				} catch (InterruptedException e) {
-					log.error("Unable to wait {} wait ms", wait, e);
-				}
-			}
+			waitNextFrame(waitFrameDuration, wait);
 
 			previousTime = startTime;
+		}
+	}
+
+	private void waitNextFrame(double waitFrameDuration, double wait) {
+		if (wait > 0 /* && wait < waitFrameDuration */) {
+			log.debug("wait for {}ms", wait);
+			try {
+				Thread.sleep((int) wait);
+			} catch (InterruptedException e) {
+				log.error("Unable to wait {} wait ms", wait, e);
+			}
 		}
 	}
 

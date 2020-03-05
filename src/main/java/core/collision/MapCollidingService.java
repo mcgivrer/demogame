@@ -56,29 +56,31 @@ public class MapCollidingService extends AbstractSystem {
      * @param go  the GameObject to be verified.
      */
     public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
-        MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
-        int ox = (int) (go.bbox.pos.x / asset.tileWidth);
-        int oy = (int) ((go.newPos.y + go.bbox.size.y/2) / asset.tileHeight);
-        int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y/2) / asset.tileHeight);
+        if (go.collidable) {
+            MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
+            int ox = (int) (go.bbox.pos.x / asset.tileWidth);
+            int oy = (int) ((go.newPos.y + go.bbox.size.y / 2) / asset.tileHeight);
+            int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y / 2) / asset.tileHeight);
 
-        int ow = (int) (go.bbox.size.x / asset.tileWidth);
-        int oh = (int) (go.bbox.size.y / asset.tileHeight);
+            int ow = (int) (go.bbox.size.x / asset.tileWidth);
+            int oh = (int) (go.bbox.size.y / asset.tileHeight);
 
-        go.collidingZone.clear();
+            go.collidingZone.clear();
 
-        if (go.vel.x > 0) {
-            testMoveRight(frontLayer, go, ox, ow, oy, oh);
+            if (go.vel.x > 0) {
+                testMoveRight(frontLayer, go, ox, ow, oy, oh);
+            }
+            if (go.vel.x < 0) {
+                testMoveLeft(frontLayer, go, ox, oy, oh);
+            }
+            if (go.vel.y < 0) {
+                testMoveUp(frontLayer, go);
+            }
+            if (go.vel.y > 0) {
+                testIfMoveDown(frontLayer, go);
+            }
+            testIfFall(frontLayer, go, true);
         }
-        if (go.vel.x < 0) {
-            testMoveLeft(frontLayer, go, ox, oy, oh);
-        }
-        if (go.vel.y < 0) {
-            testMoveUp(frontLayer, go);
-        }
-        if (go.vel.y > 0) {
-            testIfMoveDown(frontLayer, go);
-        }
-        testIfFall(frontLayer, go, true);
     }
 
     private void testIfMoveDown(MapLayer layer, GameObject go) {

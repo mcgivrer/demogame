@@ -20,6 +20,8 @@ import core.object.GameObject;
  */
 public class DebugInfo {
 	public static Font debugFont;
+	public static final Color backgroundColor = new Color(0.3f, 0.3f, 0.3f,0.45f);
+	public static final Color borderColor = Color.BLACK;
 
 	/**
 	 * display information to an information panel on right of GameObject
@@ -42,8 +44,8 @@ public class DebugInfo {
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
 		int height = (debugInfo.size() - 1) * (fontHeight - 3);
 
-		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, Color.DARK_GRAY,
-				new Color(0.6f, 0.6f, 0.6f, 0.9f));
+		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, borderColor,
+				backgroundColor);
 
 		drawAttributesText(g, debugInfo, offsetX, offsetY, maxWidth, maxLinePerColumn, fontHeight, Color.WHITE);
 
@@ -59,10 +61,10 @@ public class DebugInfo {
 	private static List<String> prepareDebugInfo(GameObject go) {
 		List<String> debugInfo = new ArrayList<>();
 		debugInfo.add(String.format("name:%s", go.name));
-		debugInfo.add(String.format("acc:(%03.1f,%03.1f)", go.acc.x, go.acc.y));
-		debugInfo.add(String.format("vel:(%03.1f,%03.1f)", go.vel.x, go.vel.y));
-		debugInfo.add(String.format("pos:(%03.1f,%03.1f)", go.pos.x, go.pos.y));
-		debugInfo.add(String.format("npo:(%03.1f,%03.1f)", go.newPos.x, go.newPos.y));
+		debugInfo.add(String.format("acc:(%03.0f,%03.0f)", go.acc.x, go.acc.y));
+		debugInfo.add(String.format("vel:(%03.0f,%03.0f)", go.vel.x, go.vel.y));
+		debugInfo.add(String.format("pos:(%03.0f,%03.0f)", go.pos.x, go.pos.y));
+		debugInfo.add(String.format("npo:(%03.0f,%03.0f)", go.newPos.x, go.newPos.y));
 		debugInfo.add(String.format("debug:%d", go.debugLevel));
 		debugInfo.add(String.format("action:%s", go.action.toString()));
 
@@ -78,7 +80,7 @@ public class DebugInfo {
 		g.setColor(textColor);
 		int x = 0, y = 0;
 		for (String line : debugInfo) {
-			g.drawString(String.format("%s", line), (int) (x + offsetX), (int) ((y * (fontHeight + 2)) + offsetY + 4));
+			g.drawString(String.format("%s", line), (int) (x + offsetX), (int) ((y * (fontHeight)) + offsetY + 4));
 			y += 1;
 			if (y > maxLinePerColumn) {
 				y = 0;
@@ -121,15 +123,15 @@ public class DebugInfo {
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					g.setFont(d);
 					switch (mtc.mo.type) {
-					case "tile":
-						g.setColor(Color.ORANGE);
-						break;
-					case "object":
-						g.setColor(Color.YELLOW);
-						break;
-					default:
-						g.setColor(Color.GREEN);
-						break;
+						case "tile":
+							g.setColor(Color.ORANGE);
+							break;
+						case "object":
+							g.setColor(Color.YELLOW);
+							break;
+						default:
+							g.setColor(Color.GREEN);
+							break;
 					}
 				} else {
 					g.setColor(Color.BLUE);

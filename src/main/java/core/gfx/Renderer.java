@@ -152,7 +152,7 @@ public class Renderer extends AbstractSystem {
 	public void render(Game dg, double elapsed) {
 		if (!renderingPause) {
 			Graphics2D g = screenBuffer.createGraphics();
-			DebugInfo.debugFont = g.getFont().deriveFont(7.0f);
+			DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
 
 			Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 

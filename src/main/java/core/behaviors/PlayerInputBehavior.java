@@ -34,7 +34,7 @@ public class PlayerInputBehavior implements Behavior {
     public void input(Game dg, GameObject go) {
         go.forces.clear();
 
-        final double defaultAcc = 0.2;
+        final double defaultAcc = 30;
         // go.setAcc(new Vector2D(0.0, 0.0));
         if (go.action == GameAction.FALL) {
             go.forces.add(new Vector2D(0.0, defaultAcc*3));

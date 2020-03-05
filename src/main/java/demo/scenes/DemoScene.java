@@ -63,7 +63,7 @@ public class DemoScene extends AbstractScene {
 	private BufferedImage itemHolderImg;
 	private BufferedImage itemHolderSelectedImg;
 
-	private TextObject scoreObject;
+	private TextObject scoreText;
 	private TextObject welcomeText;
 
 	private Font scoreFont;
@@ -225,10 +225,11 @@ public class DemoScene extends AbstractScene {
 			addObject(mapLevel);
 
 			// Add Score text on H.U.D. (fixed = true)
-			scoreObject = new TextObject("score", g.config.screenWidth - 80, 40, Color.WHITE, Color.BLACK,
+			scoreText = new TextObject("score", g.config.screenWidth - 80, 40, Color.WHITE, Color.BLACK,
 					new Color(0.1f, 0.1f, 0.1f, 0.8f), scoreFont, true, 10, TextAlign.LEFT);
-			scoreObject.setText("%06d", this.score);
-			addObject(scoreObject);
+			scoreText.setText("%06d", this.score);
+			scoreText.setCollidable(false);
+			addObject(scoreText);
 
 			// add a Welcome message for 3s.
 			welcomeText = new TextObject("welcome", g.config.screenWidth / 2, g.config.screenHeight * 2 / 3,
@@ -238,6 +239,7 @@ public class DemoScene extends AbstractScene {
 			welcomeText.backgroundColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
 			welcomeText.borderColor = Color.GRAY;
 			welcomeText.setText("Welcome to this Basic Game Demonstration");
+			welcomeText.setCollidable(false);
 			addObject(welcomeText);
 
 			// Create camera
