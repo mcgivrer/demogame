@@ -7,66 +7,7 @@ The `PhysicEngineSystem`, implementing the `System` interface, will perform Game
 
 Here is an overview of needed modification:
 
-```plantuml
-skinparam monochrome true
-interface System{
-    +initialize(g:Game)
-    +getName():String
-    +dispose()
-}
-class Game{
-    +run()
-    +input(i:InputHandler)
-    +render(r:Renderer);
-    +update(elapsed:double);
-}
-class PhysicEngineSystem implements System{
-  -objects:List<GameObject>
-  +clear()
-  +add(go:GameObject)
-  +remove(go:GameObject)
-  +update(g:Game, o:GameObject, e:double)
-}
-class CollisionSystem implements System{
-  -objects:List<GameObject>
-  +clear()
-  +add(o:GameObject)
-  +remove(o:GameObject)
-  +update(g:Game, o:GameObject)
-}
-class GameObject{
-  +loc:Vector2D
-  +vel:Vector2D
-  +acc:Vector2D
-  +size:Vector2D
-  +mass:double
-  +update(e:double)
-  +render(r:Renderer)
-}
-class Material{
-  +density:double
-  +friction:double
-  +magnetism:double
-  +elasticity:double
-}
-class World{
-  +gravity:Vector2D
-  +forces:List<Vector2D>
-}
-class BBox{
-  +loc:Vector2D
-  +size:Vector2D
-}
-
-Game "1"--"1" CollisionSystem:colliderSys
-Game "1"--"1" PhysicEngineSystem:physicEngineSys
-Game "1"--"1" SystemManager:sysMan
-Material "1"--"1" GameObject:material
-BBox "1"--"1" GameObject:bbox
-GameObject "1"--"*" GameObject:child
-PhysicEngineSystem "1"--"*" GameObject:objects
-PhysicEngineSystem "1"--"1" World:world
-```
+![The Physic Engine System class diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/mcgivrer/demogame/develop/src/docs/resources/diagrams/physic-engine-system.md "The Physic Engine System class diagram")
 
 ## The classes
 

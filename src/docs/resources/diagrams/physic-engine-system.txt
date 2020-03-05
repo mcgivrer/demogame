@@ -1,58 +1,78 @@
-skinparam monochrome true
-interface System{
-    +initialize(g:Game)
-    +getName():String
-    +dispose()
-}
+@startuml
 class Game{
-    +run()
-    +input(i:InputHandler)
-    +render(r:Renderer);
-    +update(elapsed:double);
-}
-class PhysicEngineSystem implements System{
-  -objects:List<GameObject>
-  +clear()
-  +add(go:GameObject)
-  +remove(go:GameObject)
-  +update(g:Game, o:GameObject, e:double)
-}
-class CollisionSystem implements System{
-  -objects:List<GameObject>
-  +clear()
-  +add(o:GameObject)
-  +remove(o:GameObject)
-  +update(g:Game, o:GameObject)
+ +objects:Map<String,GameObject>
+ +title:String
+ +run()
+ -initialize()
+ -input()
+ -update(float elapsed)
+ -render(Renderer r)
+ -loop()
+ -dispose()
+
 }
 class GameObject{
-  +loc:Vector2D
-  +vel:Vector2D
-  +acc:Vector2D
-  +size:Vector2D
-  +mass:double
-  +update(e:double)
-  +render(r:Renderer)
+ -id:long
+ +name:String
+ +x:double
+ +y:double
+ +dx:double
+ +dy:double
+ +animations:Map<String,Animation>
+ +image:BufferedImage
+ +input():void
+ +render(Renderer r):void
+ +update(double elapsed):void
 }
-class Material{
-  +density:double
-  +friction:double
-  +magnetism:double
-  +elasticity:double
+class Animation{
+ +frameImages:List<BufferedImage>
+ +frameTimes:List<Integer>
+ +elapsed:double
+ +frameIndex:int
 }
-class World{
-  +gravity:Vector2D
-  +forces:List<Vector2D>
+class AbstractState implements State{
+ +getName():String
+ +objects:Map<String,GameObject>
 }
-class BBox{
-  +loc:Vector2D
-  +size:Vector2D
+class SystemManager{
+ -systems:Map<Class<?>,System>
 }
-
-Game "1"--"1" CollisionSystem:colliderSys
-Game "1"--"1" PhysicEngineSystem:physicEngineSys
-Game "1"--"1" SystemManager:sysMan
-Material "1"--"1" GameObject:material
-BBox "1"--"1" GameObject:bbox
-GameObject "1"--"*" GameObject:child
-PhysicEngineSystem "1"--"*" GameObject:objects
-PhysicEngineSystem "1"--"1" World:world
+class SoundSystem implements System{}
+class Renderer implements System{
+  -renderingPipeline:List<GameObject>
+  -lights:List<Light>
+  -layers:List<Layer>
+}
+class Layer{
+  -index:int
+  -objects:List<GameObject>
+}
+class Light extends GameObject {
+  -lightType:LightType
+  -target:GameObject
+}
+class Camera extends GameObject {
+  -tween:double
+  -target:GameObject
+}
+class TextObject extends GameObject {
+  -text:String
+}
+class InputHandler implements System{}
+class ResourceManager implements System{}
+class StateManager implements System{
+ - states:Map<String,State>
+ - current:State
+}
+SystemManager -- Game:sysMan
+Renderer -- Game:rendererSystem
+InputHandler -- Game:inputHandler
+ResourceManager -- Game:resourceManager
+StateManager -- Game:stateManager
+SoundSystem -- Game:soundSystem
+SoundSystem -- SoundClip:sounds
+StateManager "1"--* AbstractState:states
+Game "1"--* GameObject :objects
+AbstractState "1"--* GameObject:objects
+GameObject "1"--* Animation:animations
+@enduml
