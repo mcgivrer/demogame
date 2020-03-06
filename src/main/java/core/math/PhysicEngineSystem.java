@@ -111,14 +111,14 @@ public class PhysicEngineSystem extends AbstractSystem {
 					acceleration = acceleration.add(world.getGravity());
 					acceleration = acceleration.add(vForces);
 
-					acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(t).threshold(1).maximize(16);
+					acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(t).threshold(0.3).maximize(16);
 
 					// TODO add contact detection
 					if (o.isContact) {
 						acceleration = acceleration.multiply(o.getMaterial().friction);
 					}
 
-					speed = speed.add(acceleration.multiply(t * t)).threshold(1).maximize(16);
+					speed = speed.add(acceleration.multiply(t * t)).threshold(0.3).maximize(16);
 					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
 					break;
 

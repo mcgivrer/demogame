@@ -193,7 +193,7 @@ public class MapCollidingService extends AbstractSystem {
      * @param y   the vertical position in the tiles map
      */
     private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y) {
-        listeners.get(go.getClass()).collide(new CollisionEvent(COLLISION_MAP, go, null, mo, map, x, y));
+        listeners.get(go.getClass()).collide(new CollisionEvent(mo.type, go, null, mo, map, x, y));
     }
 
     /**

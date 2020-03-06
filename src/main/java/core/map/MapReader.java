@@ -28,14 +28,23 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class MapReader {
+
+	public enum TileType {
+		PLAYER("player"), ENEMY("enemy"), LIGHT("light"), OBJECT("object"), ITEM("item"), TILE("tile");
+
+		private String value;
+
+		TileType(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return value;
+		}
+
+	}
+
 	private static int idxEnemy = 0;
-
-	private static final String TYPE_PLAYER = "player";
-	private static final String TYPE_ENEMY = "enemy";
-	private static final String TYPE_LIGHT = "light";
-
-	private static final String TYPE_OBJECT = "object";
-	private static final String TYPE_TILE = "item";
 
 	/**
 	 * Read the json file fileMap to renegare al tiles and object for a level map.
@@ -119,11 +128,15 @@ public class MapReader {
 				if (ml.assetsObjects.get(0).objects.containsKey(code)) {
 					MapObject mo = ml.assetsObjects.get(0).objects.get(code);
 					// those MapObject is tile
-					if ((TYPE_PLAYER + TYPE_ENEMY + TYPE_LIGHT).contains(mo.type)) {
-						// those MapObject are GameObject !
-						createGameObject(mapLevel, ml, x, y, mo);
-					} else {
-						ml.tiles[x][y] = mo;
+					switch (mo.type) {
+						case PLAYER:
+						case LIGHT:
+						case ENEMY:
+							createGameObject(mapLevel, ml, x, y, mo);
+							break;
+						default:
+							ml.tiles[x][y] = mo;
+							break;
 					}
 				} else {
 					// no tile or object on tile place.
@@ -154,19 +167,19 @@ public class MapReader {
 			GameObject go = createObjectFromClass(ml, mo, x, y);
 
 			switch (mo.type) {
-				case TYPE_ENEMY:
+				case ENEMY:
 					// add the object to the MapLevel object.
 					mapLevel.child.put(go.name, go);
 					go.physicType = PhysicType.DYNAMIC;
 					break;
-				case TYPE_PLAYER:
+				case PLAYER:
 					mapLevel.playerInitialX = go.pos.x;
 					mapLevel.playerInitialY = go.pos.y;
 					go.physicType = PhysicType.DYNAMIC;
 					// add the object to the MapLevel object.
 					mapLevel.child.put(go.name, go);
 					break;
-				case TYPE_LIGHT:
+				case LIGHT:
 					mapLevel.lights.add((Light) go);
 					go.physicType = PhysicType.STATIC;
 					break;
@@ -224,8 +237,8 @@ public class MapReader {
 					mo.asset = asset;
 					if (mo != null) {
 						switch (mo.type) {
-							case TYPE_TILE:
-							case TYPE_OBJECT:
+							case TILE:
+							case OBJECT:
 							default:
 								if (mo.size != null && !mo.size.equals("")) {
 									String[] sizeValue = mo.offset.split(",");

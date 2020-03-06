@@ -55,7 +55,7 @@ public class DebugInfo {
 		// draw bounding box
 		g.setColor(Color.RED);
 		g.drawRect((int) go.bbox.pos.x, (int) go.bbox.pos.y, (int) go.bbox.size.x, (int) go.bbox.size.y);
-
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	}
 
 	private static List<String> prepareDebugInfo(GameObject go) {
@@ -119,14 +119,14 @@ public class DebugInfo {
 					g.setFont(d.deriveFont(9.5f));
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 					g.setColor(Color.WHITE);
-					g.drawString(mtc.mo.type, mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
+					g.drawString(mtc.mo.type.toString(), mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					g.setFont(d);
 					switch (mtc.mo.type) {
-						case "tile":
+						case TILE:
 							g.setColor(Color.ORANGE);
 							break;
-						case "object":
+						case OBJECT:
 							g.setColor(Color.YELLOW);
 							break;
 						default:

@@ -2,6 +2,7 @@ package core.collision;
 
 import core.map.MapLayer;
 import core.map.MapObject;
+import core.map.MapReader.TileType;
 import core.object.GameObject;
 
 /**
@@ -14,13 +15,13 @@ import core.object.GameObject;
  */
 public class CollisionEvent {
 	public MapLayer map;
-	public CollisionType type;
+	public TileType type;
 	public GameObject o1;
 	public GameObject o2;
 	public MapObject m2;
 	public int mapX, mapY;
 
-	public CollisionEvent(CollisionType type, GameObject o1, GameObject o2, MapObject m2, MapLayer map, int x, int y) {
+	public CollisionEvent(TileType type, GameObject o1, GameObject o2, MapObject m2, MapLayer map, int x, int y) {
 		this.type = type;
 		this.o1 = o1;
 		this.o2 = o2;
@@ -31,6 +32,16 @@ public class CollisionEvent {
 	}
 
 	public enum CollisionType {
-		COLLISION_MAP, COLLISION_OBJECT, COLLISION_ITEM;
+		COLLISION_MAP("map"), COLLISION_OBJECT("object"), COLLISION_ITEM("item");
+
+		private String value = "";
+
+		CollisionType(String value) {
+			this.value = value;
+		}
+
+		public String toString() {
+			return value;
+		}
 	}
 }

@@ -113,7 +113,9 @@ public class Game {
 		int frames = 0;
 		int realFPS = 0;
 		int elapsedFrameTime = 0;
+		int elapsedUpdateTime = 0;
 		double waitFrameDuration = config.fps * 0.001f;
+		double waitUpdateDuration = config.fps * 3 * 0.001f;
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
@@ -126,13 +128,20 @@ public class Game {
 
 			sceneManager.input(this);
 			sceneManager.update(this, elapsed);
-			renderer.setRealFPS(realFPS);
-			sceneManager.render(this, renderer, elapsed);
 
-			double wait = (waitFrameDuration - elapsed);
+			double wait = (waitUpdateDuration - elapsed);
 
 			frames++;
 			elapsedFrameTime += elapsed;
+			elapsedUpdateTime += elapsed;
+
+
+			if(elapsedUpdateTime > waitUpdateDuration){
+				renderer.setRealFPS(realFPS);
+				sceneManager.render(this, renderer, elapsed);
+				elapsedUpdateTime = 0;
+			}
+
 			if (elapsedFrameTime > 1000) {
 				realFPS = frames;
 				frames = 0;
@@ -140,14 +149,14 @@ public class Game {
 				log.debug("elapsed:{}, wait:{}, FPS:{}", elapsed, wait, realFPS);
 			}
 
-			waitNextFrame(waitFrameDuration, wait);
+			waitNextFrame(waitUpdateDuration, wait);
 
 			previousTime = startTime;
 		}
 	}
 
 	private void waitNextFrame(double waitFrameDuration, double wait) {
-		if (wait > 0 /* && wait < waitFrameDuration */) {
+		if (wait > 0 && wait < waitFrameDuration) {
 			log.debug("wait for {}ms", wait);
 			try {
 				Thread.sleep((int) wait);

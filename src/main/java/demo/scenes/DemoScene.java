@@ -148,13 +148,13 @@ public class DemoScene extends AbstractScene {
 			 */
 			public void collide(CollisionEvent e) {
 				switch (e.type) {
-					case COLLISION_OBJECT:
+					case OBJECT:
 						collectCoin(e);
 						break;
-					case COLLISION_ITEM:
+					case ITEM:
 						collectItem(e);
 						break;
-					case COLLISION_MAP:
+					case TILE:
 						manageTileCollision(e);
 						break;
 					default:
@@ -197,18 +197,21 @@ public class DemoScene extends AbstractScene {
 
 			private void manageTileCollision(CollisionEvent e) {
 				if (e.m2.block) {
-					log.debug("player  pos:{},{} collide with {}", e.mapX, e.mapY,e.m2.type);
+					log.debug("player  pos:{},{} collide with {}", e.mapX, e.mapY, e.m2.type);
 					if (Math.abs(e.o1.vel.x) > 0) {
 						e.o1.vel.x = 0;
 						e.o1.forces.clear();
 					}
 					if (Math.abs(e.o1.vel.y) > 0) {
 						e.o1.vel.y = 0;
-						e.o1.acc.y = 0;
+						e.o1.forces.clear();
 						e.o1.pos.y = e.mapY * e.map.assetsObjects.get(0).tileHeight;
 						e.o1.bbox.fromGameObject(e.o1);
 						if (e.o1.name.equals("player")) {
 							log.info("player  pos:{},{}", e.mapX, e.mapY);
+						}
+						if (e.o1.action == GameAction.FALL) {
+							e.o1.action = GameAction.IDLE;
 						}
 					}
 

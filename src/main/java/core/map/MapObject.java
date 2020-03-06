@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import core.gfx.Animation;
+import core.map.MapReader.TileType;
 import core.object.BBox;
 import core.object.Light.LightType;
 import lombok.ToString;
@@ -21,7 +22,7 @@ import lombok.ToString;
 public class MapObject {
     public String id;
     public String image;
-    public String type;
+    public TileType type;
     public String name;
     public String clazz;
     public String color;
