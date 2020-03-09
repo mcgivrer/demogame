@@ -2,16 +2,17 @@ package core;
 
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
+import core.gfx.Counter;
 import core.gfx.Renderer;
 import core.io.InputHandler;
 import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
 import core.object.World;
 import core.resource.ResourceManager;
-import core.scene.Scene;
-import core.scripts.LuaScriptSystem;
 import core.scene.AbstractScene;
+import core.scene.Scene;
 import core.scene.SceneManager;
+import core.scripts.LuaScriptSystem;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,16 +107,18 @@ public class Game {
 	 * Main loop for the game.
 	 */
 	private void loop() {
-		sceneManager.startState(this);
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		int frames = 0;
-		int realFPS = 0;
-		int elapsedFrameTime = 0;
-		int elapsedUpdateTime = 0;
-		double waitFrameDuration = config.fps * 0.001f;
-		double waitUpdateDuration = config.fps * 3 * 0.001f;
+		double waitFrameDuration = config.fps * 0.000001f;
+		double waitUpdateDuration = config.fps * 3 * 0.000001f;
+		Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
+		Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
+
+		renderer.setRealFPS(realFPS);
+		renderer.setRealUPS(realUPS);
+
+		sceneManager.startState(this);
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
@@ -124,32 +127,20 @@ public class Game {
 
 			Scene current = sceneManager.getCurrent();
 
-			physicEngine.update(this, (AbstractScene) current, elapsed);
+			physicEngine.update(this, current, elapsed);
 
 			sceneManager.input(this);
 			sceneManager.update(this, elapsed);
 
+			if (realFPS.isReached()) {
+				sceneManager.render(this, renderer, elapsed);
+			}
 			double wait = (waitUpdateDuration - elapsed);
 
-			frames++;
-			elapsedFrameTime += elapsed;
-			elapsedUpdateTime += elapsed;
-
-
-			if(elapsedUpdateTime > waitUpdateDuration){
-				renderer.setRealFPS(realFPS);
-				sceneManager.render(this, renderer, elapsed);
-				elapsedUpdateTime = 0;
-			}
-
-			if (elapsedFrameTime > 1000) {
-				realFPS = frames;
-				frames = 0;
-				elapsedFrameTime = 0;
-				log.debug("elapsed:{}, wait:{}, FPS:{}", elapsed, wait, realFPS);
-			}
-
 			waitNextFrame(waitUpdateDuration, wait);
+
+			realUPS.tick(elapsed);
+			realFPS.tick(elapsed);
 
 			previousTime = startTime;
 		}

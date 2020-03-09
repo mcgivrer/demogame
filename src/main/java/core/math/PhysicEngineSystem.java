@@ -75,58 +75,59 @@ public class PhysicEngineSystem extends AbstractSystem {
 	public void update(final Game game, final Scene scn, final double elapsed) {
 		this.scene = scn;
 
-		objects.forEach(o -> {
-			update(game, o, elapsed);
+		objects.forEach(go -> {
+			update(game, go, elapsed);
 		});
 
 	}
 
-	public void update(final Game game, final GameObject o, final double elapsed) {
+	public void update(final Game game, final GameObject go, final double elapsed) {
 		// Process Camera or other object update
-		if (o instanceof Camera) {
+		if (go instanceof Camera) {
 
 			// This is a camera object, need to be updated !
-			((Camera) o).update(game, elapsed);
+			((Camera) go).update(game, elapsed);
 
-		} else if (o != null && o.pos != null && o.vel != null) {
+		} else if (go != null && go.pos != null && go.vel != null) {
 
 			// This is a standard obect, must be updated.
-			final Vector2D oldPosition = o.pos;
-			Vector2D nextPosition = o.pos;
-			Vector2D speed = o.vel;
-			Vector2D acceleration = o.acc;
-			final Vector2D objectGameSpeed = o.vel;
-			final double friction = o.material.friction;
-			final double mass = o.mass;
+			final Vector2D oldPosition = go.pos;
+			Vector2D nextPosition = go.pos;
+			Vector2D speed = go.vel;
+			Vector2D acceleration = go.acc;
+			final Vector2D objectGameSpeed = go.vel;
+			final double friction = go.material.friction;
+			final double mass = go.mass;
+			
 
 			final Vector2D vForces = new Vector2D(0.0f, 0.0f);
-
-			switch (o.physicType) {
+			
+			switch (go.physicType) {
 				case DYNAMIC:
 
 					final double t = elapsed * TIME_SCALE_FACTOR;
-					vForces.addAll(o.forces);
+					vForces.addAll(go.forces);
 					vForces.addAll(world.getForces());
 
 					acceleration = acceleration.add(world.getGravity());
 					acceleration = acceleration.add(vForces);
 
-					acceleration = acceleration.multiply(1.0 / o.getMass()).multiply(t).threshold(0.3).maximize(16);
+					acceleration = acceleration.multiply(1.0 / go.getMass()).multiply(t).threshold(0.3).maximize(4);
 
 					// TODO add contact detection
-					if (o.isContact) {
-						acceleration = acceleration.multiply(o.getMaterial().friction);
+					if (go.isContact && go.getTileCollisionObject()!=null) {
+						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction);
 					}
 
-					speed = speed.add(acceleration.multiply(t * t)).threshold(0.3).maximize(16);
+					speed = speed.add(acceleration.multiply(t * t)).threshold(0.3).maximize(4);
 					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
 					break;
 
 				case KINETIC:
 					// TODO add contact detection
 
-					if (o.isContact) {
-						speed = speed.multiply(friction);
+					if (go.isContact && go.getTileCollisionObject()!=null) {
+						speed = speed.multiply(go.getTileCollisionObject().friction);
 					}
 					speed = speed.threshold(VELOCITY_THRESHOLD_MIN);
 					// objectGameSpeed = speed.multiply(game.getGameSpeed());
@@ -138,10 +139,10 @@ public class PhysicEngineSystem extends AbstractSystem {
 					break;
 			}
 			// Set next position, speed and acceleration.
-			o.acc = acceleration;
-			o.vel = speed;
-			o.newPos = nextPosition;
-			o.forces.clear();
+			go.acc = acceleration;
+			go.vel = speed;
+			go.newPos = nextPosition;
+			go.forces.clear();
 		}
 	}
 

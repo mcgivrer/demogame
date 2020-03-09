@@ -94,6 +94,8 @@ public class GameObject {
 
 	public List<Behavior> behaviors = new ArrayList<>();
 
+	public MapObject tileCollisionObject;
+
 	/**
 	 * If the object is active it will be processed as other, but not rendered.
 	 */

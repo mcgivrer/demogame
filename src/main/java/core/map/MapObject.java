@@ -32,6 +32,8 @@ public class MapObject {
     public int priority;
     public int layer;
 
+    public double friction;
+
     public LightType lightType;
     public double intensity;
     public double radius;

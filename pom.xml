@@ -1,6 +1,4 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.snapgames</groupId>
     <artifactId>demogame</artifactId>
@@ -55,19 +53,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.26</version>
+            <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse -->
@@ -75,28 +70,37 @@
             <groupId>org.luaj</groupId>
             <artifactId>luaj-jse</artifactId>
             <version>3.0.1</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.10</version>
+            <version>1.18.12</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jlayer -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>jlayer</artifactId>
             <version>1.0.1.4</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
             <version>1.9.5.4</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/tritonus-share -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>tritonus-share</artifactId>
             <version>0.3.7.4</version>
+            <scope>provided</scope>
         </dependency>
 
 
@@ -131,12 +135,13 @@
     </dependencies>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -196,6 +201,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
+                    <javadocVersion>1.8</javadocVersion>
                     <encoding>utf-8</encoding>
                     <stylesheet>maven</stylesheet>
                     <overview>${project.basedir}/README.md</overview>
@@ -244,8 +250,7 @@
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>shaded</shadedClassifierName>
                     <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>${mainClass}</mainClass>
                         </transformer>
                         <!--transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">

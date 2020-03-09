@@ -69,7 +69,9 @@ public class Renderer extends AbstractSystem {
 	private List<GameObject> renderingObjectPipeline = new ArrayList<>();
 	private MapRenderer mapRenderer;
 	private boolean renderingPause = false;
-	private int realFPS;
+
+	private Counter realFPS;
+	private Counter realUPS;
 
 	/**
 	 * Create the Game renderer.
@@ -178,7 +180,7 @@ public class Renderer extends AbstractSystem {
 			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
 			g.dispose();
 			// render image to real screen (applying scale factor)
-			renderToScreen(dg, realFPS);
+			renderToScreen(dg, realFPS, realUPS);
 		}
 	}
 
@@ -371,8 +373,11 @@ public class Renderer extends AbstractSystem {
 		}
 	}
 
-	public void setRealFPS(int realFPS) {
+	public void setRealFPS(Counter realFPS) {
 		this.realFPS = realFPS;
+	}
+	public void setRealUPS(Counter realUPS) {
+		this.realUPS = realUPS;
 	}
 
 	public class Layer {
@@ -381,7 +386,7 @@ public class Renderer extends AbstractSystem {
 		List<GameObject> objects = new ArrayList<>();
 	}
 
-	private void renderToScreen(Game dg, int realFPS) {
+	private void renderToScreen(Game dg, Counter realFPS, Counter realUPS) {
 		BufferStrategy bs = jf.getBufferStrategy();
 		Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 		if (bs != null) {
@@ -395,8 +400,13 @@ public class Renderer extends AbstractSystem {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(String.format("debug:%01d | FPS: %03d | cam:(%03.1f,%03.1f)", dg.config.debug, realFPS,
-							camera.pos.x, camera.pos.y), 4, jf.getHeight() - 20);
+					g.drawString(String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", 
+									dg.config.debug, 
+									realFPS.getCounter(), 
+									realUPS.getCounter(),
+									camera.pos.x, 
+									camera.pos.y), 
+								4, jf.getHeight() - 20);
 
 					if (dg.config.debug > 2) {
 						g.setColor(Color.ORANGE);

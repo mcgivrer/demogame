@@ -5,15 +5,24 @@ import java.awt.event.KeyEvent;
 
 import core.Game;
 import core.io.InputHandler;
+import core.math.PhysicEngineSystem;
 import core.math.Vector2D;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
 import core.object.World;
+import core.system.SystemManager;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * The PlayerInputBehavior is the input manager for the player manage by the
+ * user.
+ */
+@Slf4j
 public class PlayerInputBehavior implements Behavior {
 
     private static GameAction idleAction = GameAction.IDLE;
-    InputHandler inputHandler;
+    private InputHandler inputHandler;
+    private PhysicEngineSystem pes;
     private static int lastIdleChange = 0;
     private static int lastIdleChangePace = 120;
 
@@ -23,7 +32,8 @@ public class PlayerInputBehavior implements Behavior {
 
     @Override
     public void initialize(Game dg) {
-        inputHandler = dg.sysMan.getSystem(InputHandler.class);
+        inputHandler = SystemManager.get(InputHandler.class);
+        pes = SystemManager.get(PhysicEngineSystem.class);
     }
 
     @Override
@@ -37,7 +47,7 @@ public class PlayerInputBehavior implements Behavior {
         final double defaultAcc = 30;
         // go.setAcc(new Vector2D(0.0, 0.0));
         if (go.action == GameAction.FALL) {
-            go.forces.add(new Vector2D(0.0, defaultAcc*3));
+            go.forces.add(pes.getWorld().getGravity());
         } else {
             go.action = idleAction;
         }
@@ -45,7 +55,7 @@ public class PlayerInputBehavior implements Behavior {
         if (inputHandler != null) {
             // reset horizontal speed if falling.
             if (inputHandler.keys[KeyEvent.VK_UP]) {
-                go.forces.add(new Vector2D(0.0, -defaultAcc));
+                go.forces.add(pes.getWorld().getGravity().multiply(-4));
                 go.action = GameAction.JUMP;
             }
             if (inputHandler.keys[KeyEvent.VK_DOWN]) {

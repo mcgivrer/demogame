@@ -1,9 +1,8 @@
 package core.math;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.Collection;
+
+import lombok.Data;
 
 /**
  * A 2D Vector class to compute next gen things..
@@ -26,7 +25,6 @@ public class Vector2D {
 
     public final static Vector2D ZERO = new Vector2D(0.0f, 0.0f);
     public final static Vector2D UNITY = new Vector2D(1.0f, 1.0f);
-
 
     /**
      * Create a Vector2D
@@ -106,9 +104,7 @@ public class Vector2D {
      * @param f
      */
     public Vector2D multiply(double f) {
-        this.x *= f;
-        this.y *= f;
-        return this;
+        return new Vector2D(this.x * f, this.y * f);
     }
 
     /**
@@ -189,6 +185,7 @@ public class Vector2D {
 
     /**
      * Return true if nextPosition < this
+     * 
      * @param nextPosition
      * @return
      */
@@ -198,6 +195,7 @@ public class Vector2D {
 
     /**
      * Return true if nextPosition > this
+     * 
      * @param nextPosition
      * @return
      */

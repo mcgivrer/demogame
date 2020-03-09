@@ -232,7 +232,8 @@
 			"type": "TILE",
 			"id": "T",
 			"block": false,
-			"offset": "19,6"
+			"offset": "19,6",
+			"friction":"0.87"
 		},
 		"k": {
 			"type": "TILE",
