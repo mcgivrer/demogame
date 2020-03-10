@@ -1,3 +1,7 @@
+# Technical consideration
+
+## The Maven projet
+
 The project is based on the maven structure:
 
 ```
@@ -47,6 +51,7 @@ Just to be clear, only Java is not the only way in our project, I added some sma
 #### PoJo easily
 
 For the first use case, I propose to use the `lombok` library to simplify PoJo writing:
+
 ```java
 @Data
 @NoArgsConstructor
@@ -61,15 +66,25 @@ The qualifiers `@Data` will authomaticaly at compilation time add setters and ge
 
 For the second use case, the Google `gson` library, and for the second, rely on the `slf4j-simple`.
 
+#### Logging
+
+We are going to fully use th lombok capabilities by using the @slf4j annotation to take benefit from the log annotation enhancement. simple add a `@Slf4J` annotation to simply use a `log` static variable from anywhere in your class:
+
+```java
+@Slf4j
+public class MyClass{
+    public void process(Game g){
+        log.info("log something about this game {}", g.title);
+    }
+}
+
+```
+
 #### converting Pojo
+
+To perofrme JSON serialization, just use the Gson library.
 
 ```java
 Gson gson= new Gson();
 MyPojo mp=gson.fromJson("myjsonstructure", MyPojo.class);
-```
-
-#### Logging
-
-```java
-
 ```
