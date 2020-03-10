@@ -44,8 +44,9 @@ public class PlayerInputBehavior implements Behavior {
     public void input(Game dg, GameObject go) {
         go.forces.clear();
 
-        final double defaultAcc = 30;
-        // go.setAcc(new Vector2D(0.0, 0.0));
+        final double defaultAcc = 20;
+        go.setAcc(new Vector2D(0.0, 0.0));
+
         if (go.action == GameAction.FALL) {
             go.forces.add(pes.getWorld().getGravity());
         } else {
@@ -55,7 +56,7 @@ public class PlayerInputBehavior implements Behavior {
         if (inputHandler != null) {
             // reset horizontal speed if falling.
             if (inputHandler.keys[KeyEvent.VK_UP]) {
-                go.forces.add(pes.getWorld().getGravity().multiply(-4));
+                go.forces.add(pes.getWorld().getGravity().multiply(-10));
                 go.action = GameAction.JUMP;
             }
             if (inputHandler.keys[KeyEvent.VK_DOWN]) {

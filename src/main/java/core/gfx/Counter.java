@@ -43,4 +43,9 @@ public class Counter {
 	public boolean isReached() {
 		return value>stepValue;
 	}
+
+	@Override
+	public String toString() {
+		return String.format("value:%04f, count:%04f, counter:%04f, step:%04f",value,count, counterValue,stepValue);
+	}
 }

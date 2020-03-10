@@ -110,8 +110,8 @@ public class Game {
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		double waitFrameDuration = config.fps * 0.000001f;
-		double waitUpdateDuration = config.fps * 3 * 0.000001f;
+		double waitFrameDuration = 1000 / config.fps;
+		double waitUpdateDuration = 1000 / config.ups;
 		Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
 		Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
 
@@ -141,6 +141,7 @@ public class Game {
 
 			realUPS.tick(elapsed);
 			realFPS.tick(elapsed);
+			//log.debug("fps:{} ups:{}",realFPS,realUPS);
 
 			previousTime = startTime;
 		}
