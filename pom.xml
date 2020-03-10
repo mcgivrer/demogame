@@ -445,16 +445,16 @@
                                     <arguments>
                                         <argument>src/docs/metadata.yml</argument>
                                         <argument>src/docs/index.md</argument>
-                                        <argument>docs/00-the_maven_project.md</argument>
-                                        <argument>docs/01-Game.md</argument>
-                                        <argument>docs/02-GameObject.md</argument>
-                                        <argument>docs/03-scene_and_manager_system.md</argument>
-                                        <argument>docs/04-Renderer.md</argument>
-                                        <argument>docs/05-Camera.md</argument>
-                                        <argument>docs/06-SystemManager.md</argument>
-                                        <argument>docs/07-behaviors_and_lua_scripts.md</argument>
-                                        <argument>docs/08-physic_engine_system.md</argument>
-                                        <!--argument>docs/00-.md</argument-->
+                                        <argument>src/docs/00-the_maven_project.md</argument>
+                                        <argument>src/docs/01-game.md</argument>
+                                        <argument>src/docs/02-game_object.md</argument>
+                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
+                                        <argument>src/docs/04-renderer.md</argument>
+                                        <argument>src/docs/05-camera.md</argument>
+                                        <argument>src/docs/06-system_manager.md</argument>
+                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>src/docs/08-physic_engine_system.md</argument>
+                                        <!--argument>src/docs/00-.md</argument-->
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>-t</argument>

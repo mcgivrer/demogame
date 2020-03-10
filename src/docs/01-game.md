@@ -1,5 +1,7 @@
 # The Game class
 
+The Game is the entry point of our game. The main class is a frmework for all the game processing, from create window to animate all those beautiful sprites. Let's dive into this thing ! 
+
 ## L for Loop
 
 The core routine of a java game is a loop. 
