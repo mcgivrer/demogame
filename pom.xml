@@ -53,7 +53,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.26</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
@@ -62,7 +61,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.6</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.luaj/luaj-jse -->
@@ -70,7 +68,6 @@
             <groupId>org.luaj</groupId>
             <artifactId>luaj-jse</artifactId>
             <version>3.0.1</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -78,7 +75,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jlayer -->
@@ -86,21 +82,18 @@
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>jlayer</artifactId>
             <version>1.0.1.4</version>
-            <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
             <version>1.9.5.4</version>
-            <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/tritonus-share -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>tritonus-share</artifactId>
             <version>0.3.7.4</version>
-            <scope>provided</scope>
         </dependency>
 
 
