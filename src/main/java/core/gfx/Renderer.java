@@ -72,6 +72,8 @@ public class Renderer extends AbstractSystem {
 
 	private Counter realFPS;
 	private Counter realUPS;
+	
+	private Graphics2D g;
 
 	/**
 	 * Create the Game renderer.
@@ -82,6 +84,7 @@ public class Renderer extends AbstractSystem {
 		super(dg);
 		jf = createWindow(dg);
 		screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
+		g = screenBuffer.createGraphics();
 	}
 
 	@Override
@@ -153,7 +156,6 @@ public class Renderer extends AbstractSystem {
 	 */
 	public void render(Game dg, double elapsed) {
 		if (!renderingPause) {
-			Graphics2D g = screenBuffer.createGraphics();
 			DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
 
 			Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
@@ -178,7 +180,6 @@ public class Renderer extends AbstractSystem {
 
 			// draw HUD
 			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
-			g.dispose();
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg, realFPS, realUPS);
 		}
@@ -415,7 +416,6 @@ public class Renderer extends AbstractSystem {
 								(int) ((dg.config.screenHeight - 20) * sY));
 					}
 				}
-				g.dispose();
 			}
 			bs.show();
 
@@ -544,7 +544,7 @@ public class Renderer extends AbstractSystem {
 		}
 	}
 
-	public void renderMapObject(Graphics2D g, MapObject mo, float x, float y) {
+	public void renderMapObject(MapObject mo, float x, float y) {
 		g.drawImage(mo.imageBuffer, (int) x, (int) y, null);
 	}
 
@@ -595,8 +595,13 @@ public class Renderer extends AbstractSystem {
 		renderingObjectPipeline.clear();
 	}
 
-	public void drawImage(Graphics2D g, BufferedImage holder, int i, int j, int width, int height) {
-		g.drawImage(holder,i,j,width,height,null);
+	public void drawImage(BufferedImage image, int x, int y, int width, int height) {
+		g.drawImage(image,x,y,width,height,null);
+	}
+
+	public void drawImage(BufferedImage image, int x, int y) {
+		g.drawImage(image,x,y,null);
+		
 	}
 
 

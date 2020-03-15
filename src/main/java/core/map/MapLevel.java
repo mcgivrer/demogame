@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import core.math.PhysicEngineSystem.PhysicType;
+import core.math.Vector2D;
 import core.object.GameObject;
 import core.object.Light;
 import lombok.ToString;
@@ -28,6 +29,8 @@ public class MapLevel extends GameObject {
 
 	// raw text format for the map.
 	public Map<String, MapLayer> layers = new HashMap<>();
+	
+	public Map<String,Vector2D> initialPosition = new HashMap<>();
 
 	// name of the output level
 	public String nextLevel;

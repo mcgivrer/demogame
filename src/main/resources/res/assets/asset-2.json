@@ -25,7 +25,17 @@
       "attributes": {
         "energy": 100.0,
         "damage": 10.0,
-        "coins": 5
+        "coins": 5,
+        "physic": {
+          "physicType":"DYNAMIC",
+          "material": {
+            "name": "player",
+            "elasticity": 0.12,
+            "friction": 0.9,
+            "density": 1.2,
+            "magnetism": 0.0
+          }
+        }
       }
     },
     "F": {
@@ -50,7 +60,17 @@
         "energy": 100.0,
         "damage": 10.0,
         "coins": 5,
-        "scripts": ["/res/scripts/enemy_update.lua"]
+        "scripts": ["/res/scripts/enemy_update.lua"],
+        "physic": {
+          "physicType":"DYNAMIC",
+          "material": {
+            "name": "enemy",
+            "elasticity": 0.12,
+            "friction": 0.9,
+            "density": 1.2,
+            "magnetism": 0.0
+          }
+        }
       }
     },
     "P": {

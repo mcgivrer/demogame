@@ -51,7 +51,7 @@ public class HudInventory extends GameObject {
      * @param dg the parent Game
      * @param g  the Graphics API to render the object.
      */
-    public void render(Game dg, Renderer r, Graphics2D g) {
+    public void render(Game dg, Renderer r) {
         // draw Items
         for (int itmNb = 1; itmNb <= maxItems; itmNb++) {
 
@@ -61,11 +61,11 @@ public class HudInventory extends GameObject {
                 item = player.items.get(itmNb - 1);
             }
             BufferedImage holder = switchItem(itmNb, item, selectedItem);
-            r.drawImage(g, holder, dg.config.screenWidth - offsetX - posX,
+            r.drawImage(holder, dg.config.screenWidth - offsetX - posX,
                     dg.config.screenHeight - (holder.getHeight() + offsetY), holder.getWidth(), holder.getHeight());
 
             if (itmNb - 1 < player.items.size() && item != null) {
-                r.renderMapObject(g, item, dg.config.screenWidth + 1 - offsetX - posX,
+                r.renderMapObject(item, dg.config.screenWidth + 1 - offsetX - posX,
                         dg.config.screenHeight - (holder.getHeight() + offsetY));
             }
         }

@@ -179,6 +179,9 @@ public class DemoScene extends AbstractScene {
 		return mapLevel != null;
 	}
 
+	/**
+	 * Manage Input processing on all objects.
+	 */
 	@Override
 	public void input(Game g) {
 
@@ -190,6 +193,9 @@ public class DemoScene extends AbstractScene {
 		});
 	}
 
+	/**
+	 * Process Special Scene keys to reset things
+	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		super.keyReleased(e);
@@ -197,7 +203,7 @@ public class DemoScene extends AbstractScene {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_R:
 			if (control) {
-				resetPlayer();
+				resetGameObjects();
 			}
 			break;
 		case KeyEvent.VK_Z:
@@ -210,18 +216,31 @@ public class DemoScene extends AbstractScene {
 		}
 	}
 
+	/**
+	 * Reset GameObject and WelComeText on a CTRL+Z
+	 */
 	public void resetState() {
-		resetPlayer();
+		resetGameObjects();
 		TextObject welcome = (TextObject) objectManager.get("welcome");
 		welcome.duration = 5000;
 		welcome.displayed = true;
+
 	}
 
-	public void resetPlayer() {
-		GameObject player = objectManager.get("player");
-		player.action = GameAction.IDLE2;
-		player.setSpeed(0.0f, 0.0f);
-		player.setPosition(mapLevel.playerInitialX, mapLevel.playerInitialY);
+	/**
+	 * Reset GameObjects on a CTRL+R
+	 */
+	public void resetGameObjects() {
+		for (GameObject go : objectManager.objects.values()) {
+			if (mapLevel.initialPosition.containsKey(go.name)) {
+				go.pos = mapLevel.initialPosition.get(go.name);
+			}
+			if (go.name.contentEquals("player")) {
+				go.action = GameAction.IDLE2;
+				go.setSpeed(0.0f, 0.0f);
+
+			}
+		}
 	}
 
 	/**
@@ -304,7 +323,7 @@ public class DemoScene extends AbstractScene {
 		int offsetY = 30;
 
 		// draw Life
-		g.drawImage(lifeImg, offsetX, offsetY - 16, null);
+		r.drawImage(lifeImg, offsetX, offsetY - 16);
 		r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
 
 		// draw Coins
@@ -324,7 +343,7 @@ public class DemoScene extends AbstractScene {
 		g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
 
 		// draw Items
-		inventory.render(ga, r, g);
+		inventory.render(ga, r);
 	}
 
 }

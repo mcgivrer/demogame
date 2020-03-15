@@ -181,7 +181,7 @@ public class MapReader {
 		try {
 			// create GameObject from MapOpbject
 			GameObject go = createObjectFromClass(ml, mo, x, y);
-
+			mapLevel.initialPosition.put(go.name,go.pos);
 			switch (mo.type) {
 			case ENEMY:
 				// add the object to the MapLevel object.
@@ -191,7 +191,7 @@ public class MapReader {
 			case PLAYER:
 				mapLevel.playerInitialX = go.pos.x;
 				mapLevel.playerInitialY = go.pos.y;
-				go.physicType = PhysicType.DYNAMIC;
+				//go.physicType = PhysicType.DYNAMIC;
 				// add the object to the MapLevel object.
 				mapLevel.child.put(go.name, go);
 				break;
