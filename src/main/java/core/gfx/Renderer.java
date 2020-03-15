@@ -595,4 +595,9 @@ public class Renderer extends AbstractSystem {
 		renderingObjectPipeline.clear();
 	}
 
+	public void drawImage(Graphics2D g, BufferedImage holder, int i, int j, int width, int height) {
+		g.drawImage(holder,i,j,width,height,null);
+	}
+
+
 }

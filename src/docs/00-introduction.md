@@ -10,3 +10,4 @@ Most of the game is out of configuration and some character and game-play behavi
 As a short introduction to what is going to happen here, a beautiful and complex UML class diagram is the best thing to have.
 
 ![A global class diagram overview](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/mcgivrer/demogame/develop/src/docs/resources/diagrams/class-diagram-overview.txt)
+

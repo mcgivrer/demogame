@@ -297,7 +297,7 @@ In the following entity, some specific behavior are scripted with LUA in the `sc
 
 You had certainly notices some common attributes. Here are ther definitions.
 
-| Attribute   | Json to Java format          | Description | Values |
+| Attribute   | Json to Java format            | Description | Values |
 |-------------|--------------------------------|-------------|--------|
 | type        | text:TileType upper/lowercase  | Internal type of the object | `PLAYER` the game player,<br/> `ITEM` a collectible object,<br/> `OBJECT` an animated coin ,<br/> `LIGHT` a light in the map,<br/> `TILE` a simple graphics element,<br/> `ENEMY` an enemy.
 | name        | text:String                    | the internal name for this MapObject, mainly for debug purpose. if a `_#` is added, the # will be automaticaly added replaced by an internal index | `"name":"player"`,<br/> `"name":"enemy_#"` |

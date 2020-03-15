@@ -91,13 +91,13 @@ public class PhysicEngineSystem extends AbstractSystem {
 		} else if (go != null && go.pos != null && go.vel != null) {
 
 			// This is a standard obect, must be updated.
-			final Vector2D oldPosition = go.pos;
+			//final Vector2D oldPosition = go.pos;
 			Vector2D nextPosition = go.pos;
 			Vector2D speed = go.vel;
 			Vector2D acceleration = go.acc;
 			final Vector2D objectGameSpeed = go.vel;
-			final double friction = go.material.friction;
-			final double mass = go.mass;
+			//final double friction = go.material.friction;
+			//final double mass = go.mass;
 			
 
 			final Vector2D vForces = new Vector2D(0.0f, 0.0f);
@@ -112,21 +112,21 @@ public class PhysicEngineSystem extends AbstractSystem {
 					acceleration = acceleration.add(world.getGravity());
 					acceleration = acceleration.add(vForces);
 
-					acceleration = acceleration.multiply(1.0 / go.getMass()).multiply(t).threshold(0.3).maximize(4);
+					acceleration = acceleration.multiply(1.0 / go.getMass()).multiply(t).maximize(7);
 
 					// TODO add contact detection
-					if (go.isContact && go.getTileCollisionObject()!=null) {
-						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction);
+					if (go.getTileCollisionObject()!=null) {
+						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction).maximize(7);
 					}
 
-					speed = speed.add(acceleration.multiply(t * t)).threshold(0.3).maximize(4);
+					speed = speed.add(acceleration.multiply(t * t)).maximize(7);
 					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
 					break;
 
 				case KINETIC:
 					// TODO add contact detection
 
-					if (go.isContact && go.getTileCollisionObject()!=null) {
+					if (go.getTileCollisionObject()!=null) {
 						speed = speed.multiply(go.getTileCollisionObject().friction);
 					}
 					speed = speed.threshold(VELOCITY_THRESHOLD_MIN);

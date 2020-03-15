@@ -20,8 +20,7 @@ import lombok.Data;
 @Data
 public class World {
 
-    @SuppressWarnings("unused")
-	private Game game;
+    private Game game;
 
     private Map<String, Vector2D> forces = new ConcurrentHashMap<>();
 
@@ -29,7 +28,7 @@ public class World {
 
     public World(Game game) {
         this.game = game;
-        this.forces.put("gravity",gravity);
+        this.forces.put("gravity", gravity);
     }
 
     public Collection<Vector2D> getForces() {
@@ -56,12 +55,12 @@ public class World {
         return gravity;
     }
 
-    public Vector2D getForce(String name){
+    public Vector2D getForce(String name) {
         return forces.get(name);
     }
 
-	public boolean containsForce(String forceName) {
-		return forces.containsKey(forceName);
-	}
+    public boolean containsForce(String forceName) {
+        return forces.containsKey(forceName);
+    }
 
 }

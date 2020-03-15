@@ -437,8 +437,7 @@
                                     <workingDirectory></workingDirectory>
                                     <arguments>
                                         <argument>src/docs/metadata.yml</argument>
-                                        <argument>src/docs/index.md</argument>
-                                        <argument>src/docs/00-the_maven_project.md</argument>
+                                        <argument>src/docs/00-introduction.md</argument>
                                         <argument>src/docs/01-game.md</argument>
                                         <argument>src/docs/02-game_object.md</argument>
                                         <argument>src/docs/03-scene_and_manager_system.md</argument>
@@ -447,6 +446,8 @@
                                         <argument>src/docs/06-system_manager.md</argument>
                                         <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
                                         <argument>src/docs/08-physic_engine_system.md</argument>
+                                        <argument>src/docs/09-maplevel.md</argument>
+                                        <argument>src/docs/10-the_maven_project.md</argument>
                                         <!--argument>src/docs/00-.md</argument-->
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>

@@ -26,9 +26,8 @@ public class Camera extends GameObject {
      * @param tween    the tween factor to manage camera sensitivity.
      * @param viewPort the size of the display window.
      */
-    public Camera(String name, GameObject target, float tween, Dimension viewPort) {
-        super(name, target.pos.x, target.pos.y, viewPort.width, viewPort.height);
-        this.target = target;
+    public Camera(String name, float tween, Dimension viewPort) {
+        super(name, 0, 0, viewPort.width, viewPort.height);
         this.tween = tween;
         this.viewport = viewPort;
     }
@@ -62,5 +61,9 @@ public class Camera extends GameObject {
             g.setColor(Color.YELLOW);
             g.drawRect((int) this.pos.x, (int) this.pos.y, viewport.width, viewport.height);
         }
+    }
+
+    public void setTarget(GameObject target) {
+        this.target = target;
     }
 }

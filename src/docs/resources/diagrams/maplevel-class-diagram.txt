@@ -1,0 +1,10 @@
+@startuml
+Scene "1"--"1" MapLevel:level
+Scene "1"--"1" MapReader:reader
+MapLevel "1"--* MapLayer:layers
+MapLayer "1"--* MapObjectAsset:assets
+MapObjectAsset "1"--* MapObject:objects
+
+MapReader "1"--"1" MapLevel:level
+Renderer "1"--"1" MapRenderer
+@enduml

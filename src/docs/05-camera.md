@@ -1,3 +1,5 @@
+# Camera
+
 One of the concept in a game is the `Camera`.  Like in movies, the player want to follow its character on the screen. 
 The way we will implement this behavior will consist in simulate a movie camera following the player's character moves.
 
