@@ -11,8 +11,10 @@ So, to start with a sustainable thing, create our class:
 ```java
 public class GameObject {
 	public String name;
-	public float x,y;
-	public float width,height;
+	public Vector2D pos;
+	public Vector2D size;
+	public Vector2D vel;
+	public Vector2D acc;
 	public Color color;
 	public GameObjectType type;
 	public Map<String,Object> attributes;
@@ -61,13 +63,4 @@ void render(Graphics2D g){
 }
 ```
 
-Now, we need to add some object to our game; modify Game class to add:
 
-```java
-
-void generateObjects(){
-  ...TODO...
-}
-```
-
-and let's have a try and execute this.
