@@ -6,6 +6,8 @@ The Game is the entry point of our game. The main class is a frmework for all th
 
 The core routine of a game is a loop. 
 
+### Why the loop ?
+
 This main loop will achieve multiple goals. 
 
 1. **capture the control input** from the player, which keys are pressed, which are released, where is the mouse cursor, all those input will be useful to animate or move all the characters in that game. 
@@ -16,7 +18,7 @@ This main loop will achieve multiple goals.
 
 And finally, restart at point 1, until the game end of the player clearly request to exit from the game.
 
-![](/home/frederic/projects/prototypes/demogame/src/docs/resources/illustrations/Game loop.png)
+![The basic game loop](./resources/illustrations/game-loop.png "The basic game loop where everything start from")
 
 The times displayed are standard ones, measured through numerous old games, and is a basic time stepping for capture, update and render  a game for a frame of 15 ms at 50 Frame Per Second.
 
@@ -33,13 +35,38 @@ while(!exit){
 } 
 ```
 
+### A little History
+
 But why does games' loop look like this ?
 
+ to translate
 
+The way the game a processed has been directed many years ago, when display screenwhere CRT ones, and a beam was used to swept the screen surface to create pixels.
 
+CPU were very slow and each CPU cycle were counting. No multi threading available, so the cost of displaying pixel was the most time consumer. 
 
+So the beam is sweeping the screen from top left(position 0,0) to bottom right (525,320). So during the beam return from bottom right (position 525,320) to top left ( position 0,0), the CPU was used to compute all other things in the game than display. And this was happening ever 1/25 s, because 25 images where displayed per second, according to AC power frequency (yes, all were linked).
 
-In a well formed Java class, let's name it `samples.SampleGameLoop`, we will create those methods:
+![The Beam return phase](./resources/illustrations/game-loop-beam-return.png "The beam return phae on CRT screen, where all game's things happened")
+
+So at least, the CPU time was split into 2 main phases, 
+
+- capturing input and updating things during beam return, 
+- and then, display all game's things.
+
+Now, those operation are all managed through powerful hardware, specifically for displaying, helped by GPU, and we split all phases with this specific sort order:
+
+1. Capture Input,
+2. Update game objects,
+3. Render and display game objects.
+
+So let's have a tour on some beginner code.
+
+### Looping in code
+
+We won't lay too much on the initialization things around `JFrame` and so on, Let's focus on the Loop itself.
+
+In a well formed Java class, the `samples.SampleGameLoop` sample code will explain more than words:
 
 
 ```java
@@ -85,22 +112,28 @@ public class SampleGameLoop {
 }
 ```
 
-The structure of this class is a basic for any game you would like to create.
+As explain just before, the structure of this class is a basic for any game you would like to create.
 
-You can notice a `waitFrame(long)` method, to manage the frequency of `update(elapsed)` method.
+But for some modern and pragmatic reason, you will notice a `waitFrame(long)` method, to manage the frequency of `update(elapsed)` method. Yes, GPU/CPU are now so speeeeedy that we need to break a little bit.
 
-![Game Loop with a wait adjust](./resources/illustrations/Game loop wait.png "Using a wait tempo to adapt frequency to 60 FPS (16 ms per frame)")
+![Game Loop with a wait adjust](./resources/illustrations/game-loop-wait.png "Using a wait tempo to adapt frequency to 60 FPS (16 ms per frame)")
 
-First initialize things, then start looping. With such simple class we will incrementally create our platform game.
+So the good loop consists in: first initialize things, then start looping by getting keys from keyboard, processing game objects, then rendering those objects, and finally waiting some milliseconds. 
+
+With such simple class we will incrementally, step by step, instruction per instruction, create our platform game.
 
 ### Some Sample code
 
-In a very simple game loop implementation, you can easily animate a bouncing square.
+#### Bouncy Square
+
+In a very simple game loop implementation, you can easily animate a bouncing square. A red square will move from side to side on the screen, bumping on borders, and changing its own direction according to the border detected collision.
+
+#### Code !
 
 Let's explore the way JFrame window is used to create
 
 ```java
-public class Game{
+public class SampleGameLoop{
     JFrame frame;
     BufferedImage screenBuffer;
     
@@ -143,14 +176,18 @@ public class Game{
 }
 ```
 
-### Adding user interactivity
+#### Adding user interactivity
 
-And we can add some interactivity by detecting some directional keys.
+As we are all player, let's add some interactivity by detecting some directional keys. The `UP`, `DOWN`, `LEFT`, and `RIGHT` keys will change speed value on each main axes, vertical and horizontal. 
 
-`UP`, `DOWN`, `LEFT`, and `RIGHT` keys will change speed value. but maximum limit value will be checked, the `maxD` set by default at 4. this will be updated on each Release event.
+But a maximum limit value for that speed will be checked, the `maxD` set by default at 4. 
+
+So add the `KeyListener` interface, to capture input keys, to our `SampleGameLoop` class and implements missing methods. the one interesting us is the `keyReleased` one.
+
+This will be updated on each `keyReleased()` event.
 
 ```java
-public class Game implements KeyListener{
+public class SampleGameLoop implements KeyListener{
     int maxD = 4;
     ...
     public void keyPressed(KeyEvent e){
@@ -194,6 +231,6 @@ you will certainly get window like this :
 
 ![The SampleGameLoop window](./resources/illustrations/SampleGameLoop.png "The Sample GameLoop demonstration window")
 
-If you press 3 times the `D` key, some debugging information will be displayed.
+If you press 3 times the `D` key, some debugging information will be displayed. the debug value will cycle from 0 to 5 max.
 
 ![The Sample Game Loop demo with debug information](./resources/illustrations/SampleGameLoop-debug.png "The Sample Game Loop demo with debug information")

@@ -17,6 +17,9 @@ import javax.swing.JFrame;
  * @since 0.1
  */
 public class SampleGameObject implements KeyListener {
+
+
+    
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
     // the Java Window to contains the game
