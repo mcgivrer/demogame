@@ -81,7 +81,9 @@ public class SampleGameLoop {
 
 The structure of this class is a basic for any game you would like to create.
 
-You can notice a `wait()` method, to manage the frequency of `update(elapsed)` method.
+You can notice a `waitFrame(long)` method, to manage the frequency of `update(elapsed)` method.
+
+![Game Loop with a wait adjust](./resources/illustrations/Game loop wait.png "Using a wait tempo to adapt frequency to 60 FPS (16 ms per frame)")
 
 First initialize things, then start looping. With such simple class we will incrementally create our platform game.
 
