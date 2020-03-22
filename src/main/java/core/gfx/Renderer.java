@@ -72,7 +72,7 @@ public class Renderer extends AbstractSystem {
 
 	private Counter realFPS;
 	private Counter realUPS;
-	
+
 	private Graphics2D g;
 
 	/**
@@ -315,35 +315,59 @@ public class Renderer extends AbstractSystem {
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
 			case LIGHT_SPHERE:
-				l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-				l.colors = new Color[] { l.foregroundColor,
-						new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
-								l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
-						new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-				l.rgp = new RadialGradientPaint(
-						new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
-								(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-						(int) (l.size.x * 2), l.dist, l.colors);
-				g.setPaint(l.rgp);
-				g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
+				drawLightSphere(g, l);
 				break;
-
-			case LIGHT_CONE:
-				// TODO implement the CONE light type
-				break;
-
 			case LIGHT_AMBIANT:
-				final Area ambientArea = new Area(
-						new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
-								dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth,
-								dg.config.screenHeight));
-				g.setColor(l.foregroundColor);
-
-				g.fill(ambientArea);
+				drawLightAmbient(dg, g, l);
+				break;
+			case LIGHT_CONE:
+				drawLightCone(dg,g,l);
+				break;
+			default:
 				break;
 		}
 
 		g.setComposite(c);
+	}
+
+	private void drawLightSphere(Graphics2D g, Light l) {
+		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+		l.colors = new Color[] { 
+				l.foregroundColor,
+				new Color(	
+						l.foregroundColor.getRed() / 2, 
+						l.foregroundColor.getGreen() / 2,
+						l.foregroundColor.getBlue() / 2, 
+						l.foregroundColor.getAlpha() / 2),
+				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
+		l.rgp = new RadialGradientPaint(
+				new Point(
+						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
+						(int) (l.size.x * 2), 
+						l.dist, 
+						l.colors);
+		g.setPaint(l.rgp);
+		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
+	}
+
+	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
+		final Area ambientArea = new Area(
+			new Rectangle2D.Double(
+				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
+				dg.config.screenWidth, 
+				dg.config.screenHeight));
+		g.setColor(l.foregroundColor);
+		g.fill(ambientArea);
+
+	}
+
+	/**
+	 * TODO implements the Conical Light drawing.
+	 */
+	private void drawLightCone(Game dg, Graphics2D g, Light l){
+		log.debug("draw Light cone {}",l.name);
 	}
 
 	/**
@@ -378,6 +402,7 @@ public class Renderer extends AbstractSystem {
 	public void setRealFPS(Counter realFPS) {
 		this.realFPS = realFPS;
 	}
+
 	public void setRealUPS(Counter realUPS) {
 		this.realUPS = realUPS;
 	}
@@ -402,13 +427,10 @@ public class Renderer extends AbstractSystem {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", 
-									dg.config.debug, 
-									realFPS.getCounter(), 
-									realUPS.getCounter(),
-									camera.pos.x, 
-									camera.pos.y), 
-								4, jf.getHeight() - 20);
+					g.drawString(
+							String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
+									realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
+							4, jf.getHeight() - 20);
 
 					if (dg.config.debug > 2) {
 						g.setColor(Color.ORANGE);
@@ -597,13 +619,12 @@ public class Renderer extends AbstractSystem {
 	}
 
 	public void drawImage(BufferedImage image, int x, int y, int width, int height) {
-		g.drawImage(image,x,y,width,height,null);
+		g.drawImage(image, x, y, width, height, null);
 	}
 
 	public void drawImage(BufferedImage image, int x, int y) {
-		g.drawImage(image,x,y,null);
-		
-	}
+		g.drawImage(image, x, y, null);
 
+	}
 
 }
