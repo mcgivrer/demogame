@@ -33,6 +33,12 @@ while(!exit){
 } 
 ```
 
+But why does games' loop look like this ?
+
+
+
+
+
 In a well formed Java class, let's name it `samples.SampleGameLoop`, we will create those methods:
 
 
