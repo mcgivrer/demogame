@@ -258,8 +258,6 @@ Then like in the previous ` SampleGameLoop` code, you can move this object accor
 
 ![The Map object list used in the SampleGameObject](./resources/illustrations/SampleGameObject-map.png "using a Map instead of a list to identify all GameObject's")
 
-
-
  ### Can we display an image ?
 
 Until now, we only draw some rectangles as `GameObject`. It's now time to try some more fancy and interesting things. Let's add a `GameObjectType` to add new capabilities to our `GameObject` class. This `enum` will be added as an internal enumeration to `GameObject`.
@@ -348,80 +346,9 @@ this is amazing, no ?
 
 ![Adding random Objects type to the objects list](./resources/illustrations/GameObjectTypeRandom.png "When randomness is fancy")
 
-### Flickering Effect
+#### Getting better debug info
 
-You certainly noticed the very "annoying eye effect" when rendering some debug text. All displayed strings are flickering. 
-
-To remove this side effects, we are going to add some display buffers.  
-
-This consists in memory buffers where the graphics are drawn while there are not displayed. Then, the buffer is displayed while another buffer is drawn by the rendering process. then switch between buffer and cycle continuously between all buffers.
-
-The component managing buffer is the [`BufferStrategy`](https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferStrategy.html "go and read the buffer strategy docmentation") class.
-
-Let's set an example with 3 buffers.
-
-![A Buffer Strategy with some show() call](./resources/illustrations/BufferStrategy.png "This is a buffer strategy with 3 buffers")
-
-This will be implemented like this : first we setup the buffer strategy at `JFrame` creation:
-
-```java
-public SampleGameObject(String title, int width, int height, int s) {
-	BufferStrategy bs = frame.getBufferStrategy();
-    ...
-        
-    if (bs == null) {
-        frame.createBufferStrategy(4);
-    }
-}
-```
-
-
-
-And then, during the phase we copy the back buffer to the screen, in fact we copy our rendered image to the current buffer. At end of rendering this buffer, we call the `show()` method to make the buffer switching.
-
-```java
-private void drawToScreen() {
-        // render to screen
-        BufferStrategy bs = frame.getBufferStrategy();
-        Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
-        ...
-        // drawing things
-        ...
-        bs.show();
-    }
-```
-
-This is now drawing in a better way :
-
-![Adding Anti-Aliasing to the rendering pipeline](./resources/illustrations/SampleGameObjectBufferStrategy.png " Some rendering with Anti-Aliasing")
-
-
-
-### Anti-Aliasing
-
-Rendering squares is  like rendering big pixels, a lot of sharp angles. But rendering some ellipses or circles and lines is not so visually good. You need to Smooth the output ;) This is exactly the role of the Anti-Aliasing mechanism from the `Graphics2D` API. This is accessible though the [`RenderingHints`](https://docs.oracle.com/javase/8/docs/api/java/awt/RenderingHints.html "Go and Read all secrets about the Rendering hints") filters.
-
-[TODO]
-
-
-
-### Adding image
-
-If we add some Image in the rendering process, we will get a more interesting UX.
-
-In the Initialization phase, just add some kinky image in place of the good old rectangle.
-
-```java
-public void initialize(){
-    
-}
-```
-
-Then, run this master piece, you will get a brand new game experience:
-
-[capture here] 
-
-In the latest version, I've update the displayDebug() method to get something more fancy and more usable:
+To get a better rendering of debug information, we update the `displayDebug()` method:
 
 ```java
 private void displayDebug(Graphics2D sg, GameObject go) {
@@ -471,7 +398,15 @@ if (debug > 1) {
             displayDebug(sg, go);
         }
     }
-    sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
+	displayGlobalDebug(sg);
+}
+```
+
+The `displayGlobalDebug()` is a simple drawing operations
+
+```java
+private void displayGlobalDebug(Graphics2D sg){
+	sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
     sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
     sg.setColor(Color.ORANGE);
     sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10,
@@ -481,9 +416,124 @@ if (debug > 1) {
 
 This small piece of code will be rendered like bellow :
 
-
-
 ![When having some useful debug information on screen](./resources/illustrations/bottomDebugLine.png "Add a screen bottom debug information line")
+
+
+
+### Show me an image
+
+Ok, so now we have some geometric shapes, we need some image display.
+
+After generating so many `GameObject` with retrieve one of the generated object, change its type and define an image to be rendered.
+
+```java
+public void initialize() {
+    ...
+    try{
+        BufferedImage sprites = ImageIO.read(
+            this.getClass()
+            .getResourceAsStream("/res/images/tileset-1.png"));
+
+        GameObject player = objects.get("gameobject_1");
+        player.type = GameObjectType.IMAGE;
+        player.image = sprites.getSubimage(0,48,32,32);
+        player.width = player.image.getWidth();
+        player.height = player.image.getHeight();
+
+    }catch(IOException ioe){
+        log.error("unable to read the tileset image");
+    }
+}
+```
+
+As all the rest of the program is already design to render image, just run it.
+
+![Now the GameObject is able to render image](./resources/illustrations/SampleGameObjectImage.png "Here is the rendered GameObject having an image")
+
+### Flickering Effect
+
+You certainly noticed the very "annoying eye effect" when rendering some debug text. All displayed strings are flickering. 
+
+To remove this side effects, we are going to add some display buffers.  
+
+This consists in memory buffers where the graphics are drawn while there are not displayed. Then, the buffer is displayed while another buffer is drawn by the rendering process. then switch between buffer and cycle continuously between all buffers.
+
+The component managing buffer is the [`BufferStrategy`](https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferStrategy.html "go and read the buffer strategy docmentation") class.
+
+Let's set an example with 3 buffers.
+
+![A Buffer Strategy with some show() call](./resources/illustrations/BufferStrategy.png "This is a buffer strategy with 3 buffers")
+
+This will be implemented like this : first we setup the buffer strategy at `JFrame` creation:
+
+```java
+public SampleGameObject(String title, int width, int height, int s) {
+	BufferStrategy bs = frame.getBufferStrategy();
+    ...
+        
+    if (bs == null) {
+        frame.createBufferStrategy(4);
+    }
+}
+```
+
+And then, during the phase we copy the back buffer to the screen, in fact we copy our rendered image to the current buffer. At end of rendering this buffer, we call the `show()` method to make the buffer switching.
+
+```java
+private void drawToScreen() {
+        // render to screen
+        BufferStrategy bs = frame.getBufferStrategy();
+        Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
+        ...
+        // drawing things
+        ...
+        bs.show();
+    }
+```
+
+A screen capture will not show you how `BufferStrategy` is smoothing things.
+
+### Anti-Aliasing
+
+Rendering squares is  like rendering big pixels, a lot of sharp angles. But rendering some ellipses or circles and lines is not so visually good. You need to Smooth the output ;) This is exactly the role of the Anti-Aliasing mechanism from the `Graphics2D` API. This is accessible though the [`RenderingHints`](https://docs.oracle.com/javase/8/docs/api/java/awt/RenderingHints.html "Go and Read all secrets about the Rendering hints") filters.
+
+at `render()` method:
+
+```java
+public void render() {
+
+    Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                       RenderingHints.VALUE_ANTIALIAS_ON);
+    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                       RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	...
+}
+```
+
+and then the `drawToScreen()` :
+
+```java
+private void drawToScreen() {
+        ...
+        if (debug > 1) {
+            sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            sg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+           ...
+        }
+    	...
+    }
+```
+
+This is now drawing in a better way :
+
+* **without** anti-aliasing
+
+![Adding random Objects type to the objects list](./resources/illustrations/SampleGameObjectImageWithoutAntialiasing.png "When randomness is fancy")
+
+* **with** anti-aliasing
+
+![Adding Anti-Aliasing to the rendering pipeline](./resources/illustrations/SampleGameObjectImageWithAntialiasing.png " Some rendering with Anti-Aliasing")
 
 We now can go to framework things by adding some just develop fancy objects.
 
@@ -501,7 +551,9 @@ src
       |  |_ Game.java
       |_ object
          |_ GameObject.java
+         |_ GameObjectType.java
 ```
 
 It's time to go to the next chapter and decrypt what is a Scene and how to manage these new things.
 
+Ok, we can go to another chapter about some Scenes and there manager.

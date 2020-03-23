@@ -296,13 +296,17 @@ public class SampleGameObject implements KeyListener {
                     displayDebug(sg, go);
                 }
             }
-            sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
-            sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
-            sg.setColor(Color.ORANGE);
-            sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10,
-                    frame.getHeight() - 4);
+            displayGlobalDebug(sg);
         }
         bs.show();
+    }
+
+    private void displayGlobalDebug(Graphics2D sg) {
+        sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
+        sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
+        sg.setColor(Color.ORANGE);
+        sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10,
+                frame.getHeight() - 4);
     }
 
     /**
@@ -364,7 +368,7 @@ public class SampleGameObject implements KeyListener {
      * @param argc
      */
     public static void main(String[] argc) {
-        SampleGameObject sgl = new SampleGameObject("Sample Game Loop", 320, 240, 2);
+        SampleGameObject sgl = new SampleGameObject("Sample Game Object", 320, 240, 2);
         sgl.run();
     }
 
