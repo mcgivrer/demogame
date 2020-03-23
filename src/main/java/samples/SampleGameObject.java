@@ -1,17 +1,22 @@
 package samples;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferStrategy;
 import java.util.HashMap;
 import java.util.Map;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.Graphics2D;
+
 import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
+import samples.GameObject.GameObjectType;
 
 /**
  * project : DemoGame
@@ -69,6 +74,10 @@ public class SampleGameObject implements KeyListener {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         frame.requestFocus();
+        BufferStrategy bs = frame.getBufferStrategy();
+        if (bs == null) {
+            frame.createBufferStrategy(4);
+        }
         log.info("JFrame created with height={}, width={}", height, width);
     }
 
@@ -113,6 +122,9 @@ public class SampleGameObject implements KeyListener {
             case KeyEvent.VK_PAUSE:
                 pause = !pause;
                 break;
+            case KeyEvent.VK_R:
+                reshuffleVelocity();
+                break;
             default:
                 break;
         }
@@ -128,6 +140,18 @@ public class SampleGameObject implements KeyListener {
         initialize();
         loop();
         frame.dispose();
+    }
+
+    /**
+     * generate randomly new velocity for all GameObject except for 'gameobject_1'.
+     */
+    private void reshuffleVelocity() {
+        for (GameObject go : objects.values()) {
+            if (!go.name.equals("gameobject_1")) {
+                go.dx = (int) (Math.random() * 8) - 4;
+                go.dy = (int) (Math.random() * 8) - 4;
+            }
+        }
     }
 
     /**
@@ -148,9 +172,17 @@ public class SampleGameObject implements KeyListener {
             go.dy = (int) (Math.random() * 8);
             go.color = squareColor;
 
+            go.type = randomType();
+
             objects.put(go.name, go);
             log.info("Add e new GameObject named {}", go.name);
         }
+    }
+
+    private GameObjectType randomType(){
+        // all type but not IMAGE => max 4
+        int vt = (int)(Math.random()*4);
+        return GameObjectType.values()[vt];
     }
 
     /**
@@ -180,9 +212,9 @@ public class SampleGameObject implements KeyListener {
     public void update(long elapsed) {
         // loop objects
         for (GameObject go : objects.values()) {
-            if(!go.name.equals("gameobject_1")){
+            if (!go.name.equals("gameobject_1")) {
                 go.color = squareColor;
-            }else{
+            } else {
                 go.color = Color.BLUE;
             }
             go.update(this, elapsed);
@@ -217,6 +249,7 @@ public class SampleGameObject implements KeyListener {
      * Render the image according to already updated objects.
      */
     public void render() {
+
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
         g.setBackground(Color.BLACK);
         g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());
@@ -226,21 +259,29 @@ public class SampleGameObject implements KeyListener {
             go.draw(this, g);
         }
 
+        drawToScreen();
+    }
+
+    private void drawToScreen() {
         // render to screen
-        Graphics2D sg = (Graphics2D) frame.getContentPane().getGraphics();
+        BufferStrategy bs = frame.getBufferStrategy();
+        Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
         sg.drawImage(screenBuffer, 0, 0, screenBuffer.getWidth() * scale, screenBuffer.getHeight() * scale, 0, 0,
                 screenBuffer.getWidth(), screenBuffer.getHeight(), null);
-
         // Add some debug information
         if (debug > 1) {
-            sg.setColor(Color.ORANGE);
-            sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10, 16);
             for (GameObject go : objects.values()) {
                 if (debug > 2) {
                     displayDebug(sg, go);
                 }
             }
+            sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
+            sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
+            sg.setColor(Color.ORANGE);
+            sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10,
+                    frame.getHeight() - 4);
         }
+        bs.show();
     }
 
     /**
@@ -250,9 +291,36 @@ public class SampleGameObject implements KeyListener {
      * @param go the GameObject to dsplay debug for.
      */
     private void displayDebug(Graphics2D sg, GameObject go) {
-        sg.drawString(String.format("pos:%03d,%03d", go.x, go.y), (go.x + go.width + 4) * scale, go.y * scale);
-        sg.drawString(String.format("vel:%03d,%03d", go.dx, go.dy), (go.x + go.width + 4) * scale, (go.y * scale) + 12);
+        Font f = sg.getFont().deriveFont(9);
+        sg.setFont(f);
+        FontMetrics fm = sg.getFontMetrics();
+        int lineHeight = fm.getHeight();
+        int xOffset = (go.x + go.width + 8);
 
+        sg.setColor(Color.DARK_GRAY);
+        sg.fillRect((xOffset-4) * scale, go.y * scale, 150, 6*lineHeight);
+
+        sg.setColor(Color.ORANGE);
+        sg.drawString(
+                String.format("name:%s", go.name), 
+                xOffset * scale,
+                (go.y * scale) + (1 * lineHeight));
+        sg.drawString(
+                String.format("pos:%03d,%03d", go.x, go.y), 
+                xOffset * scale,
+                (go.y * scale) + (2 * lineHeight));
+        sg.drawString(
+                String.format("vel:%03d,%03d", go.dx, go.dy), 
+                xOffset * scale,
+                (go.y * scale) + (3 * lineHeight));
+        sg.drawString(
+                String.format("type:%s", go.type.name()), 
+                xOffset * scale,
+                (go.y * scale) + (4 * lineHeight));
+        sg.drawString(
+                String.format("siz:%03d,%03d", go.width, go.height), 
+                xOffset * scale,
+                (go.y * scale) + (5 * lineHeight));
     }
 
     /**
