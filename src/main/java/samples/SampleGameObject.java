@@ -3,6 +3,8 @@ package samples;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -10,16 +12,60 @@ import java.awt.Graphics2D;
 import javax.swing.JFrame;
 
 /**
- * project : DemoGame SampleGameLoop is a demonstration of a simple GameLoop the
- * core hearth of every game.
+ * project : DemoGame
+ * <p>
+ * SampleGameObject is a demonstration of a using GameObject to animate things.
  * 
  * @author Frédéric Delorme<frederic.delorme@gmail.com
  * @since 0.1
  */
 public class SampleGameObject implements KeyListener {
 
+    /**
+     * The GameObject to animate, display and process all game entities.
+     */
+    public class GameObject {
+        int x;
+        int y;
+        int dx;
+        int dy;
+        int maxD;
+        int width;
+        int height;
+        Color color;
 
-    
+        /**
+         * Default constructor initializing all main attribtues.
+         */
+        GameObject() {
+            x = y = 0;
+            dx = dy = 0;
+            width = height = 0;
+        }
+
+        /**
+         * Update the game object
+         * 
+         * @param ga
+         * @param elpased
+         */
+        public void update(SampleGameObject ga, long elpased) {
+            x += dx;
+            y += dy;
+        }
+
+        /**
+         * render the GameObject.
+         * 
+         * @param ga
+         * @param g
+         */
+        public void draw(SampleGameObject ga, Graphics2D g) {
+            g.setColor(this.color);
+            g.fillRect(x, y, 16, 16);
+        }
+    }
+
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
     // the Java Window to contains the game
@@ -32,18 +78,15 @@ public class SampleGameObject implements KeyListener {
     int scale = 1;
     // debug display mode
     int debug = 0;
-
-    // precious data about square's position, speed and color
-    int x = 0;
-    int y = 0;
-    int dx = 0;
-    int dy = 0;
-    int maxD = 2;
-    Color color;
+    // pause flag
+    boolean pause = false;
 
     // internal rendering information.
     Color collidingColor;
     Color squareColor;
+
+    // list of managed objects
+    List<GameObject> objects = new ArrayList<>();
 
     /**
      * Let's create a SampleGameLoop process.
@@ -78,24 +121,29 @@ public class SampleGameObject implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        GameObject go = objects.get(0);
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                dy = (dy < maxD ? dy + 1 : dy);
+                go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
                 break;
             case KeyEvent.VK_DOWN:
-                dy = (dx >= -maxD ? dy - 1 : dy);
+                go.dy = (go.dy >= -go.maxD ? go.dy - 1 : go.dy);
                 break;
             case KeyEvent.VK_LEFT:
-                dx = (dx >= -maxD ? dx - 1 : dx);
+                go.dx = (go.dx >= -go.maxD ? go.dx - 1 : go.dx);
                 break;
             case KeyEvent.VK_RIGHT:
-                dx = (dx < maxD ? dx + 1 : dx);
+                go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
                 break;
             case KeyEvent.VK_ESCAPE:
                 exit = true;
                 break;
             case KeyEvent.VK_D:
                 debug = (debug < 5 ? debug + 1 : 0);
+                break;
+            case KeyEvent.VK_P:
+            case KeyEvent.VK_PAUSE:
+                pause = !pause;
                 break;
             default:
                 break;
@@ -119,10 +167,20 @@ public class SampleGameObject implements KeyListener {
      * initialized.
      */
     public void initialize() {
-        x = (screenBuffer.getWidth() - 16) / 2;
-        y = (screenBuffer.getHeight() - 16) / 2;
         collidingColor = Color.WHITE;
         squareColor = Color.RED;
+        for (int i = 0; i < 20; i++) {
+            GameObject go = new GameObject();
+            go.x = (int) Math.random() * (screenBuffer.getWidth() - 16);
+            go.y = (int) Math.random() * (screenBuffer.getHeight() - 16);
+            go.width = 16;
+            go.height = 16;
+            go.dx = (int) (Math.random() * 8);
+            go.dy = (int) (Math.random() * 8);
+            go.color = squareColor;
+
+            objects.add(go);
+        }
     }
 
     /**
@@ -134,7 +192,9 @@ public class SampleGameObject implements KeyListener {
         long elapsed = 0;
         while (!exit) {
             nextTime = System.currentTimeMillis();
-            update(elapsed);
+            if (!pause) {
+                update(elapsed);
+            }
             render();
             elapsed = nextTime - prevTime;
             waitNext(elapsed);
@@ -148,28 +208,34 @@ public class SampleGameObject implements KeyListener {
      * @param elapsed
      */
     public void update(long elapsed) {
-        this.color = squareColor;
-        x += dx;
-        y += dy;
-        if (x > screenBuffer.getWidth() - 16) {
-            x = screenBuffer.getWidth() - 16;
-            dx = -dx;
-            this.color = collidingColor;
+        // loop objects
+        for (GameObject go : objects) {
+            go.color = squareColor;
+            go.update(this, elapsed);
+            constrainGameObject(go);
         }
-        if (y >= screenBuffer.getHeight() - 16) {
-            y = screenBuffer.getHeight() - 16;
-            dy = -dy;
-            this.color = collidingColor;
+    }
+
+    private void constrainGameObject(GameObject go) {
+        if (go.x > screenBuffer.getWidth() - go.width) {
+            go.x = screenBuffer.getWidth() - go.width;
+            go.dx = -go.dx;
+            go.color = collidingColor;
         }
-        if (x <= 0) {
-            x = 0;
-            dx = -dx;
-            this.color = collidingColor;
+        if (go.y >= screenBuffer.getHeight() - go.height) {
+            go.y = screenBuffer.getHeight() - go.height;
+            go.dy = -go.dy;
+            go.color = collidingColor;
         }
-        if (y <= 0) {
-            y = 0;
-            dy = -dy;
-            this.color = collidingColor;
+        if (go.x <= 0) {
+            go.x = 0;
+            go.dx = -go.dx;
+            go.color = collidingColor;
+        }
+        if (go.y <= 0) {
+            go.y = 0;
+            go.dy = -go.dy;
+            go.color = collidingColor;
         }
     }
 
@@ -181,8 +247,10 @@ public class SampleGameObject implements KeyListener {
         g.setBackground(Color.BLACK);
         g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());
 
-        g.setColor(this.color);
-        g.fillRect(x, y, 16, 16);
+        // loop objects
+        for (GameObject go : objects) {
+            go.draw(this, g);
+        }
 
         // render to screen
         Graphics2D sg = (Graphics2D) frame.getContentPane().getGraphics();
@@ -192,12 +260,14 @@ public class SampleGameObject implements KeyListener {
         // Add some debug information
         if (debug > 1) {
             sg.setColor(Color.ORANGE);
-            sg.drawString(String.format("debug:%d", debug), 10, 16);
-            if (debug > 2) {
-                sg.drawString(String.format("pos:%03d,%03d", x, y), (x + 18) * scale, y * scale);
+            sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10, 16);
+            for (GameObject go : objects) {
+                if (debug > 2) {
+                    sg.drawString(String.format("pos:%03d,%03d", go.x, go.y), (go.x + go.width + 4) * scale,
+                            go.y * scale);
+                }
             }
         }
-
     }
 
     /**
