@@ -180,6 +180,74 @@ public class SampleGameObject implements KeyListener{
 
 So if you press a first  time the pause key, the update of all objects will stop. pressing the pause key again will restart the update process.
 
+There is a small difficulties in this approach,how to identify one particular `GameObject` in the list without maintaining some index values ? For this main reason, we are going to add a name to each of our object, and a mechanism to provide a default name for each of those.
+
+```java
+public class GameObject {
+    private static int index=0;
+    String name;
+    ...
+        
+    public GameObject(){
+        name = "gameobject_"+(index++);
+        ...
+    }
+    ...
+}
+```
+
+And we need to replace our `GameObject`'s list in the `SampleGameObject` class with an other object list structure that allow us to retrieve directly an entity on its own name: a [`Map`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html "go and read the official JDK doc on Map object structure").
+
+```java
+public class SampleGameObject implements KeyListener {
+    ...
+    Map<String,GameObject> objects = new HashMap<>();    
+    ...        
+}
+```
+
+Then we need to adapt our code with this new Map. first the initialize() method:
+
+```java
+public void initialize(){
+    for(int i=0;i<20;i++){
+        GameObject go = new GameObject();
+        ...
+        objects.put(go.name,go);
+    }
+}
+```
+
+And the update processing must no more parse a list, but the map elements. We will get the  [`Map#values()`](https://docs.oracle.com/javase/8/docs/api/java/util/Map.html#values-- "what is exactly the values from a map ?") collection instead of direct objects attribute:
+
+```java
+public void update(long elpased){
+    ...
+    for(GameObject go: objects.values()){
+        go.update(this,elapsed);
+        ...
+    }
+} 
+```
+
+And finally, the rendering process must be also adapted to the Map values parsing:
+
+```java
+    
+public void render(){
+    Graphics2D g = ... ;
+    ...
+    for(GameObject go: objects.values()){
+        go.draw(this,g);
+        ...
+    }
+}
+```
+
+This will resulting in the same window display as previous version, but now we can get a particular `GameObject` directly from the map, without indexing list. Names are the index;
+
+ 
+
 ## In out Framework
 
 > TODO
