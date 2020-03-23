@@ -3,13 +3,15 @@ package samples;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * project : DemoGame
@@ -19,52 +21,8 @@ import javax.swing.JFrame;
  * @author Frédéric Delorme<frederic.delorme@gmail.com
  * @since 0.1
  */
+@Slf4j
 public class SampleGameObject implements KeyListener {
-
-    /**
-     * The GameObject to animate, display and process all game entities.
-     */
-    public class GameObject {
-        int x;
-        int y;
-        int dx;
-        int dy;
-        int maxD;
-        int width;
-        int height;
-        Color color;
-
-        /**
-         * Default constructor initializing all main attribtues.
-         */
-        GameObject() {
-            x = y = 0;
-            dx = dy = 0;
-            width = height = 0;
-        }
-
-        /**
-         * Update the game object
-         * 
-         * @param ga
-         * @param elpased
-         */
-        public void update(SampleGameObject ga, long elpased) {
-            x += dx;
-            y += dy;
-        }
-
-        /**
-         * render the GameObject.
-         * 
-         * @param ga
-         * @param g
-         */
-        public void draw(SampleGameObject ga, Graphics2D g) {
-            g.setColor(this.color);
-            g.fillRect(x, y, 16, 16);
-        }
-    }
 
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
@@ -86,7 +44,7 @@ public class SampleGameObject implements KeyListener {
     Color squareColor;
 
     // list of managed objects
-    List<GameObject> objects = new ArrayList<>();
+    Map<String, GameObject> objects = new HashMap<>();
 
     /**
      * Let's create a SampleGameLoop process.
@@ -111,6 +69,7 @@ public class SampleGameObject implements KeyListener {
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         frame.requestFocus();
+        log.info("JFrame created with height={}, width={}", height, width);
     }
 
     /*----- the KeyListener interface corresponding implementation -----*/
@@ -121,16 +80,16 @@ public class SampleGameObject implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        GameObject go = objects.get(0);
+        GameObject go = objects.get("gameobject_1");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
+                go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
                 break;
             case KeyEvent.VK_DOWN:
-                go.dy = (go.dy >= -go.maxD ? go.dy - 1 : go.dy);
+                go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
                 break;
             case KeyEvent.VK_LEFT:
-                go.dx = (go.dx >= -go.maxD ? go.dx - 1 : go.dx);
+                go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
                 break;
             case KeyEvent.VK_RIGHT:
                 go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
@@ -138,6 +97,15 @@ public class SampleGameObject implements KeyListener {
             case KeyEvent.VK_ESCAPE:
                 exit = true;
                 break;
+            case KeyEvent.VK_SPACE:
+                // Break the first object of the objects map.
+                go.dx = 0;
+                go.dy = 0;
+                go.x = screenBuffer.getWidth() / 2;
+                go.y = screenBuffer.getHeight() / 2;
+                go.color = Color.BLUE;
+                break;
+
             case KeyEvent.VK_D:
                 debug = (debug < 5 ? debug + 1 : 0);
                 break;
@@ -175,11 +143,13 @@ public class SampleGameObject implements KeyListener {
             go.y = (int) Math.random() * (screenBuffer.getHeight() - 16);
             go.width = 16;
             go.height = 16;
+            go.maxD = 4;
             go.dx = (int) (Math.random() * 8);
             go.dy = (int) (Math.random() * 8);
             go.color = squareColor;
 
-            objects.add(go);
+            objects.put(go.name, go);
+            log.info("Add e new GameObject named {}", go.name);
         }
     }
 
@@ -209,8 +179,12 @@ public class SampleGameObject implements KeyListener {
      */
     public void update(long elapsed) {
         // loop objects
-        for (GameObject go : objects) {
-            go.color = squareColor;
+        for (GameObject go : objects.values()) {
+            if(!go.name.equals("gameobject_1")){
+                go.color = squareColor;
+            }else{
+                go.color = Color.BLUE;
+            }
             go.update(this, elapsed);
             constrainGameObject(go);
         }
@@ -248,7 +222,7 @@ public class SampleGameObject implements KeyListener {
         g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());
 
         // loop objects
-        for (GameObject go : objects) {
+        for (GameObject go : objects.values()) {
             go.draw(this, g);
         }
 
@@ -261,13 +235,24 @@ public class SampleGameObject implements KeyListener {
         if (debug > 1) {
             sg.setColor(Color.ORANGE);
             sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10, 16);
-            for (GameObject go : objects) {
+            for (GameObject go : objects.values()) {
                 if (debug > 2) {
-                    sg.drawString(String.format("pos:%03d,%03d", go.x, go.y), (go.x + go.width + 4) * scale,
-                            go.y * scale);
+                    displayDebug(sg, go);
                 }
             }
         }
+    }
+
+    /**
+     * Display debug information for the GameObject.
+     * 
+     * @param sg the Graphics2D API to be used
+     * @param go the GameObject to dsplay debug for.
+     */
+    private void displayDebug(Graphics2D sg, GameObject go) {
+        sg.drawString(String.format("pos:%03d,%03d", go.x, go.y), (go.x + go.width + 4) * scale, go.y * scale);
+        sg.drawString(String.format("vel:%03d,%03d", go.dx, go.dy), (go.x + go.width + 4) * scale, (go.y * scale) + 12);
+
     }
 
     /**
