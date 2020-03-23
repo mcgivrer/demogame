@@ -348,11 +348,62 @@ this is amazing, no ?
 
 ![Adding random Objects type to the objects list](./resources/illustrations/GameObjectTypeRandom.png "When randomness is fancy")
 
+### Flickering Effect
+
+You certainly noticed the very "annoying eye effect" when rendering some debug text. All displayed strings are flickering. 
+
+To remove this side effects, we are going to add some display buffers.  
+
+This consists in memory buffers where the graphics are drawn while there are not displayed. Then, the buffer is displayed while another buffer is drawn by the rendering process. then switch between buffer and cycle continuously between all buffers.
+
+The component managing buffer is the [`BufferStrategy`](https://docs.oracle.com/javase/8/docs/api/java/awt/image/BufferStrategy.html "go and read the buffer strategy docmentation") class.
+
+Let's set an example with 3 buffers.
+
+![A Buffer Strategy with some show() call](./resources/illustrations/BufferStrategy.png "This is a buffer strategy with 3 buffers")
+
+This will be implemented like this : first we setup the buffer strategy at `JFrame` creation:
+
+```java
+public SampleGameObject(String title, int width, int height, int s) {
+	BufferStrategy bs = frame.getBufferStrategy();
+    ...
+        
+    if (bs == null) {
+        frame.createBufferStrategy(4);
+    }
+}
+```
+
+
+
+And then, during the phase we copy the back buffer to the screen, in fact we copy our rendered image to the current buffer. At end of rendering this buffer, we call the `show()` method to make the buffer switching.
+
+```java
+private void drawToScreen() {
+        // render to screen
+        BufferStrategy bs = frame.getBufferStrategy();
+        Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
+        ...
+        // drawing things
+        ...
+        bs.show();
+    }
+```
+
+This is now drawing in a better way :
+
+![Adding Anti-Aliasing to the rendering pipeline](./resources/illustrations/SampleGameObjectBufferStrategy.png " Some rendering with Anti-Aliasing")
+
+
+
 ### Anti-Aliasing
 
-Rendering square is  like rendering a big pixel. But rendering some ellipse or circle is not to so visually good.
+Rendering squares is  like rendering big pixels, a lot of sharp angles. But rendering some ellipses or circles and lines is not so visually good. You need to Smooth the output ;) This is exactly the role of the Anti-Aliasing mechanism from the `Graphics2D` API. This is accessible though the [`RenderingHints`](https://docs.oracle.com/javase/8/docs/api/java/awt/RenderingHints.html "Go and Read all secrets about the Rendering hints") filters.
 
 [TODO]
+
+
 
 ### Adding image
 

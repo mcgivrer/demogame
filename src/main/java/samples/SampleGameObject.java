@@ -6,13 +6,16 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.awt.image.BufferStrategy;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +81,7 @@ public class SampleGameObject implements KeyListener {
         if (bs == null) {
             frame.createBufferStrategy(4);
         }
-        log.info("JFrame created with height={}, width={}", height, width);
+        log.info("JFrame created with height={}, width={}, with a BufferedStrategy of {} buffers", height, width, 4);
     }
 
     /*----- the KeyListener interface corresponding implementation -----*/
@@ -177,6 +180,18 @@ public class SampleGameObject implements KeyListener {
             objects.put(go.name, go);
             log.info("Add e new GameObject named {}", go.name);
         }
+        try{
+            BufferedImage sprites = ImageIO.read(this.getClass().getResourceAsStream("/res/images/tileset-1.png"));
+            
+            GameObject player = objects.get("gameobject_1");
+            player.type = GameObjectType.IMAGE;
+            player.image = sprites.getSubimage(0,48,32,32);
+            player.width = player.image.getWidth();
+            player.height = player.image.getHeight();
+
+        }catch(IOException ioe){
+            log.error("unable to read the tileset image");
+        }
     }
 
     private GameObjectType randomType(){
@@ -251,6 +266,9 @@ public class SampleGameObject implements KeyListener {
     public void render() {
 
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
         g.setBackground(Color.BLACK);
         g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());
 
@@ -266,11 +284,14 @@ public class SampleGameObject implements KeyListener {
         // render to screen
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
+        
         sg.drawImage(screenBuffer, 0, 0, screenBuffer.getWidth() * scale, screenBuffer.getHeight() * scale, 0, 0,
                 screenBuffer.getWidth(), screenBuffer.getHeight(), null);
         // Add some debug information
         if (debug > 1) {
-            for (GameObject go : objects.values()) {
+            sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            sg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                for (GameObject go : objects.values()) {
                 if (debug > 2) {
                     displayDebug(sg, go);
                 }
