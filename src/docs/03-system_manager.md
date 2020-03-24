@@ -1,5 +1,11 @@
 # System Manager
 
+## Introduction
+
+When we will go further in our development, we are going to add new components and services, specialized int other own domain. To manage those services, we will need a "Chef d'orchestre" to organize and delegate tasks. This is exactly the role of the `SystemManager` and the `System` concept.
+
+## System & manager 
+
 System manager is the manager of all game systems and is the first System.
 
 A `System` is a singleton service to be used by multiple tenants and will provide one spécifique domain. The `StateManagerSystem` is one those services, the `SoundSystem` or the `ResourceManagerSystem` will be (soon) also other services.
@@ -11,7 +17,7 @@ And then, adding other system instance to the manager, there will be all availab
 
 The ease of this approach is that at any time, you can add or.remove a service, and dispose there resources.
 
-## The System
+## A System
 
 A system is an interface to provide minimalistic method to manage the system lifecycle.
 
@@ -23,15 +29,15 @@ interface System {
 }
 ```
 
-The `initialize` method will be called at system initialization to sart the System.
-The `getName` will be used to retrieve name of the System. This is the logged name, bt also the name used a key in the System registry.
-The latest `dispose` method will be called in the endof system lifecycle, just before ending of the system need, certainly with the end of the game execution.
+The `initialize` method will be called at system initialization to start the System.
+The `getName` will be used to retrieve name of the System. This is the logged name, but also the name used a key in the System registry.
+The latest `dispose` method will be called in the end of system life-cycle, just before ending of the system need, certainly with the end of the game execution.
 
-## The manager
+## The Manager
 
-the main class for the System is where all is handled, the SystemManager.
+the main class for the System is where all is handled, the `SystemManager`.
 
-This will be the API to add, start or remove a System to the manager.
+This will be the API to add, start or remove a `System` to the manager.
 
 ```java
 public class SystemManager {
