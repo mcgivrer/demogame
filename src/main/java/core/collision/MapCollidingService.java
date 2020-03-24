@@ -1,7 +1,5 @@
 package core.collision;
 
-import static core.collision.CollisionEvent.CollisionType.COLLISION_MAP;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,16 +54,18 @@ public class MapCollidingService extends AbstractSystem {
      * @param go  the GameObject to be verified.
      */
     public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
+
         if (go.collidable) {
             MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
             int ox = (int) (go.bbox.pos.x / asset.tileWidth);
             int oy = (int) ((go.newPos.y + go.bbox.size.y / 2) / asset.tileHeight);
-            int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y / 2) / asset.tileHeight);
+            //int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y / 2) / asset.tileHeight);
 
             int ow = (int) (go.bbox.size.x / asset.tileWidth);
             int oh = (int) (go.bbox.size.y / asset.tileHeight);
 
             go.collidingZone.clear();
+            go.setContact(false);
 
             if (go.vel.x > 0) {
                 testMoveRight(frontLayer, go, ox, ow, oy, oh);
@@ -99,7 +99,7 @@ public class MapCollidingService extends AbstractSystem {
         int y1 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
 
         int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / layer.assetsObjects.get(0).tileWidth);
-        int y2 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
+        //int y2 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
 
         // test all tiles from old to new position
         for (int y = y0; y <= y1; y += 1) {
@@ -116,7 +116,7 @@ public class MapCollidingService extends AbstractSystem {
         }
         // if Go is not falling and not on a tile, recompute right Y value according to
         // tile height.
-        if (go.action != GameAction.FALL && (go.pos.y % layer.assetsObjects.get(0).tileHeight) > 0) {
+        if (!falling && go.action != GameAction.FALL && (go.pos.y % layer.assetsObjects.get(0).tileHeight) > 0) {
             go.pos.y = (int) (go.pos.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
             go.bbox.fromGameObject(go);
         }
@@ -193,6 +193,7 @@ public class MapCollidingService extends AbstractSystem {
      * @param y   the vertical position in the tiles map
      */
     private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y) {
+        go.setContact(true);
         listeners.get(go.getClass()).collide(new CollisionEvent(mo.type, go, null, mo, map, x, y));
     }
 

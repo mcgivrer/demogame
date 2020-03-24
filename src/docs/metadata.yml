@@ -1,6 +1,6 @@
 ---
-title: Java as GameDev Platform
-subtitle: How to build a Java 2D platform game ?
+title: My First 2D Platform Game with Java
+subtitle: How to build a platform game ?
 author:
   - Frédéric Delorme
 date: 2020-03-10
@@ -16,4 +16,5 @@ lang: en-US
 cover-image: src/docs/images/covers/en-front.jpg
 header: How-To Java 2D Platform - 2020
 footer: fredericDOTdelormeATgmailDOTcom [p]
+css: src/docs/resources/css/ebook-pub.css
 ---

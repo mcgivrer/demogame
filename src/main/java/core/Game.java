@@ -9,7 +9,6 @@ import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
 import core.object.World;
 import core.resource.ResourceManager;
-import core.scene.AbstractScene;
 import core.scene.Scene;
 import core.scene.SceneManager;
 import core.scripts.LuaScriptSystem;
@@ -65,10 +64,13 @@ public class Game {
 	 * Initialization of the game.
 	 */
 	public void initialize() {
-		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
 		// start System Manager
 		sysMan = SystemManager.initialize(this);
+		sysMan.add(new ResourceManager(this));
+		
+		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
+
 
 		// add basic systems
 		inputHandler = new InputHandler(this);

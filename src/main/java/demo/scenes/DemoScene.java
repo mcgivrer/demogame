@@ -13,17 +13,16 @@ import javax.script.ScriptException;
 
 import core.Game;
 import core.audio.SoundSystem;
-import core.behaviors.PlayerInputBehavior;
 import core.collision.MapCollidingService;
 import core.gfx.Renderer;
 import core.map.MapLayer;
 import core.map.MapLevel;
-import core.map.MapObject;
 import core.map.MapReader;
 import core.math.PhysicEngineSystem;
 import core.object.Camera;
 import core.object.GameObject;
 import core.object.GameObject.GameAction;
+import core.object.HudInventory;
 import core.object.TextObject;
 import core.object.TextObject.TextAlign;
 import core.resource.ProgressListener;
@@ -58,11 +57,10 @@ public class DemoScene extends AbstractScene {
 	private BufferedImage manaImg;
 	private BufferedImage coinsImg;
 	private BufferedImage lifeImg;
-	private BufferedImage itemHolderImg;
-	private BufferedImage itemHolderSelectedImg;
 
 	private TextObject scoreText;
 	private TextObject welcomeText;
+	HudInventory inventory;
 
 	private Font scoreFont;
 	private Font infoFont;
@@ -89,28 +87,16 @@ public class DemoScene extends AbstractScene {
 			}
 		});
 
-		ResourceManager.add(new String[] {
-				// level game
-				"/res/maps/map_2.json", "/res/assets/asset-2.json",
-				// graphics
-				"/res/images/background-1.jpg", "/res/images/tileset-1.png",
-				// audio
-				"/res/audio/sounds/collect-coin.ogg", "/res/audio/sounds/collect-item-1.ogg",
-				"/res/audio/sounds/collect-item-2.ogg", "/res/audio/musics/once-around-the-kingdom.ogg",
-				// fonts
-				"/res/fonts/Prince Valiant.ttf", "/res/fonts/lilliput steps.ttf",
-				// scripts
-				"/res/scripts/enemy_update.lua" });
-
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
-		BufferedImage sprites = ResourceManager.getImage("/res/images/tileset-1.png");
+		BufferedImage imageAsset = ResourceManager.getImage("/res/images/tileset-1.png");
 
-		energyImg = sprites.getSubimage(0, 0, 41, 9);
-		manaImg = sprites.getSubimage(0, 22, 41, 5);
-		lifeImg = sprites.getSubimage(8 * 16, 2 * 16, 16, 16);
-		coinsImg = sprites.getSubimage(10 * 16, 1 * 16, 16, 16);
-		itemHolderSelectedImg = sprites.getSubimage((4 * 16), 16, 18, 18);
-		itemHolderImg = sprites.getSubimage((5 * 16) + 1, 16, 18, 18);
+		energyImg = imageAsset.getSubimage(0, 0, 41, 9);
+		manaImg = imageAsset.getSubimage(0, 22, 41, 5);
+		lifeImg = imageAsset.getSubimage(8 * 16, 2 * 16, 16, 16);
+		coinsImg = imageAsset.getSubimage(10 * 16, 1 * 16, 16, 16);
+
+		inventory = new HudInventory(20, 12);
+		inventory.load(imageAsset);
 	}
 
 	@Override
@@ -167,12 +153,14 @@ public class DemoScene extends AbstractScene {
 
 			// Create camera
 			GameObject player = objectManager.get("player");
-			objectManager.addBehavior(player, new PlayerInputBehavior());
-
-			Camera cam = new Camera("camera", player, 0.017f,
+			Camera cam = new Camera("camera", 0.017f,
 					new Dimension((int) g.config.screenWidth, (int) g.config.screenHeight));
-
+			cam.setTarget(player);
 			addObject(cam);
+
+			// Attache inventory object to the Player inventory.
+			inventory.setPlayer(player);
+
 			// start game music background
 			soundSystem = g.sysMan.getSystem(SoundSystem.class);
 			soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
@@ -191,6 +179,9 @@ public class DemoScene extends AbstractScene {
 		return mapLevel != null;
 	}
 
+	/**
+	 * Manage Input processing on all objects.
+	 */
 	@Override
 	public void input(Game g) {
 
@@ -202,34 +193,54 @@ public class DemoScene extends AbstractScene {
 		});
 	}
 
+	/**
+	 * Process Special Scene keys to reset things
+	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		super.keyReleased(e);
 		boolean control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
 		switch (e.getKeyCode()) {
-			case KeyEvent.VK_R:
-				if (control) {
-					resetState();
-				}
-				break;
-			case KeyEvent.VK_Z:
-				if (control) {
-					resetState();
-				}
-				break;
-			default:
-				break;
+		case KeyEvent.VK_R:
+			if (control) {
+				resetGameObjects();
+			}
+			break;
+		case KeyEvent.VK_Z:
+			if (control) {
+				resetState();
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
+	/**
+	 * Reset GameObject and WelComeText on a CTRL+Z
+	 */
 	public void resetState() {
-		GameObject player = objectManager.get("player");
-		player.action = GameAction.IDLE2;
-		player.setSpeed(0.0f, 0.0f);
-		player.setPosition(mapLevel.playerInitialX, mapLevel.playerInitialY);
+		resetGameObjects();
 		TextObject welcome = (TextObject) objectManager.get("welcome");
 		welcome.duration = 5000;
 		welcome.displayed = true;
+
+	}
+
+	/**
+	 * Reset GameObjects on a CTRL+R
+	 */
+	public void resetGameObjects() {
+		for (GameObject go : objectManager.objects.values()) {
+			if (mapLevel.initialPosition.containsKey(go.name)) {
+				go.pos = mapLevel.initialPosition.get(go.name);
+			}
+			if (go.name.contentEquals("player")) {
+				go.action = GameAction.IDLE2;
+				go.setSpeed(0.0f, 0.0f);
+
+			}
+		}
 	}
 
 	/**
@@ -256,7 +267,7 @@ public class DemoScene extends AbstractScene {
 
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
-				// TODO implement objects collisiion detection with an octree
+				// TODO implement objects collision detection with an octree
 				// objectCollider.checkCollision(go);
 
 				// execute any lua script attached to this object
@@ -268,6 +279,7 @@ public class DemoScene extends AbstractScene {
 		if (this.camera != null) {
 			((Camera) camera).update(g, elapsed);
 		}
+		inventory.update(g, elapsed);
 	}
 
 	/**
@@ -280,6 +292,7 @@ public class DemoScene extends AbstractScene {
 	private void executeScriptUpdate(Game g, GameObject go) {
 		Map<String, GameObject> objects = objectManager.objects;
 		if (go.attributes.containsKey("scripts")) {
+			@SuppressWarnings("unchecked")
 			List<String> scripts = (List<String>) (go.attributes.get("scripts"));
 			for (String script : scripts) {
 				try {
@@ -310,7 +323,7 @@ public class DemoScene extends AbstractScene {
 		int offsetY = 30;
 
 		// draw Life
-		g.drawImage(lifeImg, offsetX, offsetY - 16, null);
+		r.drawImage(lifeImg, offsetX, offsetY - 16);
 		r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
 
 		// draw Coins
@@ -320,44 +333,17 @@ public class DemoScene extends AbstractScene {
 				infoFont);
 
 		// draw Mana
-		float nrjRatio = (energyImg.getWidth() / 100.0f);
+		double nrjRatio = (energyImg.getWidth() / 100.0f);
 		double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
 		g.drawImage(energyImg, offsetX + 24, offsetY - 12, (int) nrj, energyImg.getHeight(), null);
 
 		// draw Energy
-		float manaRatio = (manaImg.getWidth() / 100.0f);
+		double manaRatio = (manaImg.getWidth() / 100.0f);
 		double mana = manaRatio * ((double) (player.attributes.get("mana")));
 		g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
 
 		// draw Items
-		double maxItems = (double) player.attributes.get("maxItems");
-		double selectedItem = (double) player.attributes.get("selectedItem");
-		for (int itmNb = 1; itmNb <= maxItems; itmNb++) {
-
-			int posX = (int) (maxItems - itmNb) * (itemHolderImg.getWidth() - 1);
-			MapObject item = null;
-			if (player.items.size() > 0 && itmNb - 1 < player.items.size()) {
-				item = player.items.get(itmNb - 1);
-			}
-			BufferedImage holder = switchItem(itmNb, item, selectedItem);
-			g.drawImage(holder, ga.config.screenWidth - offsetX - posX,
-					ga.config.screenHeight - (holder.getHeight() + 12), holder.getWidth(), holder.getHeight(), null);
-
-			if (itmNb - 1 < player.items.size() && item != null) {
-				r.renderMapObject(g, item, ga.config.screenWidth + 1 - offsetX - posX,
-						ga.config.screenHeight - (holder.getHeight() + 12));
-			}
-		}
-	}
-
-	private BufferedImage switchItem(int itmNb, MapObject item, double selectedItem) {
-		BufferedImage holder;
-		if (((double) itmNb) == selectedItem && (item != null)) {
-			holder = itemHolderSelectedImg;
-		} else {
-			holder = itemHolderImg;
-		}
-		return holder;
+		inventory.render(ga, r);
 	}
 
 }

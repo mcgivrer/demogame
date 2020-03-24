@@ -27,13 +27,15 @@ public class PlayerInputBehavior implements Behavior {
     private static int lastIdleChangePace = 120;
 
     public PlayerInputBehavior() {
-
+        lastIdleChange = 0;
+        lastIdleChangePace = 120;
     }
 
     @Override
     public void initialize(Game dg) {
         inputHandler = SystemManager.get(InputHandler.class);
         pes = SystemManager.get(PhysicEngineSystem.class);
+        log.debug("inputHandler and pes system are kept");
     }
 
     @Override
@@ -63,7 +65,7 @@ public class PlayerInputBehavior implements Behavior {
                 go.action = GameAction.DOWN;
             }
 
-            if (inputHandler.keys[KeyEvent.VK_LEFT]) {
+                if (inputHandler.keys[KeyEvent.VK_LEFT]) {
                 go.forces.add(new Vector2D(-defaultAcc, 0.0));
                 go.direction = -1;
                 go.action = (!inputHandler.shift ? GameAction.WALK : GameAction.RUN);
@@ -74,20 +76,10 @@ public class PlayerInputBehavior implements Behavior {
             }
 
             int itemsNb = go.items.size();
-            if (inputHandler.keys[KeyEvent.VK_1] && itemsNb <= 1) {
-                go.attributes.put("selectedItem", 1.0);
-            }
-            if (inputHandler.keys[KeyEvent.VK_2] && itemsNb <= 2) {
-                go.attributes.put("selectedItem", 2.0);
-            }
-            if (inputHandler.keys[KeyEvent.VK_3] && itemsNb <= 3) {
-                go.attributes.put("selectedItem", 3.0);
-            }
-            if (inputHandler.keys[KeyEvent.VK_4] && itemsNb <= 4) {
-                go.attributes.put("selectedItem", 4.0);
-            }
-            if (inputHandler.keys[KeyEvent.VK_5] && itemsNb <= 5) {
-                go.attributes.put("selectedItem", 5.0);
+            for(int k=KeyEvent.VK_1;k<KeyEvent.VK_5;k++){
+                if (inputHandler.keys[k] && itemsNb <= k-KeyEvent.VK_1-1) {
+                    go.attributes.put("selectedItem", k-KeyEvent.VK_1);
+                }    
             }
         }
     }
