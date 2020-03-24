@@ -1,7 +1,26 @@
 # Level, map and tiles
 
-To get playable area in a platform game, we need to define finely the level design, the objects to be collected, the non player characters and the enemies, there ca=haracteristics and there position in the level.
-We also need to be able to define the chain between each levels.
+To get playable area in a platform game, we need to define finely the level design, the objects to be collected, the non player characters and the enemies, there characteristics and there position in the level.
+We also need to be able to define the chains between each levels.
+
+## What is a Level ?
+
+A level is a composition of multiple layers of graphical and data objects.
+
+![Layers of a Level, from background to HUD](./resources/illustrations/TilemapAndRendering.png "What are the layers of a level")
+
+Multiple layers are possible:
+
+1. the background which is often a simple image,
+2. A collision layer, where all the area where the player character can not move through are defined width only meta-data or geometrical shapes,
+3. A foreground defining the decors, build upon tiles,
+4. a layer dedicated to objects and items
+5. And the main object layer where animated and interactive objects are defined, like enemies, player, door, etc..
+6. And the last one, a fixed layer where player, quest, inventory and map informations are displayed.
+
+All those data are a Level.
+
+## How to implement it ?
 
 To achieve those requirements, we need to implement some new objects and some files to define those values.
 

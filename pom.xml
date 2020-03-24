@@ -505,6 +505,9 @@
                                         <argument>pdf</argument-->
                                         <argument>-o</argument>
                                         <argument>target/${project.name}-doc-${project.version}.pdf</argument>
+                                        <argument>--template</argument>
+                                        <argument>eisvogel</argument>
+                                        <argument>--listings</argument>
                                     </arguments>
                                 </configuration>
                                 <goals>

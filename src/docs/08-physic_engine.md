@@ -87,18 +87,23 @@ class Material {
 
 Optionally, it can define some default materials like, rock, water, pillow, plastic, wood, metal, glass, and some fancy ones like bouncy ball and/or super ball.
 
+
+
 ### GameObject
 
-The `GameObject` class must add new attributes:
+The `GameObject` class must be modified and use now the Vector2D in place of all the int for position, velocity and size. The new attributes will look like this:
 
 ```java
-Vector2D pos;
-Vector2D vel;
-Vector2D acc;
-Vector2D size;
+public class GameObject {
+    Vector2D pos;
+	Vector2D vel;
+	Vector2D acc;
+	Vector2D size;
 
-Material material;
-double mass;
+	Material material;
+	double mass;
+    ...
+}
 ```
 Now let's dive into the `PhysicEngineSystem` main `System` implementation.
 

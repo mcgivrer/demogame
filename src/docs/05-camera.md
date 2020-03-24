@@ -1,6 +1,15 @@
 # Camera
 
 One of the concept in a game is the `Camera`.  Like in movies, the player want to follow its character on the screen. 
+
+Let's illustrate this concept: the full size of a level, an the area, the camera will show during the game; the viewport.
+
+This rectangular area, according to the camera position will move by tracking the player moves. This is the way we want our camera to behave.
+
+![Camera viewport in a level area](./resources/illustrations/LevelAndCamera.png "All the secret around camera and level")
+
+## Implementation
+
 The way we will implement this behavior will consist in simulate a movie camera following the player's character moves.
 
 But to make this more realistic, the camera will follow the player a small delay , as if an elastic was joining the character and the Camera. 
@@ -57,5 +66,36 @@ class Game{
 }
 ```
 
+An enhance version of the camera would implements a zoom factor, to focus on a specific area, to show something to the player, focusing on a door, an object, an enemy.
 
+This can be achieve by adding a double zoom attribute.
+
+```java
+public class Camera {
+    ...
+        double zoomFactor;
+    ...
+}
+```
+
+And in the rendering processing, add a scale action according to the zoomFactor value:
+
+```java 
+public class Game {
+    ...
+    public void render(){
+        if(camera!=null){
+            g.translate(-camera.x, -camera.y);
+            g.scale(zoomFactor);
+        }
+
+        //... rendering process...
+
+        if(camera!=null){
+            g.translate(camera.x, camera.y);
+            g.scale(1/zoomFactor);
+        }
+    }    
+}
+```
 
