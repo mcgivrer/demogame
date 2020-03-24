@@ -180,23 +180,23 @@ public class SampleGameObject implements KeyListener {
             objects.put(go.name, go);
             log.info("Add e new GameObject named {}", go.name);
         }
-        try{
+        try {
             BufferedImage sprites = ImageIO.read(this.getClass().getResourceAsStream("/res/images/tileset-1.png"));
-            
+
             GameObject player = objects.get("gameobject_1");
             player.type = GameObjectType.IMAGE;
-            player.image = sprites.getSubimage(0,48,32,32);
+            player.image = sprites.getSubimage(0, 48, 32, 32);
             player.width = player.image.getWidth();
             player.height = player.image.getHeight();
 
-        }catch(IOException ioe){
+        } catch (IOException ioe) {
             log.error("unable to read the tileset image");
         }
     }
 
-    private GameObjectType randomType(){
+    private GameObjectType randomType() {
         // all type but not IMAGE => max 4
-        int vt = (int)(Math.random()*4);
+        int vt = (int) (Math.random() * 4);
         return GameObjectType.values()[vt];
     }
 
@@ -284,14 +284,14 @@ public class SampleGameObject implements KeyListener {
         // render to screen
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
-        
+
         sg.drawImage(screenBuffer, 0, 0, screenBuffer.getWidth() * scale, screenBuffer.getHeight() * scale, 0, 0,
                 screenBuffer.getWidth(), screenBuffer.getHeight(), null);
         // Add some debug information
         if (debug > 1) {
             sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             sg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                for (GameObject go : objects.values()) {
+            for (GameObject go : objects.values()) {
                 if (debug > 2) {
                     displayDebug(sg, go);
                 }
@@ -305,8 +305,7 @@ public class SampleGameObject implements KeyListener {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
         sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
         sg.setColor(Color.ORANGE);
-        sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10,
-                frame.getHeight() - 4);
+        sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10, frame.getHeight() - 4);
     }
 
     /**
@@ -320,32 +319,22 @@ public class SampleGameObject implements KeyListener {
         sg.setFont(f);
         FontMetrics fm = sg.getFontMetrics();
         int lineHeight = fm.getHeight();
-        int xOffset = (go.x + go.width + 8);
+        int xOffset = (go.x + go.width + 8) * scale;
+        int yOffset = (go.y * scale);
 
         sg.setColor(Color.DARK_GRAY);
-        sg.fillRect((xOffset-4) * scale, go.y * scale, 150, 6*lineHeight);
+        sg.fillRect(xOffset-4, yOffset, 150, 6 * lineHeight);
 
         sg.setColor(Color.ORANGE);
-        sg.drawString(
-                String.format("name:%s", go.name), 
-                xOffset * scale,
-                (go.y * scale) + (1 * lineHeight));
-        sg.drawString(
-                String.format("pos:%03d,%03d", go.x, go.y), 
-                xOffset * scale,
-                (go.y * scale) + (2 * lineHeight));
-        sg.drawString(
-                String.format("vel:%03d,%03d", go.dx, go.dy), 
-                xOffset * scale,
-                (go.y * scale) + (3 * lineHeight));
-        sg.drawString(
-                String.format("type:%s", go.type.name()), 
-                xOffset * scale,
-                (go.y * scale) + (4 * lineHeight));
-        sg.drawString(
-                String.format("siz:%03d,%03d", go.width, go.height), 
-                xOffset * scale,
-                (go.y * scale) + (5 * lineHeight));
+        drawString(sg, xOffset, yOffset, lineHeight, 1, String.format("name:%s", go.name));
+        drawString(sg, xOffset, yOffset, lineHeight, 2, String.format("pos:%03d,%03d", go.x, go.y));
+        drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03d,%03d", go.dx, go.dy));
+        drawString(sg, xOffset, yOffset, lineHeight, 4, String.format("type:%s", go.type.name()));
+        drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03d,%03d", go.width, go.height));
+    }
+
+    private void drawString(Graphics2D sg, int xOffset, int yOffset, int lineHeight, int line, String message) {
+        sg.drawString(message, xOffset, yOffset + (line * lineHeight));
     }
 
     /**

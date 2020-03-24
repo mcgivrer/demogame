@@ -449,12 +449,62 @@
                                         <argument>src/docs/09-maplevel.md</argument>
                                         <argument>src/docs/10-the_maven_project.md</argument>
                                         <!--argument>src/docs/00-.md</argument-->
+                                        <argument>--resource-path=src/docs/</argument>
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>-t</argument>
                                         <argument>epub3</argument>
                                         <argument>-o</argument>
                                         <argument>target/${project.name}-doc-${project.version}.epub</argument>
+                                    </arguments>
+                                </configuration>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>doc-pdf</id>
+            <build>
+                <plugins>
+                    <!-- generate PDF width docs/ documentation content -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>pandoc-pdf</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>pandoc</executable>
+                                    <workingDirectory></workingDirectory>
+                                    <arguments>
+                                        <argument>src/docs/metadata.yml</argument>
+                                        <argument>src/docs/00-introduction.md</argument>
+                                        <argument>src/docs/01-game.md</argument>
+                                        <argument>src/docs/02-game_object.md</argument>
+                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
+                                        <argument>src/docs/04-renderer.md</argument>
+                                        <argument>src/docs/05-camera.md</argument>
+                                        <argument>src/docs/06-system_manager.md</argument>
+                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>src/docs/08-physic_engine_system.md</argument>
+                                        <argument>src/docs/09-maplevel.md</argument>
+                                        <argument>src/docs/10-the_maven_project.md</argument>
+                                        <!--argument>src/docs/00-.md</argument-->
+                                        <argument>--resource-path=src/docs/</argument>
+                                        <argument>--toc</argument>
+                                        <argument>--toc-depth=2</argument>
+                                        <argument>--pdf-engine=context</argument>
+                                        <!--argument>-t</argument>
+                                        <argument>pdf</argument-->
+                                        <argument>-o</argument>
+                                        <argument>target/${project.name}-doc-${project.version}.pdf</argument>
                                     </arguments>
                                 </configuration>
                                 <goals>

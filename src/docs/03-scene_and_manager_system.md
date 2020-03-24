@@ -392,3 +392,6 @@ while (!exitRequest) {
 We've just created a new way to make a greater game ;)
 
 Next step is how to manage render those `GameObject`.
+
+
+

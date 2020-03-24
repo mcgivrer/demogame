@@ -116,3 +116,6 @@ where:
 
 - `[XXXXXXXX]` will describe the goal of the script,
 - `[phase]` is one of the "create", "update", "render", "input" or "dispose" phase keyword, corresponding to one of the gameloop or `GameObject` lifecycle phases. Today, only the "update" is implemented and usable.
+
+
+
