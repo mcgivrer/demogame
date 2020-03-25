@@ -11,11 +11,20 @@ import lombok.extern.slf4j.Slf4j;
  * @since 0.1
  */
 @Slf4j
-public class SampleSystemManager extends SampleGameObject {
+public class SampleGameSystemManager extends SampleGameObject{
 
-    public SampleSystemManager(String title, int w, int h, int s) {
+
+
+    public SampleGameSystemManager(String title, int w, int h, int s) {
         super(title, w, h, s);
         log.info("Sample System Manager ready...");
+    }
+
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        GameSystemManager.initialize(this);
     }
 
     /**
@@ -24,7 +33,7 @@ public class SampleSystemManager extends SampleGameObject {
      * @param argc
      */
     public static void main(String[] argc) {
-        SampleSystemManager sgl = new SampleSystemManager("Sample System Manager", 320, 240, 2);
+        SampleGameSystemManager sgl = new SampleGameSystemManager("Sample System Manager", 320, 240, 2);
         sgl.run();
     }
 

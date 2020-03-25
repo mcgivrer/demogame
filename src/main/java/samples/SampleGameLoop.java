@@ -16,7 +16,7 @@ import javax.swing.JFrame;
  * @author Frédéric Delorme<frederic.delorme@gmail.com
  * @since 0.1
  */
-public class SampleGameLoop implements KeyListener {
+public class SampleGameLoop implements Sample,KeyListener {
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
     // the Java Window to contains the game

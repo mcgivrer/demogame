@@ -1,8 +1,8 @@
 package samples;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 /**
  * The GameObject to animate, display and process all game entities.
@@ -15,13 +15,13 @@ public class GameObject {
 
     public static int index = 0;
     String name;
-    int x;
-    int y;
-    int dx;
-    int dy;
-    int maxD;
-    int width;
-    int height;
+    double x;
+    double y;
+    double dx;
+    double dy;
+    double maxD;
+    double width;
+    double height;
     Color color;
     GameObjectType type;
     BufferedImage image;
@@ -35,6 +35,11 @@ public class GameObject {
         dx = dy = 0;
         width = height = 0;
         type = GameObjectType.RECT;
+    }
+
+    public GameObject(String name) {
+        this();
+        this.name = name;
     }
 
     /**
@@ -58,19 +63,19 @@ public class GameObject {
         g.setColor(this.color);
         switch (type) {
             case POINT:
-                g.drawLine(x, y, x, y);
+                g.drawLine((int)x, (int)y, (int)x, (int)y);
                 break;
             case LINE:
-                g.drawLine(x, y, x + dx, y + dy);
+                g.drawLine((int)x, (int)y, (int)(x + dx),(int)(y + dy));
                 break;
             case RECT:
-                g.fillRect(x,y,width,height);
+                g.fillRect((int)x, (int)y, (int)width, (int)height);
                 break;
             case ELLIPSE:
-                g.fillOval(x, y, width, height);
+                g.fillOval((int)x, (int)y, (int)width, (int)height);
                 break;
             case IMAGE:
-                g.drawImage(image,x,y,null);
+                g.drawImage(image, (int)x, (int)y, null);
                 break;
             default:
                 break;

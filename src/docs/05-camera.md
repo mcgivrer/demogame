@@ -27,16 +27,21 @@ The `Camera` will be a [`GameObject`](GameObject) like the other, but some `upda
 class Camera extends GameObject{
   public GameObject target;
   public float tween;
+  public Rectangle viewport;
 
   ...
   void update(float elapsed){
-    x += x + (x - target.x) * tween * elapsed;
-    y += y + (y - target.y) * tween * elapsed;
+    x += ((target.x + target.width - viewport.width * 0.5f) - x) * tween * elapsed;
+    y += ((target.y + target.height - viewport.height * 0.5f) - y) * tween * elapsed;
   }
   ...
 
 }
 ```
+
+The position is relative to the player position, and the player is centered on the camera viewport. the tween (from 0.0 to 1.0) factor is used to delay the camera tracking move. 
+
+[add an illustration]
 
 the Game class must be updated:
 
@@ -92,8 +97,8 @@ public class Game {
         //... rendering process...
 
         if(camera!=null){
-            g.translate(camera.x, camera.y);
             g.scale(1/zoomFactor);
+            g.translate(camera.x, camera.y);
         }
     }    
 }

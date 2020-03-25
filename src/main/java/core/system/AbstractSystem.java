@@ -7,6 +7,7 @@
 package core.system;
 
 import core.Game;
+import core.system.System;
 
 /**
  * The AbstractSystem class will implment the default behavior for any

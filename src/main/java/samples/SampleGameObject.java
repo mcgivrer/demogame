@@ -30,7 +30,7 @@ import samples.GameObject.GameObjectType;
  * @since 0.1
  */
 @Slf4j
-public class SampleGameObject implements KeyListener {
+public class SampleGameObject implements Sample,KeyListener {
 
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
@@ -237,7 +237,7 @@ public class SampleGameObject implements KeyListener {
         }
     }
 
-    private void constrainGameObject(GameObject go) {
+    protected void constrainGameObject(GameObject go) {
         if (go.x > screenBuffer.getWidth() - go.width) {
             go.x = screenBuffer.getWidth() - go.width;
             go.dx = -go.dx;
@@ -280,7 +280,7 @@ public class SampleGameObject implements KeyListener {
         drawToScreen();
     }
 
-    private void drawToScreen() {
+    protected void drawToScreen() {
         // render to screen
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
@@ -301,7 +301,7 @@ public class SampleGameObject implements KeyListener {
         bs.show();
     }
 
-    private void displayGlobalDebug(Graphics2D sg) {
+    protected void displayGlobalDebug(Graphics2D sg) {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
         sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
         sg.setColor(Color.ORANGE);
@@ -314,23 +314,23 @@ public class SampleGameObject implements KeyListener {
      * @param sg the Graphics2D API to be used
      * @param go the GameObject to dsplay debug for.
      */
-    private void displayDebug(Graphics2D sg, GameObject go) {
+    protected void displayDebug(Graphics2D sg, GameObject go) {
         Font f = sg.getFont().deriveFont(9);
         sg.setFont(f);
         FontMetrics fm = sg.getFontMetrics();
         int lineHeight = fm.getHeight();
-        int xOffset = (go.x + go.width + 8) * scale;
-        int yOffset = (go.y * scale);
+        int xOffset = (int)((go.x + go.width + 8) * scale);
+        int yOffset = (int)(go.y * scale);
 
-        sg.setColor(Color.DARK_GRAY);
+        sg.setColor(new Color(0.4f,0.4f,0.4f,0.6f));
         sg.fillRect(xOffset-4, yOffset, 150, 6 * lineHeight);
 
         sg.setColor(Color.ORANGE);
         drawString(sg, xOffset, yOffset, lineHeight, 1, String.format("name:%s", go.name));
-        drawString(sg, xOffset, yOffset, lineHeight, 2, String.format("pos:%03d,%03d", go.x, go.y));
-        drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03d,%03d", go.dx, go.dy));
+        drawString(sg, xOffset, yOffset, lineHeight, 2, String.format("pos:%03.2f,%03.2f", go.x, go.y));
+        drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03.2f,%03.2f", go.dx, go.dy));
         drawString(sg, xOffset, yOffset, lineHeight, 4, String.format("type:%s", go.type.name()));
-        drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03d,%03d", go.width, go.height));
+        drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03.2f,%03.2f", go.width, go.height));
     }
 
     private void drawString(Graphics2D sg, int xOffset, int yOffset, int lineHeight, int line, String message) {
