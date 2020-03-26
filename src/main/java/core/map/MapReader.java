@@ -186,17 +186,17 @@ public class MapReader {
 			case ENEMY:
 				// add the object to the MapLevel object.
 				mapLevel.child.put(go.name, go);
-				go.physicType = PhysicType.DYNAMIC;
+				//go.physicType = PhysicType.DYNAMIC;
 				break;
 			case PLAYER:
 				mapLevel.playerInitialX = go.pos.x;
 				mapLevel.playerInitialY = go.pos.y;
-				//go.physicType = PhysicType.DYNAMIC;
 				// add the object to the MapLevel object.
 				mapLevel.child.put(go.name, go);
 				break;
 			case LIGHT:
 				mapLevel.lights.add((Light) go);
+				mapLevel.child.put(go.name, go);
 				go.physicType = PhysicType.STATIC;
 				break;
 			default:

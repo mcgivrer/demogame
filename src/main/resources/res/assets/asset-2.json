@@ -120,6 +120,7 @@
       "lightType": "LIGHT_AMBIANT",
       "priority": 10,
       "layer": 4,
+      "bboxType":"CIRCLE",
       "color": "[0.6,0.5,0.12,0.5]",
       "attributes": {
         "intensity": 0.2
@@ -133,6 +134,7 @@
       "lightType": "LIGHT_SPHERE",
       "priority": 10,
       "layer": 5,
+      "bboxType":"CIRCLE",
       "color": "[0.9,0.6,0.3,0.6]",
       "attributes": {
         "intensity": 0.5,
