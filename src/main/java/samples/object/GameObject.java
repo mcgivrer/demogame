@@ -1,4 +1,4 @@
-package samples;
+package samples.object;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -14,17 +14,19 @@ public class GameObject {
     }
 
     public static int index = 0;
-    String name;
-    double x;
-    double y;
-    double dx;
-    double dy;
-    double maxD;
-    double width;
-    double height;
-    Color color;
-    GameObjectType type;
-    BufferedImage image;
+    public String name;
+    public double x;
+    public double y;
+    public double dx;
+    public double dy;
+    public double maxD;
+    public double width;
+    public double height;
+    public Color color;
+    public GameObjectType type;
+    public BufferedImage image;
+
+    public double timeFactor = 0.1;
 
     /**
      * Default constructor initializing all main attribtues.
@@ -46,11 +48,11 @@ public class GameObject {
      * Update the game object
      * 
      * @param ga
-     * @param elpased
+     * @param elapsed
      */
-    public void update(SampleGameObject ga, long elpased) {
-        x += dx;
-        y += dy;
+    public void update(SampleGameObject ga, double elapsed) {
+        x += dx * (elapsed * timeFactor);
+        y += dy * (elapsed * timeFactor);
     }
 
     /**
@@ -63,19 +65,19 @@ public class GameObject {
         g.setColor(this.color);
         switch (type) {
             case POINT:
-                g.drawLine((int)x, (int)y, (int)x, (int)y);
+                g.drawLine((int) x, (int) y, (int) x, (int) y);
                 break;
             case LINE:
-                g.drawLine((int)x, (int)y, (int)(x + dx),(int)(y + dy));
+                g.drawLine((int) x, (int) y, (int) (x + dx), (int) (y + dy));
                 break;
             case RECT:
-                g.fillRect((int)x, (int)y, (int)width, (int)height);
+                g.fillRect((int) x, (int) y, (int) width, (int) height);
                 break;
             case ELLIPSE:
-                g.fillOval((int)x, (int)y, (int)width, (int)height);
+                g.fillOval((int) x, (int) y, (int) width, (int) height);
                 break;
             case IMAGE:
-                g.drawImage(image, (int)x, (int)y, null);
+                g.drawImage(image, (int) x, (int) y, null);
                 break;
             default:
                 break;

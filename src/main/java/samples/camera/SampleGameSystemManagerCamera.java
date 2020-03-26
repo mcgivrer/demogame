@@ -1,12 +1,15 @@
-package samples;
+package samples.camera;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.image.BufferStrategy;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.image.BufferStrategy;
 
 import lombok.extern.slf4j.Slf4j;
+import samples.object.GameObject;
+import samples.system.GameSystemManager;
+import samples.system.SampleGameSystemManager;
 
 /**
  * project : DemoGame
@@ -18,9 +21,9 @@ import lombok.extern.slf4j.Slf4j;
  * @since 0.1
  */
 @Slf4j
-public class SampleGameSystemManagerCamera extends SampleGameObject{
+public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
 
-    private Camera camera;
+    protected Camera camera;
 
     public SampleGameSystemManagerCamera(String title, int w, int h, int s) {
         super(title, w, h, s);
@@ -33,11 +36,11 @@ public class SampleGameSystemManagerCamera extends SampleGameObject{
         GameSystemManager.initialize(this);
         camera = new Camera("cam1", objects.get("gameobject_1"), 0.018f,
                 new Rectangle(screenBuffer.getWidth(), screenBuffer.getHeight()));
-        objects.put(camera.name,camera);
+        objects.put(camera.name, camera);
     }
 
     @Override
-    public void update(long elapsed) {
+    public void update(double elapsed) {
         // loop objects
         for (GameObject go : objects.values()) {
             if (!go.name.equals("gameobject_1")) {
@@ -50,7 +53,7 @@ public class SampleGameSystemManagerCamera extends SampleGameObject{
     }
 
     @Override
-    public void render() {
+    public void render(long realFps) {
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -67,16 +70,16 @@ public class SampleGameSystemManagerCamera extends SampleGameObject{
             go.draw(this, g);
         }
         g.setColor(Color.GRAY);
-        g.drawRect(0,0,camera.viewport.width,camera.viewport.height);
+        g.drawRect(0, 0, camera.viewport.width, camera.viewport.height);
 
         if (camera != null) {
             g.translate(camera.x, camera.y);
 
         }
-        drawToScreen(camera);
+        drawToScreen(camera, realFps);
     }
 
-    protected void drawToScreen(Camera camera) {
+    protected void drawToScreen(Camera camera, long realFps) {
         // render to screen
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
@@ -89,7 +92,7 @@ public class SampleGameSystemManagerCamera extends SampleGameObject{
             sg.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             if (camera != null) {
-                sg.translate(-camera.x*scale, -camera.y*scale);
+                sg.translate(-camera.x * scale, -camera.y * scale);
             }
 
             for (GameObject go : objects.values()) {
@@ -99,10 +102,10 @@ public class SampleGameSystemManagerCamera extends SampleGameObject{
             }
 
             if (camera != null) {
-                sg.translate(camera.x*scale, camera.y*scale);
-    
+                sg.translate(camera.x * scale, camera.y * scale);
+
             }
-            displayGlobalDebug(sg);
+            displayGlobalDebug(sg, realFps);
         }
         bs.show();
     }

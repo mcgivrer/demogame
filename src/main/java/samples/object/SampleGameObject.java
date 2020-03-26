@@ -1,4 +1,4 @@
-package samples;
+package samples.object;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,7 +19,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
-import samples.GameObject.GameObjectType;
+import samples.Sample;
+import samples.object.GameObject.GameObjectType;
 
 /**
  * project : DemoGame
@@ -33,26 +34,26 @@ import samples.GameObject.GameObjectType;
 public class SampleGameObject implements Sample,KeyListener {
 
     // Internal Renderinf buffer
-    BufferedImage screenBuffer;
+    protected BufferedImage screenBuffer;
     // the Java Window to contains the game
-    JFrame frame;
+    protected JFrame frame;
     // a flag to request to exit from this sample
-    boolean exit = false;
+    protected boolean exit = false;
     // how many frames per second on this screen ?
-    int FPS = 30;
+    protected int FPS = 30;
     // scaling factor
-    int scale = 1;
+    protected int scale = 1;
     // debug display mode
-    int debug = 0;
+    protected int debug = 0;
     // pause flag
-    boolean pause = false;
+    protected boolean pause = false;
 
     // internal rendering information.
-    Color collidingColor;
-    Color squareColor;
+    protected Color collidingColor;
+    protected Color squareColor;
 
     // list of managed objects
-    Map<String, GameObject> objects = new HashMap<>();
+    protected Map<String, GameObject> objects = new HashMap<>();
 
     /**
      * Let's create a SampleGameLoop process.
@@ -63,6 +64,11 @@ public class SampleGameObject implements Sample,KeyListener {
      */
     public SampleGameObject(String title, int width, int height, int s) {
         scale = s;
+        createWindow(title, width, height,s);
+        log.info("JFrame created with height={}, width={}, with a BufferedStrategy of {} buffers", height, width, 4);
+    }
+
+    protected void createWindow(String title, int width, int height, int scale) {
         screenBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         frame = new JFrame(title);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,7 +87,6 @@ public class SampleGameObject implements Sample,KeyListener {
         if (bs == null) {
             frame.createBufferStrategy(4);
         }
-        log.info("JFrame created with height={}, width={}, with a BufferedStrategy of {} buffers", height, width, 4);
     }
 
     /*----- the KeyListener interface corresponding implementation -----*/
@@ -148,7 +153,7 @@ public class SampleGameObject implements Sample,KeyListener {
     /**
      * generate randomly new velocity for all GameObject except for 'gameobject_1'.
      */
-    private void reshuffleVelocity() {
+    protected void reshuffleVelocity() {
         for (GameObject go : objects.values()) {
             if (!go.name.equals("gameobject_1")) {
                 go.dx = (int) (Math.random() * 8) - 4;
@@ -194,7 +199,7 @@ public class SampleGameObject implements Sample,KeyListener {
         }
     }
 
-    private GameObjectType randomType() {
+    protected GameObjectType randomType() {
         // all type but not IMAGE => max 4
         int vt = (int) (Math.random() * 4);
         return GameObjectType.values()[vt];
@@ -206,14 +211,27 @@ public class SampleGameObject implements Sample,KeyListener {
     public void loop() {
         long nextTime = System.currentTimeMillis();
         long prevTime = nextTime;
-        long elapsed = 0;
+        double elapsed = 0;
+        long timeFrame=0;
+        long frames=0;
+        long realFps=0;
         while (!exit) {
             nextTime = System.currentTimeMillis();
             if (!pause) {
                 update(elapsed);
             }
-            render();
+            render(realFps);
+
+            timeFrame+=elapsed;
+            frames++;
+            if(timeFrame>1000){
+                realFps=frames;
+                frames=0;
+                timeFrame=0;
+            }
+
             elapsed = nextTime - prevTime;
+
             waitNext(elapsed);
             prevTime = nextTime;
         }
@@ -224,7 +242,7 @@ public class SampleGameObject implements Sample,KeyListener {
      * 
      * @param elapsed
      */
-    public void update(long elapsed) {
+    public void update(double elapsed) {
         // loop objects
         for (GameObject go : objects.values()) {
             if (!go.name.equals("gameobject_1")) {
@@ -263,7 +281,7 @@ public class SampleGameObject implements Sample,KeyListener {
     /**
      * Render the image according to already updated objects.
      */
-    public void render() {
+    public void render(long realFps) {
 
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -277,10 +295,10 @@ public class SampleGameObject implements Sample,KeyListener {
             go.draw(this, g);
         }
 
-        drawToScreen();
+        drawToScreen(realFps);
     }
 
-    protected void drawToScreen() {
+    protected void drawToScreen(long realFps) {
         // render to screen
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
@@ -296,16 +314,16 @@ public class SampleGameObject implements Sample,KeyListener {
                     displayDebug(sg, go);
                 }
             }
-            displayGlobalDebug(sg);
+            displayGlobalDebug(sg,realFps);
         }
         bs.show();
     }
 
-    protected void displayGlobalDebug(Graphics2D sg) {
+    protected void displayGlobalDebug(Graphics2D sg,long realFps) {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
         sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
         sg.setColor(Color.ORANGE);
-        sg.drawString(String.format("debug:%d | pause:%s", debug, (pause ? "on" : "off")), 10, frame.getHeight() - 4);
+        sg.drawString(String.format("FPS: %d | debug:%d | pause:%s ", realFps, debug, (pause ? "on" : "off")), 10, frame.getHeight() - 4);
     }
 
     /**
@@ -342,8 +360,8 @@ public class SampleGameObject implements Sample,KeyListener {
      * 
      * @param elapsed
      */
-    public void waitNext(long elapsed) {
-        long waitTime = (1000 / FPS) - elapsed;
+    public void waitNext(double elapsed) {
+        long waitTime = (1000 / FPS) - (long)elapsed;
         try {
             Thread.sleep(waitTime > 0 ? waitTime : 0);
         } catch (InterruptedException e) {

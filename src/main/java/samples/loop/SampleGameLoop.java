@@ -1,4 +1,4 @@
-package samples;
+package samples.loop;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
+
+import samples.Sample;
 
 /**
  * project : DemoGame SampleGameLoop is a demonstration of a simple GameLoop the
@@ -61,7 +63,6 @@ public class SampleGameLoop implements Sample,KeyListener {
         frame.setSize(dim);
         frame.setPreferredSize(dim);
         frame.pack();
-        frame.addKeyListener(this);
         frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         frame.requestFocus();
@@ -77,10 +78,10 @@ public class SampleGameLoop implements Sample,KeyListener {
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
-                dy = (dy < maxD ? dy + 1 : dy);
+                dy = (dy < maxD ? dy - 1 : dy);
                 break;
             case KeyEvent.VK_DOWN:
-                dy = (dx >= -maxD ? dy - 1 : dy);
+                dy = (dx >= -maxD ? dy + 1 : dy);
                 break;
             case KeyEvent.VK_LEFT:
                 dx = (dx >= -maxD ? dx - 1 : dx);
@@ -116,6 +117,7 @@ public class SampleGameLoop implements Sample,KeyListener {
      * initialized.
      */
     public void initialize() {
+        frame.addKeyListener(this);
         x = (screenBuffer.getWidth() - 16) / 2;
         y = (screenBuffer.getHeight() - 16) / 2;
         collidingColor = Color.WHITE;

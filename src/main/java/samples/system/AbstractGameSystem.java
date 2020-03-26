@@ -1,6 +1,7 @@
-package samples;
+package samples.system;
 
 import core.Game;
+import samples.Sample;
 
 /**
  * The AbstractSystem class will implment the default behavior for any

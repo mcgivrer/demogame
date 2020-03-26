@@ -1,4 +1,6 @@
-package samples;
+package samples.system;
+
+import samples.Sample;
 
 /**
  * Interface to define and manage a new System for the game.

@@ -1,6 +1,7 @@
-package samples;
+package samples.system;
 
 import lombok.extern.slf4j.Slf4j;
+import samples.object.SampleGameObject;
 
 /**
  * project : DemoGame
@@ -13,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SampleGameSystemManager extends SampleGameObject{
 
-
+    protected GameSystemManager gsm;
 
     public SampleGameSystemManager(String title, int w, int h, int s) {
         super(title, w, h, s);
@@ -24,7 +25,8 @@ public class SampleGameSystemManager extends SampleGameObject{
     @Override
     public void initialize() {
         super.initialize();
-        GameSystemManager.initialize(this);
+        frame.addKeyListener(this);
+        gsm = GameSystemManager.initialize(this);
     }
 
     /**

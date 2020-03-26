@@ -1,5 +1,7 @@
 package core.system;
 
+import core.Game;
+
 /**
  * Interface to define and manage a new System for the game.
  *
@@ -20,7 +22,7 @@ public interface System {
      * @param game
      * @return
      */
-    int initialize(System game);
+    int initialize(Game game);
 
     /**
      * Dispose of all resources of the system.
