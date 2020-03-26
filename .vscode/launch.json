@@ -1,0 +1,45 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - FadeOutEx",
+            "request": "launch",
+            "mainClass": "core.tests.FadeOutEx",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - DemoViewer",
+            "request": "launch",
+            "mainClass": "core.tests.DemoViewer",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Game",
+            "request": "launch",
+            "mainClass": "core.Game",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - FadeOutEx",
+            "request": "launch",
+            "mainClass": "core.tests.FadeOutEx",
+            "projectName": "DemoGame"
+        },
+        {
+            "type": "java",
+            "name": "Game debug(Launch)",
+            "request": "launch",
+            "mainClass": "core.Game",
+            "projectName": "DemoGame"
+        },
+        {
+            "type": "java",
+            "name": "FrameInfo debug (Launch)",
+            "request": "launch",
+            "mainClass": "core.tests.FrameInfo"
+        }
+    ]
+}

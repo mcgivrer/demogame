@@ -1,0 +1,44 @@
+{
+  "done": [],
+  "in-progress": [
+    {
+      "assignedTo": {
+        "name": "Frédéric Delorme"
+      },
+      "category": "framework",
+      "creation_time": "2020-02-27T13:28:57.101Z",
+      "description": {
+        "content": "Add a Physic Engine to animate all GameObjects.",
+        "mime": "text/markdown"
+      },
+      "details": {
+        "content": "The `PhysicEngineSystem`, implementing the `System` interface, will perform GameObject update according to the own material, speed, acceleration to defines new there position.\n\n## Global design \n\nHere is an overview of needed modification:\n\n```plantuml\nskinparam monochrome true\ninterface System{\n    +initialize(g:Game)\n    +getName():String\n    +dispose()\n}\nclass Game{\n    +run()\n    +input(i:InputHandler)\n    +render(r:Renderer);\n    +update(elapsed:double);\n}\nclass PhysicEngineSystem implements System{\n  -objects:List<GameObject>\n  +clear()\n  +add(go:GameObject)\n  +remove(go:GameObject)\n  +update(g:Game, o:GameObject, e:double)\n}\nclass CollisionSystem implements System{\n  -objects:List<GameObject>\n  +clear()\n  +add(o:GameObject)\n  +remove(o:GameObject)\n  +update(g:Game, o:GameObject)\n}\nclass GameObject{\n  +loc:Vector2D\n  +vel:Vector2D\n  +acc:Vector2D\n  +size:Vector2D\n  +mass:double\n  +update(e:double)\n  +render(r:Renderer)\n}\nclass Material{\n  +density:double\n  +friction:double\n  +magnetism:double\n  +elasticity:double\n}\nclass World{\n  +gravity:Vector2D\n  +forces:List<Vector2D>\n}\nclass BBox{\n  +loc:Vector2D\n  +size:Vector2D\n}\n\nGame \"1\"--\"1\" CollisionSystem:colliderSys\nGame \"1\"--\"1\" PhysicEngineSystem:physicEngineSys\nGame \"1\"--\"1\" SystemManager:sysMan\nMaterial \"1\"--\"1\" GameObject:material\nBBox \"1\"--\"1\" GameObject:bbox\nGameObject \"1\"--\"*\" GameObject:child\nPhysicEngineSystem \"1\"--\"*\" GameObject:objects\nPhysicEngineSystem \"1\"--\"1\" World:world\n```\n\n## The classes\n\n### World\n\nAs we want to integrate some physical ant natural behaviors, the World class will be the *configuration* place for the characteristics like the gravity, and any other global world influencers, like wind, magnetism, etc...\n\nThe simple World class will porpose something like the following piece of code:\n\n```java\n\n```\n\n### Material definition\n\nMust be introduced a new object to simulate Material physic behavior:\n\n`Material` class will defined the needed attributes:\n\n```java\nclass Material {\n  String name;\n  double elasticity;\n  double friction;\n  double density;\n  double magnetism;\n}\n```\n\nOptionally, it can define some default materials like, rock, water, pillow, plastic, wood, metal, glass, and some fancy ones like bouncy ball and/or super ball.\n\n### GameObject\n\nThe `GameObject` class must add new attributes:\n\n```java\nVector2D pos;\nVector2D vel;\nVector2D acc;\nVector2D size;\n\nMaterial material;\ndouble mass;\n```\n",
+        "mime": "text/markdown"
+      },
+      "id": "1",
+      "prio": 1,
+      "references": [],
+      "title": "feature(PhysicEngine)"
+    },
+    {
+      "assignedTo": {
+        "name": "Frédéric Delorme"
+      },
+      "category": "core",
+      "creation_time": "2020-03-26T09:47:42.424Z",
+      "description": {
+        "content": "Create a particle engine integrated with \n\n- the `ObjectManager` to manage `ParticleGroup` as `GameObject`,\n- the `PhysiscEngine` to compute `ParticleGroup` physic moves,\n- use `GameObject` `Behavior`'s capability to create and update physic particle subo",
+        "mime": "text/markdown"
+      },
+      "details": {
+        "content": "# Particle Engine\n\n## Introduction \n\nThe Particle Engine will provide a new way to simulate things in the game engine, like rain, snow, fire cloud or smog. Others sfx are also possible.\n\nNeed some new Objects like:\n\n- `Particle` is the simple element to be animated into a `ParticleGroup` is has its own physical values and a lifespan,\n- `ParticleGroup` is an extension of the GameObject (inheritance) and manage a bunch of particles. Some Behaviors are attached to this object to animate particles,\n- `ParticleEngine` is the core engine managing all ParticleGroup and providing a limited Particle buffer where ParticleGroup can pickup and restore particle to be used by.\n\n## Particle\n\nA very simple POJO without intelligencia :\n\n```java\npublic class Particle {\n  public Vector2D pos;\n  public Vector2D vel;\n  public Vector2D acc;\n  public double lifespan;\n  public boolean active;\n  public Map<String,Object> attributes;\n}\n```\n\n`pos`, `vel` and `acc` are physical values for animation purpose. `lifespan` is used to compute life duration of the particle, the flag `active` is used for `ParticleEngine#particles` buffer lifecycle. And finally, `attributes` will attach some contextual information for particle processing.\nThe rendering characteristics are attached to the `ParticleGroup` the Particle belongs to.\n\n## ParticleGroup entity\n\nThe `PaticleGroup` class is used to group some particles and to link thoses small graphical elements to some `Behavior`s inherited from the `GameObject` capabilites.",
+        "mime": "text/markdown"
+      },
+      "id": "2",
+      "references": [],
+      "title": "feat(Particle): Add Particle Engine"
+    }
+  ],
+  "testing": [],
+  "todo": []
+}
