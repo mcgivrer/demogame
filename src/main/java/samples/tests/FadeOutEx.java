@@ -1,7 +1,7 @@
 /**
  * 
  */
-package core.tests;
+package samples.tests;
 
 /**
  * @author Frédéric Delorme
