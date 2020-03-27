@@ -61,7 +61,7 @@ But we need to dispatch the keys event not only to the input handler, we want to
 public class InputHandler extends AbstractGameSystem implements KeyListener{
     boolean[] keys;
     boolean[] prevKeys;
-    List<KeyListener> keylisteners = new ArrayList<>();
+    List<InputHandlerListener> keylisteners = new ArrayList<>();
     
     ...
     
@@ -73,6 +73,24 @@ public class InputHandler extends AbstractGameSystem implements KeyListener{
 ```
 
 And we need to modify the `keyPressed` and `keyReleased` event processor to dispatch the `KeyEvent`.
+
+To achieve this for not only keys but also future mouse and game controller, we need to define a new interface grouping the JDK ones.
+
+```java
+public interface InputHandlerListener extends KeyListener{
+	public void input(InputHandler il);    
+}
+```
+
+This new interface must be inherited by all class which need to process input events in our future game.
+
+```java
+public class SampleInputHandler implements InputHandlerListener {
+    
+}
+```
+
+
 
 parsing the `keylisteners` list, we are going to call each `keyPressed()` methods.
 
@@ -87,6 +105,24 @@ public void keyPressed(KeyEvent e){
 ```
 
 And now the same processing but for the `keyReleased` event.
+
+```java
+public void keyReleased(KeyEvent e){
+    prevKeys[e.getKeyCode()] = keys[e.getKeyCode()];
+    keys[e.getKeyCode()] = false;
+    for(KeyListener kl:keyListeners){
+        kl.keyReleased(e);
+    }
+}
+```
+
+okay ! we now have a first step in our `InputHandler` implementation quest.
+
+Now, what we have to do is to register our `SampleInputHandler` game to the `InputHandler`.
+
+
+
+
 
 ## Get mouse events
 
