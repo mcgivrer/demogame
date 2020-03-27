@@ -13,7 +13,7 @@ public class Camera extends GameObject {
     public GameObject target;
     public Rectangle viewport;
     public double tween = 1.0;
-    public double zoomFactor = 0.0;
+    public double zoomFactor = 1.0;
     public double offsetX = 0.0;
     public double offsetY = 0.0;
 

@@ -12,13 +12,16 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.awt.image.BufferStrategy;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
+import samples.DefaultSample;
 import samples.Sample;
 import samples.object.GameObject.GameObjectType;
 
@@ -31,7 +34,7 @@ import samples.object.GameObject.GameObjectType;
  * @since 0.1
  */
 @Slf4j
-public class SampleGameObject implements Sample,KeyListener {
+public class SampleGameObject extends DefaultSample implements KeyListener {
 
     // Internal Renderinf buffer
     protected BufferedImage screenBuffer;
@@ -41,8 +44,6 @@ public class SampleGameObject implements Sample,KeyListener {
     protected boolean exit = false;
     // how many frames per second on this screen ?
     protected int FPS = 30;
-    // scaling factor
-    protected int scale = 1;
     // debug display mode
     protected int debug = 0;
     // pause flag
@@ -63,7 +64,7 @@ public class SampleGameObject implements Sample,KeyListener {
      * @param height height for this window.
      */
     public SampleGameObject(String title, int width, int height, int s) {
-        scale = s;
+        super(title,width,height,s);
         createWindow(title, width, height,s);
         log.info("JFrame created with height={}, width={}, with a BufferedStrategy of {} buffers", height, width, 4);
     }
@@ -131,7 +132,7 @@ public class SampleGameObject implements Sample,KeyListener {
                 pause = !pause;
                 break;
             case KeyEvent.VK_R:
-                reshuffleVelocity();
+                reshuffleVelocity(Arrays.asList("gameobject_1"));
                 break;
             default:
                 break;
@@ -153,9 +154,9 @@ public class SampleGameObject implements Sample,KeyListener {
     /**
      * generate randomly new velocity for all GameObject except for 'gameobject_1'.
      */
-    protected void reshuffleVelocity() {
+    protected void reshuffleVelocity(List<String> excludedObjects) {
         for (GameObject go : objects.values()) {
-            if (!go.name.equals("gameobject_1")) {
+            if (!excludedObjects.contains(go.name)) {
                 go.dx = (int) (Math.random() * 8) - 4;
                 go.dy = (int) (Math.random() * 8) - 4;
             }
@@ -303,8 +304,11 @@ public class SampleGameObject implements Sample,KeyListener {
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
 
-        sg.drawImage(screenBuffer, 0, 0, screenBuffer.getWidth() * scale, screenBuffer.getHeight() * scale, 0, 0,
-                screenBuffer.getWidth(), screenBuffer.getHeight(), null);
+        sg.drawImage(
+                screenBuffer, 
+                0, 0, (int)(width * scale), (int)(height * scale), 
+                0, 0, width, height, 
+                null);
         // Add some debug information
         if (debug > 1) {
             sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

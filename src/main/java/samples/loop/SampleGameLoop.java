@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
 
+import samples.DefaultSample;
 import samples.Sample;
 
 /**
@@ -18,7 +19,7 @@ import samples.Sample;
  * @author Frédéric Delorme<frederic.delorme@gmail.com
  * @since 0.1
  */
-public class SampleGameLoop implements Sample,KeyListener {
+public class SampleGameLoop extends DefaultSample implements KeyListener {
     // Internal Renderinf buffer
     BufferedImage screenBuffer;
     // the Java Window to contains the game
@@ -52,6 +53,7 @@ public class SampleGameLoop implements Sample,KeyListener {
      * @param height height for this window.
      */
     public SampleGameLoop(String title, int width, int height, int s) {
+        super(title,width,height,s);
         scale = s;
         screenBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         frame = new JFrame(title);
@@ -134,7 +136,7 @@ public class SampleGameLoop implements Sample,KeyListener {
         while (!exit) {
             nextTime = System.currentTimeMillis();
             update(elapsed);
-            render();
+            render(0);
             elapsed = nextTime - prevTime;
             waitNext(elapsed);
             prevTime = nextTime;
@@ -146,7 +148,7 @@ public class SampleGameLoop implements Sample,KeyListener {
      * 
      * @param elapsed
      */
-    public void update(long elapsed) {
+    public void update(double elapsed) {
         this.color = squareColor;
         x += dx;
         y += dy;
@@ -175,7 +177,7 @@ public class SampleGameLoop implements Sample,KeyListener {
     /**
      * Render the image according to already updated objects.
      */
-    public void render() {
+    public void render(long realFps) {
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
         g.setBackground(Color.BLACK);
         g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());

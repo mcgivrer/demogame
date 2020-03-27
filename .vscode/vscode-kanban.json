@@ -37,6 +37,24 @@
       "id": "2",
       "references": [],
       "title": "feat(Particle): Add Particle Engine"
+    },
+    {
+      "assignedTo": {
+        "name": "Frédéric Delorme"
+      },
+      "category": "core input",
+      "creation_time": "2020-03-26T13:44:32.535Z",
+      "description": {
+        "content": "Add an InputHandler to manage and dsitribute input events to game internal listeners.\nEach listener is able to register to he input handler to receive input events.\n",
+        "mime": "text/markdown"
+      },
+      "details": {
+        "content": "# InputHandler\n\n## Context\n\nThe `InputHandler` game system is an internal service providing platform input events listenng capabilities to the game.\n\nThe main events are:\n\n- key events\n- mouse events (with wheele events)\n\nand in a near futur:\n\n- the gamepad and game controller events\n\n## InputHandler\n\nthe input handler will register to the platform as a KeyListener, MouseAdapter (an abstract class implementing the MousListener, MouseMotionListener, MouseWheelListener interfaces).\n\ǹ```java\npublic class InputHandler extends MouseAdapter implements GameSystem, KeyListener{\n  ...\n}\n```\n\n",
+        "mime": "text/markdown"
+      },
+      "id": "3",
+      "references": [],
+      "title": "feature(InputHandler): Add an input handler manager"
     }
   ],
   "testing": [],

@@ -49,7 +49,6 @@ public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
             go.update(this, elapsed);
             constrainGameObject(go);
         }
-        camera.update(this, elapsed);
     }
 
     @Override
@@ -84,8 +83,8 @@ public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
 
-        sg.drawImage(screenBuffer, 0, 0, screenBuffer.getWidth() * scale, screenBuffer.getHeight() * scale, 0, 0,
-                screenBuffer.getWidth(), screenBuffer.getHeight(), null);
+        sg.drawImage(screenBuffer, 0, 0, (int) (width * scale), (int) (height * scale), 0, 0, (int) width, (int) height,
+                null);
         // Add some debug information
         if (debug > 1) {
             sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

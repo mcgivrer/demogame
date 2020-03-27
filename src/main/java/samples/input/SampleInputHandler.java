@@ -1,12 +1,17 @@
 package samples.input;
 
-import java.awt.Rectangle;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.imageio.ImageIO;
+
 import lombok.extern.slf4j.Slf4j;
 import samples.camera.Camera;
 import samples.camera.SampleGameSystemManagerCamera;
@@ -22,15 +27,22 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
 
     public SampleInputHandler(String title, int w, int h, int s) {
         super(title, w, h, s);
+        FPS = 60;
     }
 
     @Override
     public void initialize() {
         gsm = GameSystemManager.initialize(this);
-        gsm.add(new InputHandler(this));
 
-        frame.addKeyListener(gsm.getSystem(InputHandler.class));
-        frame.addMouseListener(gsm.getSystem(InputHandler.class));
+        InputHandler ih = new InputHandler(this);
+        // add this new GameSystem to the manager
+        gsm.add(ih);
+        ih.register(this);
+
+        frame.addKeyListener(ih);
+        frame.addMouseListener(ih);
+        frame.addMouseMotionListener(ih);
+        frame.addMouseWheelListener(ih);
 
         load();
     }
@@ -47,15 +59,21 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             player.image = sprites.getSubimage(0, 48, 32, 32);
             player.width = player.image.getWidth();
             player.height = player.image.getHeight();
-            objects.put(player.name,player);
+            player.maxD = 4;
+            player.attributes.put("elasticity", 0.0);
+            objects.put(player.name, player);
+
+            MouseCursor mCursor = new MouseCursor("mouse_cursor");
+            mCursor.color = Color.WHITE;
+            mCursor.width = 16;
+            mCursor.height = 16;
+            objects.put(mCursor.name, mCursor);
 
         } catch (IOException ioe) {
             log.error("unable to read the tileset image");
         }
 
-        camera = new Camera("cam1", 
-                objects.get("player"), 
-                0.018f,
+        camera = new Camera("cam1", objects.get("player"), 0.018f,
                 new Rectangle(screenBuffer.getWidth(), screenBuffer.getHeight()));
         objects.put(camera.name, camera);
     }
@@ -71,6 +89,8 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             go.dx = (int) (Math.random() * 8);
             go.dy = (int) (Math.random() * 8);
             go.color = squareColor;
+
+            go.attributes.put("elasticity", 1.0);
 
             go.type = randomType();
 
@@ -97,31 +117,35 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         }
     }
 
+    public void input(InputHandler ih) {
+        final List<String> excludedObjects = Arrays.asList("player");
 
-    public void input(InputHandler ih){
+        MouseCursor m = (MouseCursor) objects.get("mouse_cursor");
+        m.x = ih.getMouseX() / scale;
+        m.y = ih.getMouseY() / scale;
+
         GameObject go = objects.get("player");
-        if(ih.getKey(KeyEvent.VK_UP)){
+
+        if (ih.getKey(KeyEvent.VK_UP)) {
             go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
         }
-        if(ih.getKey(KeyEvent.VK_DOWN)){
+        if (ih.getKey(KeyEvent.VK_DOWN)) {
             go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
         }
-        if(ih.getKey(KeyEvent.VK_LEFT)){
+        if (ih.getKey(KeyEvent.VK_LEFT)) {
             go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
         }
-        if(ih.getKey(KeyEvent.VK_RIGHT)){
+        if (ih.getKey(KeyEvent.VK_RIGHT)) {
             go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
         }
-        if(ih.getKey(KeyEvent.VK_SPACE)){
+        if (ih.getKey(KeyEvent.VK_SPACE)) {
             // Break the first object of the objects map.
             go.dx = 0;
             go.dy = 0;
-            go.x = screenBuffer.getWidth() / 2;
-            go.y = screenBuffer.getHeight() / 2;
             go.color = Color.BLUE;
         }
-        if(ih.getKey(KeyEvent.VK_R)){
-            reshuffleVelocity();
+        if (ih.getKey(KeyEvent.VK_R)) {
+            reshuffleVelocity(excludedObjects);
         }
     }
 
@@ -133,9 +157,9 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         long nextTime = System.currentTimeMillis();
         long prevTime = nextTime;
         double elapsed = 0;
-        long timeFrame=0;
-        long frames=0;
-        long realFps=0;
+        long timeFrame = 0;
+        long frames = 0;
+        long realFps = 0;
         while (!exit) {
             nextTime = System.currentTimeMillis();
 
@@ -145,12 +169,12 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             }
             render(realFps);
 
-            timeFrame+=elapsed;
+            timeFrame += elapsed;
             frames++;
-            if(timeFrame>1000){
-                realFps=frames;
-                frames=0;
-                timeFrame=0;
+            if (timeFrame > 1000) {
+                realFps = frames;
+                frames = 0;
+                timeFrame = 0;
             }
 
             elapsed = nextTime - prevTime;
@@ -168,12 +192,74 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
                 go.color = squareColor;
             }
             go.update(this, elapsed);
-            if(!go.name.equals("camera")){
+            if (!(go.name.equals("camera") || go.name.equals("mouse_cursor"))) {
                 constrainGameObject(go);
             }
         }
     }
 
+    protected void constrainGameObject(GameObject go) {
+        double elasticity = (go.attributes.containsKey("elasticity") ? (double) go.attributes.get("elasticity") : 0.0);
+        if (go.x > screenBuffer.getWidth() - go.width) {
+            go.x = screenBuffer.getWidth() - go.width;
+            go.dx = -go.dx * elasticity;
+            go.color = collidingColor;
+        }
+        if (go.y >= screenBuffer.getHeight() - go.height) {
+            go.y = screenBuffer.getHeight() - go.height;
+            go.dy = -go.dy * elasticity;
+            go.color = collidingColor;
+        }
+        if (go.x <= 0) {
+            go.x = 0;
+            go.dx = -go.dx * elasticity;
+            go.color = collidingColor;
+        }
+        if (go.y <= 0) {
+            go.y = 0;
+            go.dy = -go.dy * elasticity;
+            go.color = collidingColor;
+        }
+    }
+
+    public void render(long realFps) {
+        Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        g.setBackground(Color.BLACK);
+        g.clearRect(0, 0, screenBuffer.getWidth(), screenBuffer.getHeight());
+
+        if (camera != null) {
+            g.translate(-camera.x, -camera.y);
+        }
+
+        // loop objects
+        for (GameObject go : objects.values()) {
+            go.draw(this, g);
+        }
+        g.setColor(Color.GRAY);
+        g.drawRect(0, 0, camera.viewport.width, camera.viewport.height);
+
+        if (camera != null) {
+            g.translate(camera.x, camera.y);
+        }
+        drawToScreen(camera, realFps);
+    }
+
+    protected void displayGlobalDebug(Graphics2D sg,long realFps) {
+        sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
+        sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
+        sg.setColor(Color.ORANGE);
+        sg.drawString(String.format(
+                "FPS: %d | debug:%d | pause:%s | cam:%s (zoom:%f)", 
+                realFps, 
+                debug, 
+                (pause ? "on" : "off"),
+                camera.name,
+                (camera!=null?camera.zoomFactor:1)), 
+                10, frame.getHeight() - 4);
+    }
 
     /**
      * Entry point for our SampleGameLoop demo.

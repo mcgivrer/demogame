@@ -3,6 +3,8 @@ package samples.object;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The GameObject to animate, display and process all game entities.
@@ -25,8 +27,12 @@ public class GameObject {
     public Color color;
     public GameObjectType type;
     public BufferedImage image;
+    public double offsetX=0;
+    public double offsetY=0;
 
-    public double timeFactor = 0.1;
+    public Map<String, Object> attributes = new HashMap<>();
+
+    public double timeFactor = 0.05;
 
     /**
      * Default constructor initializing all main attribtues.
@@ -63,21 +69,24 @@ public class GameObject {
      */
     public void draw(SampleGameObject ga, Graphics2D g) {
         g.setColor(this.color);
+        int ox = (int)(x + offsetX);
+        int oy = (int)(y + offsetY);
+
         switch (type) {
             case POINT:
-                g.drawLine((int) x, (int) y, (int) x, (int) y);
+                g.drawLine(ox, oy, ox, oy);
                 break;
             case LINE:
-                g.drawLine((int) x, (int) y, (int) (x + dx), (int) (y + dy));
+                g.drawLine(ox, oy, ox+(int)(dx), oy+(int)(dy));
                 break;
             case RECT:
-                g.fillRect((int) x, (int) y, (int) width, (int) height);
+                g.fillRect(ox, oy, (int) width, (int) height);
                 break;
             case ELLIPSE:
-                g.fillOval((int) x, (int) y, (int) width, (int) height);
+                g.fillOval(ox, oy, (int) width, (int) height);
                 break;
             case IMAGE:
-                g.drawImage(image, (int) x, (int) y, null);
+                g.drawImage(image, ox, oy, null);
                 break;
             default:
                 break;
