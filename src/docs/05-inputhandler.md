@@ -126,7 +126,33 @@ Now, what we have to do is to register our `SampleInputHandler` game to the `Inp
 
 ## Get mouse events
 
-todo
+To illustrate the use of mouse events, I propose to implement in our game engine a mouse cursor that can be used to interact with screen.
+
+So let's implement all the needed mouse listeners to interact with a mouse, and then, try to create a new `GameObject`, the `MouseCursor`.
+
+### The mouse listeners
+
+In the JDK all mouse events are split between multiple listeners:
+
+- `MouseListener` mainly to detect Mouse click,
+- `MouseMotionListener` to detect mouse moves,
+- ans the `MouseWheelListener` to interact with the mouse wheel.
+
+We must implement all of those event listeners to capture all mouse events.
+
+We need to enhance our InputHandler with those capabilities:
+
+```java
+public class InputHandler implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+    ...
+}
+```
+
+Ok, and now we have to add new attributes to manage all those new events.
+
+We also add new Event Queue to be able to process those events on demand.
+
+
 
 ## Get game device events
 

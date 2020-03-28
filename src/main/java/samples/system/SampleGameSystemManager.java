@@ -16,6 +16,10 @@ public class SampleGameSystemManager extends SampleGameObject{
 
     protected GameSystemManager gsm;
 
+    public SampleGameSystemManager(){
+        
+    }
+
     public SampleGameSystemManager(String title, int w, int h, int s) {
         super(title, w, h, s);
         log.info("Sample System Manager ready...");

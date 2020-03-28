@@ -153,8 +153,8 @@ public class Game {
     // start System Manager
         sysMan = SystemManager.initialize(this);
     // start State manager system
-    stateManager = new StateManager(this);
-    sysMan.add(stateManager);
+    sceneManager = new SceneManagerSystem(this);
+    sysMan.add(sceneManager);
         ...
     }
     ...
@@ -164,7 +164,7 @@ public class Game {
 And from anywhere from code, you can gather the added system from the SystemManager :
 
 ```java
-  StateManagerSystem  sms = SystemManager.get(StateManagerSystem.class);
+  SceneManagerSystem  sms = SystemManager.get(SceneManagerSystem.class);
 ```
 
 That's all for the System Manager chapter.

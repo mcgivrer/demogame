@@ -25,6 +25,10 @@ public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
 
     protected Camera camera;
 
+    public SampleGameSystemManagerCamera(){
+        
+    }
+
     public SampleGameSystemManagerCamera(String title, int w, int h, int s) {
         super(title, w, h, s);
         log.info("Sample System Manager ready...");
@@ -93,13 +97,11 @@ public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
             if (camera != null) {
                 sg.translate(-camera.x * scale, -camera.y * scale);
             }
-
             for (GameObject go : objects.values()) {
                 if (debug > 2) {
                     displayDebug(sg, go);
                 }
             }
-
             if (camera != null) {
                 sg.translate(camera.x * scale, camera.y * scale);
 

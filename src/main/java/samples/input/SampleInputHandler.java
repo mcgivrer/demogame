@@ -1,6 +1,8 @@
 package samples.input;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -24,6 +26,10 @@ import samples.system.GameSystemManager;
  */
 @Slf4j
 public class SampleInputHandler extends SampleGameSystemManagerCamera implements InputHandlerListener {
+
+    public SampleInputHandler(){
+
+    }
 
     public SampleInputHandler(String title, int w, int h, int s) {
         super(title, w, h, s);
@@ -67,6 +73,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             mCursor.color = Color.WHITE;
             mCursor.width = 16;
             mCursor.height = 16;
+            mCursor.image = sprites.getSubimage(0, 16 * 10, 20, 10);
             objects.put(mCursor.name, mCursor);
 
         } catch (IOException ioe) {
@@ -78,7 +85,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         objects.put(camera.name, camera);
     }
 
-    private void createObjects(int max) {
+    protected void createObjects(int max) {
         for (int i = 0; i < max; i++) {
             GameObject go = new GameObject();
             go.x = (int) Math.random() * (screenBuffer.getWidth() - 16);
@@ -234,12 +241,14 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             g.translate(-camera.x, -camera.y);
         }
 
+        // draw play area
+        g.setColor(new Color(0.0f,0.0f,0.3f));
+        g.fillRect(0, 0, width, height);
+        
         // loop objects
         for (GameObject go : objects.values()) {
             go.draw(this, g);
         }
-        g.setColor(Color.GRAY);
-        g.drawRect(0, 0, camera.viewport.width, camera.viewport.height);
 
         if (camera != null) {
             g.translate(camera.x, camera.y);
@@ -247,18 +256,45 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         drawToScreen(camera, realFps);
     }
 
-    protected void displayGlobalDebug(Graphics2D sg,long realFps) {
+    protected void displayDebug(Graphics2D sg, GameObject go) {
+        Font f = sg.getFont().deriveFont(9);
+        sg.setFont(f);
+        FontMetrics fm = sg.getFontMetrics();
+        int lineHeight = fm.getHeight();
+        if (go instanceof MouseCursor) {
+            int xOffset = (int) (width * scale - 150);
+            int yOffset = (int) (height * scale - (4 * lineHeight));
+            sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
+            sg.fillRect(xOffset - 4, yOffset, 150, 3 * lineHeight);
+            sg.setColor(Color.ORANGE);
+            drawString(sg, xOffset, yOffset, lineHeight, 1, String.format("name:%s", go.name));
+            drawString(sg, xOffset, yOffset, lineHeight, 2, String.format("pos:%03.2f,%03.2f", go.x, go.y));
+        }
+        if (go instanceof Camera) {
+            int yOffset = (int) (4 * lineHeight);
+            sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
+            sg.fillRect(10, yOffset, 150, 3 * lineHeight);
+            sg.setColor(Color.ORANGE);
+            sg.drawRect(10, 10, (int) (width * scale) - 20, (int) (height * scale) - 20);
+            drawString(sg, 10, yOffset, lineHeight, 1, String.format("name:%s", go.name));
+            drawString(sg, 10, yOffset, lineHeight, 2, String.format("pos:%03.2f,%03.2f", go.x, go.y));
+        } else {
+            super.displayDebug(sg, go);
+        }
+    }
+
+    protected void displayGlobalDebug(Graphics2D sg, long realFps) {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
         sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
         sg.setColor(Color.ORANGE);
-        sg.drawString(String.format(
-                "FPS: %d | debug:%d | pause:%s | cam:%s (zoom:%f)", 
-                realFps, 
-                debug, 
-                (pause ? "on" : "off"),
-                camera.name,
-                (camera!=null?camera.zoomFactor:1)), 
+        sg.drawString(
+                String.format("FPS: %d | debug:%d | pause:%s | cam:%s (zoom:%f)", realFps, debug,
+                        (pause ? "on" : "off"), camera.name, (camera != null ? camera.zoomFactor : 1)),
                 10, frame.getHeight() - 4);
+    }
+
+    public Camera getActiveCamera() {
+        return camera;
     }
 
     /**

@@ -28,16 +28,37 @@ public class GameObject {
 	public int height;
 	public int dx;
     public int dy;
-  	public Color color;   
+    public Color color;   
+    public int direction=1;  
 }
 ```
 
+Here are attributes:
+
+| Attribute | description                         |
+|-----------|-------------------------------------|
+| x         | horizontal position                 |
+| y         | vertical   position                 |
+| dx        | horizontal velocity                 |
+| dy        | vertical velocity                   |
+| width     | width of object                     |
+| height    | height of object                    |
+| color     | draw color of object                |
+| direction | moving direction (<0 left,>0 right) |
+
 Now we have some attributes, we need to update and render things. In a common way to Object development, we need to specialized objects. In the previous sample, all things were performed by the main class. let's delegate some of the operations to this new `GameObject` class. The update process can be performed into the object itself, and the draw process so:
+
+The update has 2 roles:
+
+- update the object position (`x`,`y`) according to its velocity (`dx`,`dy`), 
+- and update its `direction`.  it will be useful to define the sprite to be use for moving left or moving right. `direction>0` is moving right, else moving left.
 
 ```java
 public void udpate(Game ga, long elapsed){
     x += dx;
     y += dx;
+    // compute direction.
+    direction=(dx>0?1:-1);
 }
 public void draw(Game ga, Graphics2D g){
     g.setColor(color);
@@ -114,7 +135,11 @@ So, now, adding one or a dozen of `GameObject`, the main class `SampleGameObject
 
 ```java
   public void initialize(){
-      for(int i=0;i<20;i++){
+      createObjects(20);
+  }
+
+  protected void createObjects(int maxNbObjects){
+      for(int i=0;i<maxNbObjects;i++){
           GameObject go = new GameObject()
           go.x = (int) Math.random() * (screenBuffer.getWidth() - 16);
           go.y = (int) Math.random() * (screenBuffer.getHeight() - 16);
@@ -123,9 +148,12 @@ So, now, adding one or a dozen of `GameObject`, the main class `SampleGameObject
           go.dx = (int) (Math.random() * 8);
           go.dy = (int) (Math.random() * 8);             
           objects.add(go);   
-      }      
+      }
   }
 ```
+
+> **INFO**
+> You can notice that the method `createObjects()` is protected for a future enhancement in next chapters.
 
 Then run this sample code :
 
@@ -216,7 +244,9 @@ Then we need to adapt our code with this new Map. first the initialize() method:
 
 ```java
 public void initialize(){
-    for(int i=0;i<20;i++){
+}
+protected void createObjetcs(int maxNbObjects){
+    for(int i=0;i<maxNbObjects;i++){
         GameObject go = new GameObject();
         ...
         objects.put(go.name,go);

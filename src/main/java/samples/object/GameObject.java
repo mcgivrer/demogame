@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import samples.Sample;
+
 /**
  * The GameObject to animate, display and process all game entities.
  */
@@ -25,6 +27,7 @@ public class GameObject {
     public double width;
     public double height;
     public Color color;
+    public int direction = 1; 
     public GameObjectType type;
     public BufferedImage image;
     public double offsetX=0;
@@ -56,9 +59,10 @@ public class GameObject {
      * @param ga
      * @param elapsed
      */
-    public void update(SampleGameObject ga, double elapsed) {
+    public void update(Sample ga, double elapsed) {
         x += dx * (elapsed * timeFactor);
         y += dy * (elapsed * timeFactor);
+        direction = (dx>0?1:-1);
     }
 
     /**
@@ -67,7 +71,7 @@ public class GameObject {
      * @param ga
      * @param g
      */
-    public void draw(SampleGameObject ga, Graphics2D g) {
+    public void draw(Sample ga, Graphics2D g) {
         g.setColor(this.color);
         int ox = (int)(x + offsetX);
         int oy = (int)(y + offsetY);
@@ -86,8 +90,13 @@ public class GameObject {
                 g.fillOval(ox, oy, (int) width, (int) height);
                 break;
             case IMAGE:
-                g.drawImage(image, ox, oy, null);
-                break;
+            if (direction < 0) {
+                g.drawImage(image, (int) (x + width), (int) y, (int) (-width),
+                        (int) height, null);
+            } else {
+                g.drawImage(image, (int)x, (int) y, (int) width, (int) height, null);
+            }
+            break;
             default:
                 break;
         }
