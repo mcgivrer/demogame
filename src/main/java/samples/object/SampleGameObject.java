@@ -9,9 +9,9 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.awt.image.BufferStrategy;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +22,6 @@ import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
 import samples.DefaultSample;
-import samples.Sample;
 import samples.object.GameObject.GameObjectType;
 
 /**
@@ -64,8 +63,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
      * @param height height for this window.
      */
     public SampleGameObject(String title, int width, int height, int s) {
-        super(title,width,height,s);
-        createWindow(title, width, height,s);
+        super(title, width, height, s);
+        createWindow(title, width, height, s);
         log.info("JFrame created with height={}, width={}, with a BufferedStrategy of {} buffers", height, width, 4);
     }
 
@@ -213,9 +212,9 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         long nextTime = System.currentTimeMillis();
         long prevTime = nextTime;
         double elapsed = 0;
-        long timeFrame=0;
-        long frames=0;
-        long realFps=0;
+        long timeFrame = 0;
+        long frames = 0;
+        long realFps = 0;
         while (!exit) {
             nextTime = System.currentTimeMillis();
             if (!pause) {
@@ -223,12 +222,12 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
             }
             render(realFps);
 
-            timeFrame+=elapsed;
+            timeFrame += elapsed;
             frames++;
-            if(timeFrame>1000){
-                realFps=frames;
-                frames=0;
-                timeFrame=0;
+            if (timeFrame > 1000) {
+                realFps = frames;
+                frames = 0;
+                timeFrame = 0;
             }
 
             elapsed = nextTime - prevTime;
@@ -304,11 +303,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         BufferStrategy bs = frame.getBufferStrategy();
         Graphics2D sg = (Graphics2D) bs.getDrawGraphics();
 
-        sg.drawImage(
-                screenBuffer, 
-                0, 0, (int)(width * scale), (int)(height * scale), 
-                0, 0, width, height, 
-                null);
+        sg.drawImage(screenBuffer, 0, 0, (int) (width * scale), (int) (height * scale), 0, 0, width, height, null);
         // Add some debug information
         if (debug > 1) {
             sg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -318,16 +313,17 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
                     displayDebug(sg, go);
                 }
             }
-            displayGlobalDebug(sg,realFps);
+            displayGlobalDebug(sg, realFps);
         }
         bs.show();
     }
 
-    protected void displayGlobalDebug(Graphics2D sg,long realFps) {
+    protected void displayGlobalDebug(Graphics2D sg, long realFps) {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
         sg.fillRect(0, frame.getHeight() - 20, frame.getWidth(), 20);
         sg.setColor(Color.ORANGE);
-        sg.drawString(String.format("FPS: %d | debug:%d | pause:%s ", realFps, debug, (pause ? "on" : "off")), 10, frame.getHeight() - 4);
+        sg.drawString(String.format("FPS: %d | debug:%d | pause:%s ", realFps, debug, (pause ? "on" : "off")), 10,
+                frame.getHeight() - 4);
     }
 
     /**
@@ -341,11 +337,11 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         sg.setFont(f);
         FontMetrics fm = sg.getFontMetrics();
         int lineHeight = fm.getHeight();
-        int xOffset = (int)((go.x + go.width + 8) * scale);
-        int yOffset = (int)(go.y * scale);
+        int xOffset = (int) ((go.x + go.width + 8) * scale);
+        int yOffset = (int) (go.y * scale);
 
-        sg.setColor(new Color(0.4f,0.4f,0.4f,0.6f));
-        sg.fillRect(xOffset-4, yOffset, 150, 6 * lineHeight);
+        sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
+        sg.fillRect(xOffset - 4, yOffset, 150, 6 * lineHeight);
 
         sg.setColor(Color.ORANGE);
         drawString(sg, xOffset, yOffset, lineHeight, 1, String.format("name:%s", go.name));
@@ -365,7 +361,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
      * @param elapsed
      */
     public void waitNext(double elapsed) {
-        long waitTime = (1000 / FPS) - (long)elapsed;
+        long waitTime = (1000 / FPS) - (long) elapsed;
         try {
             Thread.sleep(waitTime > 0 ? waitTime : 0);
         } catch (InterruptedException e) {
@@ -382,5 +378,4 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         SampleGameObject sgl = new SampleGameObject("Sample Game Object", 320, 240, 2);
         sgl.run();
     }
-
 }

@@ -1,12 +1,4 @@
-/**
- * 
- */
-package core.tests;
-
-/**
- * @author Frédéric Delorme
- *
- */
+package samples.tests;
 
 import java.awt.AlphaComposite;
 import java.awt.Dimension;

@@ -1,10 +1,13 @@
 package samples;
 
+import samples.camera.Camera;
+
 public abstract class DefaultSample implements Sample{
     protected String title;
     protected int width;
     protected int height;
     protected double scale;
+    protected Camera camera;
 
     public DefaultSample(String title, int width, int height, double scale){
         this.title=title;
@@ -33,5 +36,7 @@ public abstract class DefaultSample implements Sample{
         return title;
     }
 
-
+    public Camera getActiveCamera(){
+        return camera;
+    }
 }

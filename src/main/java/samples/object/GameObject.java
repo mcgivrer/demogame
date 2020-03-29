@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import samples.Sample;
+
 /**
  * The GameObject to animate, display and process all game entities.
  */
@@ -56,7 +58,7 @@ public class GameObject {
      * @param ga
      * @param elapsed
      */
-    public void update(SampleGameObject ga, double elapsed) {
+    public void update(Sample ga, double elapsed) {
         x += dx * (elapsed * timeFactor);
         y += dy * (elapsed * timeFactor);
     }
@@ -67,7 +69,7 @@ public class GameObject {
      * @param ga
      * @param g
      */
-    public void draw(SampleGameObject ga, Graphics2D g) {
+    public void draw(Sample ga, Graphics2D g) {
         g.setColor(this.color);
         int ox = (int)(x + offsetX);
         int oy = (int)(y + offsetY);

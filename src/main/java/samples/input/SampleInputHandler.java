@@ -118,7 +118,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
     }
 
     public void input(InputHandler ih) {
-        final List<String> excludedObjects = Arrays.asList("player");
+        final List<String> excludedObjects = Arrays.asList("player","mouse_cursor");
 
         MouseCursor m = (MouseCursor) objects.get("mouse_cursor");
         m.x = ih.getMouseX() / scale;
@@ -267,7 +267,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
      * @param argc
      */
     public static void main(String[] argc) {
-        SampleInputHandler sgl = new SampleInputHandler("Sample With Camera", 320, 240, 2);
+        SampleInputHandler sgl = new SampleInputHandler("Sample With InputHandler", 320, 240, 2);
         sgl.run();
     }
 }

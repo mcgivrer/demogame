@@ -3,6 +3,7 @@ package samples.camera;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import samples.Sample;
 import samples.object.GameObject;
 import samples.object.SampleGameObject;
 
@@ -27,7 +28,7 @@ public class Camera extends GameObject {
     }
 
     @Override
-    public void update(SampleGameObject ga, double elapsed) {
+    public void update(Sample ga, double elapsed) {
         if(target==null){
             return;
         }
@@ -36,7 +37,7 @@ public class Camera extends GameObject {
     }
 
     @Override
-    public void draw(SampleGameObject ga, Graphics2D g) {
+    public void draw(Sample ga, Graphics2D g) {
     }
 
 }
