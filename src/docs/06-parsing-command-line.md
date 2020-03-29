@@ -169,14 +169,14 @@ private void parseArgs(String[] args) {
 if you start the game with the following arguments :
 
 ```bash
-$> java -jar target\BGF-x.y.z-shaded.jar -Dd=2 w=720 h=320 s=1.5
+$> java -jar target\BGF-x.y.z-shaded.jar -Dd=3 w=720 h=320 s=1.5
 ```
 
-This will start the game with a 350x240 window size, a debug level set to 2 and a scale factor set to 2.
+This will start the game with a 720x320 window size, a debug level set to 3 and a scale factor set to 1.5.
 
 Pushing the `[d]` key, more debug information are displayed.
 
-![Display the game with some options](./images/screen-4.png "Some more debug options")
+![Display the game with some options](./images/screen-6.png "Some more debug options")
 
 
 
