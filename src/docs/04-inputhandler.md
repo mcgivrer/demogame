@@ -303,8 +303,7 @@ public class MouseCursor extends GameObject{
         g.drawLine((int)(x),(int)(y-(height/2)),(int)(x+width),(int)(y+(height/2)));
     }
     @Override
-    public void update(SampleGameObject ga, double elapsed) {
-    }
+    public void update(SampleGameObject ga, double elapsed) {}
 }
 ```
 
@@ -334,7 +333,7 @@ public void input(InputHandler ih) {
 }
 ```
 
-and as the mouse cursor must stay centered on the screen it needs to follow the camera moves. Let's update the mouse cursor position :
+And as the mouse cursor must stay centered on the screen it needs to follow the camera moves. Let's update the mouse cursor position :
 
 ```java
 public void update(Sample ga, double elapsed) {
@@ -372,10 +371,6 @@ private void pushEvent(InputEvent e) {
     events.add(e);
 }
 ```
-
-
-
-
 
 
 
