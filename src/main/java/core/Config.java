@@ -1,10 +1,16 @@
 package core;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import core.cli.ArgumentUnknownException;
+import core.cli.BooleanArgParser;
+import core.cli.CliManager;
+import core.cli.FloatArgParser;
+import core.cli.IntArgParser;
+import core.cli.StringArgParser;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -37,11 +43,12 @@ public class Config {
 	public float musicVolume;
 
 	public Map<String, Object> attributes = new HashMap<>();
+	private final CliManager clm;
 
 	/**
 	 * Initialization of default values for configuraiton.
 	 */
-	public Config() {
+	public Config(final Game g) {
 		this.title = "notitle";
 		this.screenWidth = 360;
 		this.screenHeight = 200;
@@ -53,6 +60,44 @@ public class Config {
 		this.mute = false;
 		this.soundVolume = 0.0f;
 		this.musicVolume = 0.0f;
+		clm = new CliManager(g);
+
+		// Define title attribute.
+		clm.add(new StringArgParser("WindowTitle", "t", "title", "BGF", "Title of the displayed game window",
+				"the title must be a simple character's string"));
+		// Add debug attribute
+		clm.add(new IntArgParser("Debug", "d", "debug", 0, 0, 5, "Define the Debug level to on screen display.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the Width attribute
+		clm.add(new IntArgParser("Width", "w", "width", 320, 120, 640, "Define the Width of the game window.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// add the Height attribute
+		clm.add(new IntArgParser("Height", "h", "height", 200, 80, 480, "Define the height of the game window.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the scale factor.
+		clm.add(new FloatArgParser("Scale", "s", "scale", 2.0f, 1, 4, "Define the factor to be apply to pixel scale.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the frame per second.
+		clm.add(new IntArgParser("FPS", "f", "fps", 60, 25, 60, "Define the frames per second ratio.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the update per second.
+		clm.add(new IntArgParser("UPS", "u", "ups", 60, 25, 60, "Define the update per second ratio.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the soundVolume factor.
+		clm.add(new BooleanArgParser("MuteMode", "m", "muteMode", false, true, false, "set the mute mode.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the soundVolume factor.
+		clm.add(new FloatArgParser("SoundVolume", "sm", "soundVolume", 0.2f, 0.0f, 1.0f,
+				"Define the sound volume value.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the musicVolume factor.
+		clm.add(new FloatArgParser("MusicVolume", "mm", "musicVolume", 0.2f, 0.0f, 1.0f,
+				"Define the sound volume value.",
+				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
+		// Add the states configuration path.
+		clm.add(new StringArgParser("StatePath", "st", "statePath", "/res/game.json", "Path where the game.json file exists",
+		"the state path must be a simple path string"));
+
 	}
 
 	/**
@@ -62,79 +107,30 @@ public class Config {
 	 * @param argc list of arguments from command line.
 	 * @return the Config object initialized with right values.
 	 */
-	public static Config analyzeArgc(String[] argc) {
-		Config config = new Config();
+	public static Config analyzeArgc(final Game g, final String[] argc) {
+		final Config config = new Config(g);
 		config.load();
-
-		for (String arg : argc) {
-			System.out.println(String.format("arg: %s", arg));
-			String[] parts = arg.split("=");
-			switch (parts[0]) {
-				case "f":
-				case "fps":
-					config.fps = Integer.parseInt(parts[1]);
-					log.info("fps request:{}", config.fps);
-
-					break;
-				case "u":
-				case "ups":
-					config.ups = Integer.parseInt(parts[1]);
-					log.info("ups request:{}", config.ups);
-
-					break;
-				case "t":
-				case "title":
-					config.title = parts[1];
-					log.info("window title:{}", config.title);
-
-					break;
-				case "h":
-				case "height":
-					config.screenHeight = Integer.parseInt(parts[1]);
-					log.info("Screen height:{}", config.screenHeight);
-
-					break;
-				case "w":
-				case "width":
-					config.screenWidth = Integer.parseInt(parts[1]);
-					log.info("Screen width:{}", config.screenWidth);
-
-					break;
-				case "s":
-				case "scale":
-					config.screenScale = Float.parseFloat(parts[1]);
-					log.info("screen scale:{}", config.screenScale);
-					break;
-				case "d":
-				case "debug":
-					config.debug = Integer.parseInt(parts[1]);
-					log.info("debug mode:{}", config.debug);
-					break;
-				case "m":
-				case "mute":
-					config.mute = Boolean.parseBoolean(parts[1]);
-					log.info("sound mute:{}", config.mute);
-					break;
-				case "sv":
-				case "soundVolume":
-					config.soundVolume = Float.parseFloat(parts[1]);
-					log.info("sound volume:{}", config.soundVolume);
-					break;
-				case "mv":
-				case "usicVolume":
-					config.musicVolume = Float.parseFloat(parts[1]);
-					log.info("music volume:{}", config.musicVolume);
-					break;
-				default:
-					System.out.println(String.format("Unknown arguments '%s'", arg));
-					break;
-			}
+		config.clm.parse(argc);
+		try {
+			config.debug = (Integer) (config.clm.getValue("Debug"));
+			config.screenWidth = (Integer) (config.clm.getValue("Width"));
+			config.screenHeight = (Integer) (config.clm.getValue("Height"));
+			config.screenScale = (Float) (config.clm.getValue("Scale"));
+			config.title = ((String) config.clm.getValue("WindowTitle"));
+			config.fps = (Integer) (config.clm.getValue("FPS"));
+			config.ups = (Integer) (config.clm.getValue("UPS"));
+			config.mute = (Boolean) (config.clm.getValue("MuteMode"));
+			config.soundVolume = (Float) (config.clm.getValue("SoundVolume"));
+			config.musicVolume = (Float) (config.clm.getValue("MusicVolume"));
+			config.statesPath = ((String) config.clm.getValue("StatePath"));;
+		} catch (ArgumentUnknownException e) {
+			log.error(e.getMessage());
 		}
 		return config;
 	}
 
 	private void load() {
-		ResourceBundle cfgFromFile = ResourceBundle.getBundle("res.config");
+		final ResourceBundle cfgFromFile = ResourceBundle.getBundle("res.config");
 
 		this.title = cfgFromFile.getString("game.win.title");
 		this.screenWidth = Integer.parseInt(cfgFromFile.getString("screen.width"));
