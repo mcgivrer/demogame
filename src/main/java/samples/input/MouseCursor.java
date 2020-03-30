@@ -2,6 +2,7 @@ package samples.input;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import samples.Sample;
 import samples.object.GameObject;
@@ -29,5 +30,12 @@ public class MouseCursor extends GameObject {
     public void update(Sample ga, double elapsed) {
         x += ga.getActiveCamera().x;
         x += ga.getActiveCamera().y;
+    }
+
+    public void setCursorImage(BufferedImage image) {
+        this.image = image;
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        this.type = GameObjectType.IMAGE;
     }
 }
