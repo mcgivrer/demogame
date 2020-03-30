@@ -15,19 +15,13 @@ import samples.system.SampleGameSystemManager;
  * project : DemoGame
  * <p>
  * SampleGameSysemManagerCamera is a demonstration of a using : - some
- * GameObject to animate things. - A SystemMnager ready to use - a Camera
+ * GameObject to animate things. - A SystemManager ready to use - a Camera
  * 
  * @author Frédéric Delorme<frederic.delorme@gmail.com
  * @since 0.1
  */
 @Slf4j
 public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
-
-    protected Camera camera;
-
-    public SampleGameSystemManagerCamera(){
-        
-    }
 
     public SampleGameSystemManagerCamera(String title, int w, int h, int s) {
         super(title, w, h, s);

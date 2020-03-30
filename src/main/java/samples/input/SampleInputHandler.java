@@ -4,15 +4,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
 import samples.camera.Camera;
@@ -35,6 +40,32 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         super(title, w, h, s);
         FPS = 60;
     }
+
+    protected void createWindow(String title, int width, int height, int scale) {
+        screenBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        frame = new JFrame(title);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setBackground(Color.BLACK);
+        Insets ins = frame.getInsets();
+        Dimension dim = new Dimension((width * scale) - (ins.left + ins.right),
+                (height * scale) - (ins.top + ins.bottom));
+        frame.setSize(dim);
+        frame.setPreferredSize(dim);
+        frame.pack();
+        frame.addKeyListener(this);
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
+        frame.requestFocus();
+        frame.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+                new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB), 
+                new Point(0,0), 
+                "transparent_cursor"));
+        BufferStrategy bs = frame.getBufferStrategy();
+        if (bs == null) {
+            frame.createBufferStrategy(4);
+        }
+    }
+
 
     @Override
     public void initialize() {
@@ -70,10 +101,6 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             objects.put(player.name, player);
 
             MouseCursor mCursor = new MouseCursor("mouse_cursor");
-            mCursor.color = Color.WHITE;
-            mCursor.width = 16;
-            mCursor.height = 16;
-            mCursor.image = sprites.getSubimage(0, 16 * 10, 20, 10);
             objects.put(mCursor.name, mCursor);
 
         } catch (IOException ioe) {
@@ -303,7 +330,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
      * @param argc
      */
     public static void main(String[] argc) {
-        SampleInputHandler sgl = new SampleInputHandler("Sample With Camera", 320, 240, 2);
+        SampleInputHandler sgl = new SampleInputHandler("Sample With InputHandler", 320, 240, 2);
         sgl.run();
     }
 }

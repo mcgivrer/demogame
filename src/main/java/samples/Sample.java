@@ -1,8 +1,6 @@
 package samples;
 
-import java.util.Map;
-
-import samples.object.GameObject;
+import samples.camera.Camera;
 
 /**
  * All Sample gaame will implements this interface, just to simplify
@@ -16,6 +14,7 @@ public interface Sample {
     public double getScale();
 
     public String getTitle();
+    public Camera getActiveCamera();
 
     public Map<String, GameObject> getObjects();
 

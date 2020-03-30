@@ -10,6 +10,7 @@ public abstract class DefaultSample implements Sample {
     protected int width;
     protected int height;
     protected double scale;
+    protected Camera camera;
 
     // list of managed objects
     protected Map<String, GameObject> objects = new HashMap<>();
@@ -46,6 +47,9 @@ public abstract class DefaultSample implements Sample {
         return title;
     }
 
+    public Camera getActiveCamera(){
+        return camera;
+    }
     @Override
     public Map<String, GameObject> getObjects() {
         return objects;

@@ -167,6 +167,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
             if (!excludedObjects.contains(go.name)) {
                 go.dx = (int) (Math.random() * 8) - 4;
                 go.dy = (int) (Math.random() * 8) - 4;
+                go.type = randomType();
             }
         }
     }
@@ -391,5 +392,4 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         SampleGameObject sgl = new SampleGameObject("Sample Game Object", 320, 240, 2);
         sgl.run();
     }
-
 }

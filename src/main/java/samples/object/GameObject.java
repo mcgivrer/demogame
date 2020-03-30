@@ -14,7 +14,7 @@ import samples.Sample;
 public class GameObject {
 
     public enum GameObjectType {
-        POINT, LINE, RECT, ELLIPSE, IMAGE;
+        POINT, LINE, RECT, ELLIPSE, IMAGE, OTHER;
     }
 
     public static int index = 0;
