@@ -295,15 +295,21 @@ To test that new mouse events,  we need a mouse cursor, and this `MouseCursor` o
 public class MouseCursor extends GameObject{
     public MouseCursor(String name){
         super(name);
+        mCursor.color = Color.WHITE;
+        mCursor.width = 16;
+        mCursor.height = 16;
+        type = GameObjectType.OTHER;
     }
     @Override
     public void draw(SampleGameObject ga, Graphics2D g) {
         g.setColor(color);
-        g.drawLine((int)(x-(width/2)),(int)(y),(int)(x+(width/2)),(int)(y+height));
-        g.drawLine((int)(x),(int)(y-(height/2)),(int)(x+width),(int)(y+(height/2)));
+        g.drawLine(
+            (int)(x-(width/2)),(int)(y),
+            (int)(x+(width/2)),(int)(y+height));
+        g.drawLine(
+            (int)(x),(int)(y-(height/2)),
+            (int)(x+width),(int)(y+(height/2)));
     }
-    @Override
-    public void update(SampleGameObject ga, double elapsed) {}
 }
 ```
 
@@ -313,9 +319,6 @@ Add an instance of this object to our `SampleInputHandler`:
 public void load() {
     ...
     MouseCursor mCursor = new MouseCursor("mouse_cursor");
-    mCursor.color = Color.WHITE;
-    mCursor.width = 16;
-    mCursor.height = 16;
     objects.put(mCursor.name, mCursor);
     ...
 }
@@ -333,12 +336,13 @@ public void input(InputHandler ih) {
 }
 ```
 
-And as the mouse cursor must stay centered on the screen it needs to follow the camera moves. Let's update the mouse cursor position :
+And as the mouse cursor must stay centered on the screen it needs to follow the `camera` moves. Let's update the `MouseCursor` object position :
 
 ```java
-public void update(Sample ga, double elapsed) {
-    offsetX = ga.getActiveCamera().x;
-    offsetY = ga.getActiveCamera().y;
+@Override
+public void update(SampleGameObject ga, double elapsed) {
+    x += ga.getActiveCamera().x;
+    y += ga.getActiveCamera().y;
 }
 ```
 
@@ -348,9 +352,9 @@ And now `MouseCursor` and `Camera` are moving as a duo.
 
 ## Complex input behaviors
 
-To be able to detect more complex input interpretation, we also add new Event Queue to be able to process those events on demand.
+To detect more complex input, like key chains, we also add new Event Queue to process events on demand.
 
-Add a buffer to store those event, we try to use a `Queue`;  let's back into the `initialize()`
+As a buffer to store event, we use a `Queue`;  let's back into the `initialize()`
 
 ```java
 public int initialize(Sample game){
