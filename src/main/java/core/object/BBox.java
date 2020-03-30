@@ -1,32 +1,43 @@
 package core.object;
 
+import core.math.Vector2D;
+
 public class BBox {
-    public double x;
-    public double y;
-    public double width;
-    public double height;
+	public Vector2D pos;
+	public Vector2D size;
 
-    public double top, bottom, left, right;
+	public double top, bottom, left, right;
 
-    public BBox(double x, double y, double w, double h) {
-        this.x = x;
-        this.y = y;
-        this.width = w;
-        this.height = h;
-    }
+	public BBox() {
+		this.pos = new Vector2D();
+		this.size = new Vector2D();
+	};
 
-    public void fromGameObject(GameObject g) {
-        this.x = g.x + left;
-        this.y = g.y + top;
-        this.width = g.width - (left + right);
-        this.height = g.height - (top + bottom);
-    }
+	public BBox(double x, double y, double w, double h) {
+		this();
+		this.pos.x = x;
+		this.pos.y = y;
+		this.size.x = w;
+		this.size.y = h;
+	}
 
-    public boolean intersect(BBox other) {
-        return other != null
-                && this.x + this.right >= other.x + other.left
-                && this.x + this.left <= other.x + other.right
-                && this.y + this.top >= other.y + other.bottom
-                && this.y + this.bottom <= other.y + other.top;
-    }
+	public BBox(GameObject go) {
+		this();
+		this.pos = go.pos;
+		this.size = go.size;
+	}
+
+	public void fromGameObject(GameObject g) {
+		this.pos.x = g.pos.x + left;
+		this.pos.y = g.pos.y + top;
+		this.size.x = g.size.x - (left + right);
+		this.size.y = g.size.y - (top + bottom);
+	}
+
+	public boolean intersect(BBox other) {
+		return other != null && this.pos.x + this.right >= other.pos.x + other.left
+				&& this.pos.x + this.left <= other.pos.x + other.right
+				&& this.pos.y + this.top >= other.pos.y + other.bottom
+				&& this.pos.y + this.bottom <= other.pos.y + other.top;
+	}
 }

@@ -4,9 +4,12 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
@@ -46,7 +49,6 @@ import core.object.Light;
 import core.object.TextObject;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
-import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -57,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
  * @year 2019
  */
 @Slf4j
-public class Renderer extends AbstractSystem implements System {
+public class Renderer extends AbstractSystem {
 
 	private static int screenShotIndex = 0;
 	public BufferedImage screenBuffer;
@@ -67,7 +69,11 @@ public class Renderer extends AbstractSystem implements System {
 	private List<GameObject> renderingObjectPipeline = new ArrayList<>();
 	private MapRenderer mapRenderer;
 	private boolean renderingPause = false;
-	private int realFPS;
+
+	private Counter realFPS;
+	private Counter realUPS;
+
+	private Graphics2D g;
 
 	/**
 	 * Create the Game renderer.
@@ -78,6 +84,7 @@ public class Renderer extends AbstractSystem implements System {
 		super(dg);
 		jf = createWindow(dg);
 		screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
+		g = screenBuffer.createGraphics();
 	}
 
 	@Override
@@ -93,6 +100,9 @@ public class Renderer extends AbstractSystem implements System {
 	 * @return a JFrame initialized conforming to config attributes.
 	 */
 	private JFrame createWindow(Game dg) {
+		// log.info("Java Library Path: {}", System.getProperty("java.library.path"));
+		log.info(getMonitorSizes());
+
 		jf = new JFrame(dg.config.title);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jf.setBackground(Color.BLACK);
@@ -101,7 +111,6 @@ public class Renderer extends AbstractSystem implements System {
 				(int) (dg.config.screenHeight * dg.config.screenScale) - (ins.top + ins.bottom));
 		jf.setSize(dim);
 		jf.setPreferredSize(dim);
-
 		jf.pack();
 		InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
 		jf.addKeyListener(kih);
@@ -118,6 +127,7 @@ public class Renderer extends AbstractSystem implements System {
 				jf.pack();
 			}
 		});
+
 		jf.setIgnoreRepaint(true);
 		jf.enableInputMethods(true);
 		jf.setLocationByPlatform(true);
@@ -130,17 +140,28 @@ public class Renderer extends AbstractSystem implements System {
 		return jf;
 	}
 
+	private String getMonitorSizes() {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < gs.length; i++) {
+			DisplayMode dm = gs[i].getDisplayMode();
+			sb.append(i + ", width: " + dm.getWidth() + ", height: " + dm.getHeight() + "\n");
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Render all objects !
 	 */
 	public void render(Game dg, double elapsed) {
 		if (!renderingPause) {
-			Graphics2D g = screenBuffer.createGraphics();
-			DebugInfo.debugFont = g.getFont().deriveFont(9.0f);
+			DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
 
-			Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+			Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 
 			// activate Anti-aliasing for image and text rendering.
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
 			// clear image
@@ -149,20 +170,19 @@ public class Renderer extends AbstractSystem implements System {
 			for (Layer layer : layers.values()) {
 				// if a camera is set, use it.
 				if (camera != null && !layer.fixed) {
-					g.translate(-camera.x, -camera.y);
+					g.translate(-camera.pos.x, -camera.pos.y);
 				}
 				renderObjects(dg, elapsed, g, camera, layer);
 				// if a camera is set, use it.
 				if (camera != null && !layer.fixed) {
-					g.translate(camera.x, camera.y);
+					g.translate(camera.pos.x, camera.pos.y);
 				}
 			}
 
 			// draw HUD
-			dg.stateManager.getCurrent().drawHUD(dg, this, g);
-			g.dispose();
+			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
 			// render image to real screen (applying scale factor)
-			renderToScreen(dg, realFPS);
+			renderToScreen(dg, realFPS, realUPS);
 		}
 	}
 
@@ -209,21 +229,22 @@ public class Renderer extends AbstractSystem implements System {
 			Font b = g.getFont();
 			g.setFont(to.font);
 			FontMetrics fm = g.getFontMetrics(to.font);
-			to.width = fm.stringWidth(to.text);
-			to.height = fm.getHeight();
+			to.size.x = fm.stringWidth(to.text);
+			to.size.y = fm.getHeight();
 
-			double ox = to.x, oy = to.y;
+			double ox = to.pos.x;
+			double oy = to.pos.y;
 			switch (to.align) {
-			case CENTER:
-				ox = to.x - (to.width / 2);
-				break;
-			case RIGHT:
-				ox = to.x - to.width;
-				break;
-			case LEFT:
-			default:
-				ox = to.x;
-				break;
+				case CENTER:
+					ox = to.pos.x - (to.size.x / 2);
+					break;
+				case RIGHT:
+					ox = to.pos.x - to.size.x;
+					break;
+				case LEFT:
+				default:
+					ox = to.pos.x;
+					break;
 			}
 			int boxPadding = 4;
 
@@ -261,24 +282,24 @@ public class Renderer extends AbstractSystem implements System {
 	public void drawBackgroundBox(Graphics2D g, TextObject to, FontMetrics fm, double ox, double oy, int boxPadding) {
 		if (to.backgroundColor != null) {
 			g.setColor(to.shadowColor);
-			g.fillRect((int) (ox), (int) (oy - (fm.getMaxAscent())), (int) (to.width + boxPadding * 2),
-					(int) (to.height + boxPadding * 2));
+			g.fillRect((int) (ox), (int) (oy - (fm.getMaxAscent())), (int) (to.size.x + boxPadding * 2),
+					(int) (to.size.y + boxPadding * 2));
 			g.setColor(to.backgroundColor);
 			g.fillRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())),
-					(int) (to.width + boxPadding * 2), (int) (to.height + boxPadding * 2));
+					(int) (to.size.x + boxPadding * 2), (int) (to.size.y + boxPadding * 2));
 		}
 		if (to.borderColor != null) {
 			g.setColor(to.borderColor);
 			g.drawRect((int) (ox - boxPadding), (int) (oy - boxPadding - (fm.getMaxAscent())),
-					(int) (to.width + boxPadding * 2), (int) (to.height + boxPadding * 2));
+					(int) (to.size.x + boxPadding * 2), (int) (to.size.y + boxPadding * 2));
 
 			g.setColor(to.shadowColor);
 			g.drawRect((int) (ox - boxPadding + 1), (int) (oy - boxPadding - (fm.getMaxAscent()) + 1),
-					(int) (to.width - 2 + boxPadding * 2), (int) (to.height - 2 + boxPadding * 2));
+					(int) (to.size.x - 2 + boxPadding * 2), (int) (to.size.y - 2 + boxPadding * 2));
 
 			g.setColor(Color.BLACK);
 			g.drawRect((int) (ox - (boxPadding + 1)), (int) (oy - (boxPadding + 1) - (fm.getMaxAscent())),
-					(int) (to.width + (boxPadding * 2) + 2), (int) (to.height + (boxPadding * 2) + 2));
+					(int) (to.size.x + (boxPadding * 2) + 2), (int) (to.size.y + (boxPadding * 2) + 2));
 		}
 	}
 
@@ -293,34 +314,60 @@ public class Renderer extends AbstractSystem implements System {
 		Composite c = g.getComposite();
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
-		case LIGHT_SPHERE:
-			l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-			l.colors = new Color[] { l.foregroundColor,
-					new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
-							l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
-					new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-			l.rgp = new RadialGradientPaint(
-					new Point((int) (l.x + (20 * Math.random() * l.glitterEffect)),
-							(int) (l.y + (20 * Math.random() * l.glitterEffect))),
-					(int) (l.width * 2), l.dist, l.colors);
-			g.setPaint(l.rgp);
-			g.fill(new Ellipse2D.Double(l.x, l.y, l.width, l.width));
-			break;
-
-		case LIGHT_CONE:
-			// TODO implement the CONE light type
-			break;
-
-		case LIGHT_AMBIANT:
-			final Area ambientArea = new Area(new Rectangle2D.Double(dg.stateManager.getCurrent().getActiveCamera().x,
-					dg.stateManager.getCurrent().getActiveCamera().y, dg.config.screenWidth, dg.config.screenHeight));
-			g.setColor(l.foregroundColor);
-
-			g.fill(ambientArea);
-			break;
+			case LIGHT_SPHERE:
+				drawLightSphere(g, l);
+				break;
+			case LIGHT_AMBIANT:
+				drawLightAmbient(dg, g, l);
+				break;
+			case LIGHT_CONE:
+				drawLightCone(dg,g,l);
+				break;
+			default:
+				break;
 		}
 
 		g.setComposite(c);
+	}
+
+	private void drawLightSphere(Graphics2D g, Light l) {
+		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
+		l.colors = new Color[] { 
+				l.foregroundColor,
+				new Color(	
+						l.foregroundColor.getRed() / 2, 
+						l.foregroundColor.getGreen() / 2,
+						l.foregroundColor.getBlue() / 2, 
+						l.foregroundColor.getAlpha() / 2),
+				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
+		l.rgp = new RadialGradientPaint(
+				new Point(
+						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
+						(int) (l.size.x * 2), 
+						l.dist, 
+						l.colors);
+		g.setPaint(l.rgp);
+		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
+	}
+
+	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
+		final Area ambientArea = new Area(
+			new Rectangle2D.Double(
+				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
+				dg.config.screenWidth, 
+				dg.config.screenHeight));
+		g.setColor(l.foregroundColor);
+		g.fill(ambientArea);
+
+	}
+
+	/**
+	 * TODO implements the Conical Light drawing.
+	 */
+	private void drawLightCone(Game dg, Graphics2D g, Light l){
+		log.debug("draw Light cone {}",l.name);
 	}
 
 	/**
@@ -333,26 +380,31 @@ public class Renderer extends AbstractSystem implements System {
 	 */
 	private void drawObject(Game dg, Graphics2D g, GameObject go) {
 		switch (go.type) {
-		case RECTANGLE:
-			g.setColor(go.foregroundColor);
-			g.fillRect((int) go.x, (int) go.y, (int) go.width, (int) go.height);
-			break;
-		case CIRCLE:
-			g.setColor(go.foregroundColor);
-			g.fillOval((int) go.x, (int) go.y, (int) go.width, (int) go.height);
-			break;
-		case IMAGE:
-			if (go.direction < 0) {
-				g.drawImage(go.image, (int) (go.x + go.width), (int) go.y, (int) (-go.width), (int) go.height, null);
-			} else {
-				g.drawImage(go.image, (int) go.x, (int) go.y, (int) go.width, (int) go.height, null);
-			}
-			break;
+			case RECTANGLE:
+				g.setColor(go.foregroundColor);
+				g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+				break;
+			case CIRCLE:
+				g.setColor(go.foregroundColor);
+				g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+				break;
+			case IMAGE:
+				if (go.direction < 0) {
+					g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x),
+							(int) go.size.y, null);
+				} else {
+					g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
+				}
+				break;
 		}
 	}
 
-	public void setRealFPS(int realFPS) {
+	public void setRealFPS(Counter realFPS) {
 		this.realFPS = realFPS;
+	}
+
+	public void setRealUPS(Counter realUPS) {
+		this.realUPS = realUPS;
 	}
 
 	public class Layer {
@@ -361,9 +413,9 @@ public class Renderer extends AbstractSystem implements System {
 		List<GameObject> objects = new ArrayList<>();
 	}
 
-	private void renderToScreen(Game dg, int realFPS) {
+	private void renderToScreen(Game dg, Counter realFPS, Counter realUPS) {
 		BufferStrategy bs = jf.getBufferStrategy();
-		Camera camera = dg.stateManager.getCurrent().getActiveCamera();
+		Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
 		if (bs != null) {
 			Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 			float sX = jf.getWidth() / dg.config.screenWidth;
@@ -375,8 +427,10 @@ public class Renderer extends AbstractSystem implements System {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(String.format("debug:%01d | FPS: %03d | cam:(%03.1f,%03.1f)", dg.config.debug, realFPS,
-							camera.x, camera.y), 4, jf.getHeight() - 20);
+					g.drawString(
+							String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
+									realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
+							4, jf.getHeight() - 20);
 
 					if (dg.config.debug > 2) {
 						g.setColor(Color.ORANGE);
@@ -385,7 +439,6 @@ public class Renderer extends AbstractSystem implements System {
 								(int) ((dg.config.screenHeight - 20) * sY));
 					}
 				}
-				g.dispose();
 			}
 			bs.show();
 
@@ -514,7 +567,7 @@ public class Renderer extends AbstractSystem implements System {
 		}
 	}
 
-	public void renderMapObject(Graphics2D g, MapObject mo, float x, float y) {
+	public void renderMapObject(MapObject mo, float x, float y) {
 		g.drawImage(mo.imageBuffer, (int) x, (int) y, null);
 	}
 
@@ -563,6 +616,15 @@ public class Renderer extends AbstractSystem implements System {
 	public void clear() {
 		layers.clear();
 		renderingObjectPipeline.clear();
+	}
+
+	public void drawImage(BufferedImage image, int x, int y, int width, int height) {
+		g.drawImage(image, x, y, width, height, null);
+	}
+
+	public void drawImage(BufferedImage image, int x, int y) {
+		g.drawImage(image, x, y, null);
+
 	}
 
 }

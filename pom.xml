@@ -1,11 +1,9 @@
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.snapgames</groupId>
     <artifactId>demogame</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>core.Game</name>
+    <name>DemoGame</name>
     <description>This is a sample implementation of a Game with Java JRE only</description>
     <url>https://github.com/mcgivrer/demogame</url>
     <inceptionYear>2019</inceptionYear>
@@ -33,7 +31,7 @@
         <url>https://snapgames.github.io/</url>
         <connection>scm:git:git@github.com:mcgivrer/demogame.git</connection>
         <developerConnection>scm:git:git@github.com/mcgivrer/demogame.git</developerConnection>
-        <tag>${project.id}-0.0.1-SNAPSHOT</tag>
+        <tag>${project.id}-${project.version}</tag>
     </scm>
     <issueManagement>
         <system>Issues tracker</system>
@@ -57,11 +55,6 @@
             <version>1.7.26</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 
         <dependency>
@@ -77,16 +70,26 @@
             <version>3.0.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jlayer -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>jlayer</artifactId>
             <version>1.0.1.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>mp3spi</artifactId>
             <version>1.9.5.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/tritonus-share -->
         <dependency>
             <groupId>com.googlecode.soundlibs</groupId>
             <artifactId>tritonus-share</artifactId>
@@ -121,15 +124,17 @@
             <version>1.2.5</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
-        <finalName>${project.name}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -189,6 +194,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
                 <configuration>
+                    <javadocVersion>1.8</javadocVersion>
                     <encoding>utf-8</encoding>
                     <stylesheet>maven</stylesheet>
                     <overview>${project.basedir}/README.md</overview>
@@ -237,8 +243,7 @@
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>shaded</shadedClassifierName>
                     <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>${mainClass}</mainClass>
                         </transformer>
                         <!--transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
@@ -318,7 +323,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <projectName>core.Game</projectName>
+                            <projectName>${project.name}</projectName>
                             <outputDirectory>${project.build.directory}/site/cucumber-reports</outputDirectory>
                             <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
                             <skippedFails>true</skippedFails>
@@ -432,14 +437,77 @@
                                     <workingDirectory></workingDirectory>
                                     <arguments>
                                         <argument>src/docs/metadata.yml</argument>
-                                        <argument>src/docs/index.md</argument>
-                                        <!--argument>docs/01-{chapters list}.md</argument-->
+                                        <argument>src/docs/00-introduction.md</argument>
+                                        <argument>src/docs/01-game.md</argument>
+                                        <argument>src/docs/02-game_object.md</argument>
+                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
+                                        <argument>src/docs/04-renderer.md</argument>
+                                        <argument>src/docs/05-camera.md</argument>
+                                        <argument>src/docs/06-system_manager.md</argument>
+                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>src/docs/08-physic_engine_system.md</argument>
+                                        <argument>src/docs/09-maplevel.md</argument>
+                                        <argument>src/docs/10-the_maven_project.md</argument>
+                                        <!--argument>src/docs/00-.md</argument-->
+                                        <argument>--resource-path=src/docs/</argument>
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>-t</argument>
                                         <argument>epub3</argument>
                                         <argument>-o</argument>
                                         <argument>target/${project.name}-doc-${project.version}.epub</argument>
+                                    </arguments>
+                                </configuration>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>doc-pdf</id>
+            <build>
+                <plugins>
+                    <!-- generate PDF width docs/ documentation content -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>pandoc-pdf</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <executable>pandoc</executable>
+                                    <workingDirectory></workingDirectory>
+                                    <arguments>
+                                        <argument>src/docs/metadata.yml</argument>
+                                        <argument>src/docs/00-introduction.md</argument>
+                                        <argument>src/docs/01-game.md</argument>
+                                        <argument>src/docs/02-game_object.md</argument>
+                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
+                                        <argument>src/docs/04-renderer.md</argument>
+                                        <argument>src/docs/05-camera.md</argument>
+                                        <argument>src/docs/06-system_manager.md</argument>
+                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>src/docs/08-physic_engine_system.md</argument>
+                                        <argument>src/docs/09-maplevel.md</argument>
+                                        <argument>src/docs/10-the_maven_project.md</argument>
+                                        <!--argument>src/docs/00-.md</argument-->
+                                        <argument>--resource-path=src/docs/</argument>
+                                        <argument>--toc</argument>
+                                        <argument>--toc-depth=2</argument>
+                                        <argument>--pdf-engine=context</argument>
+                                        <!--argument>-t</argument>
+                                        <argument>pdf</argument-->
+                                        <argument>-o</argument>
+                                        <argument>target/${project.name}-doc-${project.version}.pdf</argument>
+                                        <argument>--template</argument>
+                                        <argument>eisvogel</argument>
+                                        <argument>--listings</argument>
                                     </arguments>
                                 </configuration>
                                 <goals>

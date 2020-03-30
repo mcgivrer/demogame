@@ -7,20 +7,21 @@
  */
 package core.audio;
 
-import com.google.gson.Gson;
-import core.Game;
-import core.resource.ResourceManager;
-import core.system.AbstractSystem;
-import core.system.System;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Map;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.sound.sampled.AudioFileFormat.Type;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.Mixer.Info;
-import java.util.Map;
-import java.util.Stack;
-import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.gson.Gson;
+
+import core.Game;
+import core.resource.ResourceManager;
+import core.system.AbstractSystem;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is intend to manage and control Sound play and output.
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Frédéric Delorme.
  */
 @Slf4j
-public class SoundSystem extends AbstractSystem implements System {
+public class SoundSystem extends AbstractSystem {
     /**
      * Max number of SoundClip to be stored in cache.
      */
@@ -152,7 +153,7 @@ public class SoundSystem extends AbstractSystem implements System {
 
             if (soundBank.containsKey(code)) {
                 SoundClip sc = soundBank.get(code);
-                if (loop && sc !=null) {
+                if (loop && sc != null) {
                     sc.play(pan, volume);
                     sc.loop();
                 }

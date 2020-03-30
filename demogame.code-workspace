@@ -1,11 +1,16 @@
 {
 	"folders": [
 		{
-			"path": "/home/frederic/projects/prototypes/demogame.wiki"
+			"path": "."
 		},
 		{
-			"path": "."
+			"path": "C:/Users/212391884/projects/perso/prototypes/demogame.wiki"
+		},
+		{
+			"path": "/home/frederic/projects/prototypes/bgf"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
 }

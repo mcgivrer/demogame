@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import core.math.PhysicEngineSystem.PhysicType;
+import core.math.Vector2D;
 import core.object.GameObject;
 import core.object.Light;
 import lombok.ToString;
@@ -27,6 +29,8 @@ public class MapLevel extends GameObject {
 
 	// raw text format for the map.
 	public Map<String, MapLayer> layers = new HashMap<>();
+	
+	public Map<String,Vector2D> initialPosition = new HashMap<>();
 
 	// name of the output level
 	public String nextLevel;
@@ -38,28 +42,33 @@ public class MapLevel extends GameObject {
 	// Lights in the level.
 	public List<Light> lights = new ArrayList<>();
 
+	public MapLevel() {
+		super();
+		this.physicType = PhysicType.STATIC;
+	}
+
 	/**
 	 * This method is used to constrain GameObject in the MapLevel bounding box.
 	 *
 	 * @param go the GameObject to be evaluated and constrained if necessary.
 	 */
 	public void constrainToMapLevel(MapLayer ml, int index, GameObject go) {
-		if (go.x + go.width > ml.width * ml.assetsObjects.get(index).tileWidth) {
-			go.x = ml.width * ml.assetsObjects.get(index).tileWidth - go.width;
-			go.dx = -go.dx;
+		if (go.pos.x + go.size.x > ml.width * ml.assetsObjects.get(index).tileWidth) {
+			go.pos.x = ml.width * ml.assetsObjects.get(index).tileWidth - go.size.x;
+			go.vel.x = -go.vel.x;
 		}
-		if (go.y + go.height > ml.height * ml.assetsObjects.get(index).tileHeight) {
-			go.y = ml.height * ml.assetsObjects.get(index).tileHeight - go.height;
-			go.dy = -go.dy;
+		if (go.pos.y + go.size.y > ml.height * ml.assetsObjects.get(index).tileHeight) {
+			go.pos.y = ml.height * ml.assetsObjects.get(index).tileHeight - go.size.y;
+			go.vel.y = -go.vel.y;
 		}
 
-		if (go.x < 0.0f) {
-			go.x = 0.0f;
-			go.dx = -go.dx;
+		if (go.pos.x < 0.0f) {
+			go.pos.x = 0.0f;
+			go.vel.x = -go.vel.x;
 		}
-		if (go.y < 0.0f) {
-			go.y = 0.0f;
-			go.dy = -go.dy;
+		if (go.pos.y < 0.0f) {
+			go.pos.y = 0.0f;
+			go.vel.y = -go.vel.y;
 		}
 	}
 }

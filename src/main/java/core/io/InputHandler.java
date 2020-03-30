@@ -1,14 +1,13 @@
 package core.io;
 
-import core.Game;
-import core.system.AbstractSystem;
-import core.system.System;
-import lombok.extern.slf4j.Slf4j;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import core.Game;
+import core.system.AbstractSystem;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * InputHandler gaols consists in managing all input from any connected devices.
@@ -18,7 +17,7 @@ import java.util.List;
  * @since 2019
  */
 @Slf4j
-public class InputHandler extends AbstractSystem implements KeyListener, System {
+public class InputHandler extends AbstractSystem implements KeyListener {
 
     /**
      * The current key states
@@ -57,7 +56,6 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
     public InputHandler(Game g) {
         super(g);
     }
-
 
     /**
      * retrieve name fo this system.
@@ -108,8 +106,8 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         for (KeyListener kl : listeners) {
             kl.keyPressed(e);
         }
-        
-        log.debug("key {}:{} pressed",e.getKeyCode(),e.getKeyChar());
+
+        log.debug("key {}:{} pressed", e.getKeyCode(), e.getKeyChar());
     }
 
     /**
@@ -128,7 +126,7 @@ public class InputHandler extends AbstractSystem implements KeyListener, System 
         for (KeyListener kl : listeners) {
             kl.keyReleased(e);
         }
-        log.debug("key {}:{} released",e.getKeyCode(),e.getKeyChar());
+        log.debug("key {}:{} released", e.getKeyCode(), e.getKeyChar());
     }
 
     /**

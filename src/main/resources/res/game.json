@@ -1,6 +1,6 @@
 {
-  "defaultState": "game",
-  "states": {
-    "game": "demo.states.DemoState"
+  "defaultScene": "game",
+  "scenes": {
+    "game": "demo.scenes.DemoScene"
   }
 }

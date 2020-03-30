@@ -20,7 +20,6 @@ import core.object.GameObject;
 import core.object.World;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
-import core.system.System;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,12 +29,13 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2019
  */
 @Slf4j
-public class LuaScriptSystem extends AbstractSystem implements System {
+public class LuaScriptSystem extends AbstractSystem {
 
 	private Map<String, String> scripts = new HashMap<>();
 	private Globals globals;
 	private PrintStream printStream;
 	private ByteArrayOutputStream baos;
+	private boolean scriptingOn = false;
 
 	public LuaScriptSystem(Game g) {
 		super(g);
@@ -62,13 +62,15 @@ public class LuaScriptSystem extends AbstractSystem implements System {
 	 * @param paths list of path to Scripts in the "/res/scripts" path.
 	 */
 	public void loadAll(String[] paths) {
-		for (String path : paths) {
-			try {
-				load(path);
-				LuaValue chunk = globals.load(scripts.get(path), path);
-				chunk.call();
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (scriptingOn) {
+			for (String path : paths) {
+				try {
+					load(path);
+					LuaValue chunk = globals.load(scripts.get(path), path);
+					chunk.call();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -87,22 +89,23 @@ public class LuaScriptSystem extends AbstractSystem implements System {
 
 	public Object execute(Game g, World world, String scriptName, Object o, Map<String, GameObject> map)
 			throws ScriptException {
-		log.debug("execute script {} on object {}", scriptName, ((GameObject) o).name);
+		if (scriptingOn) {
+			log.debug("execute script {} on object {}", scriptName, ((GameObject) o).name);
 
-		LuaValue gameLua = CoerceJavaToLua.coerce(g);
-		LuaValue worldLua = CoerceJavaToLua.coerce(world);
-		LuaValue objectLua = CoerceJavaToLua.coerce(o);
-		if (map == null) {
-			map = new HashMap<>();
+			LuaValue gameLua = CoerceJavaToLua.coerce(g);
+			LuaValue worldLua = CoerceJavaToLua.coerce(world);
+			LuaValue objectLua = CoerceJavaToLua.coerce(o);
+			if (map == null) {
+				map = new HashMap<>();
+			}
+			LuaValue mapLua = CoerceJavaToLua.coerce(map);
+
+			LuaValue initMtd = globals.get("init");
+			initMtd.invoke(new LuaValue[] { gameLua, worldLua });
+			LuaValue updateMtd = globals.get("update");
+			updateMtd.invoke(new LuaValue[] { gameLua, worldLua, objectLua, mapLua });
+			logLuaConsole(scriptName);
 		}
-		LuaValue mapLua = CoerceJavaToLua.coerce(map);
-
-		LuaValue initMtd = globals.get("init");
-		initMtd.invoke(new LuaValue[] { gameLua, worldLua });
-		LuaValue updateMtd = globals.get("update");
-		updateMtd.invoke(new LuaValue[] { gameLua, worldLua, objectLua, mapLua });
-		logLuaConsole(scriptName);
-
 		return o;
 	}
 

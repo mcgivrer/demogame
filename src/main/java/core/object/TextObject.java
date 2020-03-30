@@ -1,12 +1,15 @@
 package core.object;
 
-import core.Game;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 
-import java.awt.*;
+import core.Game;
+import core.math.PhysicEngineSystem.PhysicType;
 
 /**
- * The TextObject is a new GameObject to display only Text.
- * This GO is managed as other GameObject but can be Fixed (or sticked) to camera view.
+ * The TextObject is a new GameObject to display only Text. This GO is managed
+ * as other GameObject but can be Fixed (or sticked) to camera view.
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  * @since 2019
@@ -14,9 +17,7 @@ import java.awt.*;
 public class TextObject extends GameObject {
 
     public enum TextAlign {
-        LEFT,
-        CENTER,
-        RIGHT
+        LEFT, CENTER, RIGHT
     }
 
     public TextAlign align = TextAlign.CENTER;
@@ -46,13 +47,8 @@ public class TextObject extends GameObject {
      * @param layer
      * @param align
      */
-    public TextObject(String name,
-                      double x, double y,
-                      Color foreground, Color outlined, Color shadow,
-                      Font font,
-                      boolean fixed,
-                      int layer,
-                      TextAlign align) {
+    public TextObject(String name, double x, double y, Color foreground, Color outlined, Color shadow, Font font,
+            boolean fixed, int layer, TextAlign align) {
         super(name, x, y, 0, 0);
         this.foregroundColor = foreground;
         this.outlinedColor = outlined;
@@ -61,6 +57,7 @@ public class TextObject extends GameObject {
         this.layer = layer;
         this.fixed = fixed;
         this.align = align;
+        this.physicType = PhysicType.STATIC;
     }
 
     /**
@@ -73,7 +70,7 @@ public class TextObject extends GameObject {
      */
     @Override
     public void update(Game dg, double elapsed) {
-    	super.update(dg, elapsed);
+        super.update(dg, elapsed);
         if (attributes.containsKey("text")) {
             this.text = attributes.get("text").toString();
         }
@@ -92,7 +89,6 @@ public class TextObject extends GameObject {
     public void setText(String text, Object... attributes) {
         this.text = String.format(text, attributes);
     }
-
 
     public void setText(String text) {
         this.text = text;

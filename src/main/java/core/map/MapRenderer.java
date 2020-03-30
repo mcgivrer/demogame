@@ -59,8 +59,8 @@ public class MapRenderer {
 	private void drawTilemapLayer(Game dg, Graphics2D g, double elapsed, Camera camera, int mHeight, int mWidth,
 			MapLayer mapLayer) {
 
-		int cx = (int) (camera.x / mapLayer.assetsObjects.get(0).tileWidth);
-		int cy = (int) (camera.y / mapLayer.assetsObjects.get(0).tileHeight);
+		int cx = (int) (camera.pos.x / mapLayer.assetsObjects.get(0).tileWidth);
+		int cy = (int) (camera.pos.y / mapLayer.assetsObjects.get(0).tileHeight);
 		int offCx = (int) (camera.viewport.width / (mapLayer.assetsObjects.get(0).tileWidth)) + 2;
 		int offCy = (int) (camera.viewport.height / (mapLayer.assetsObjects.get(0).tileHeight)) + 2;
 
@@ -101,8 +101,8 @@ public class MapRenderer {
 	 */
 	private void drawBackgroundLayer(Graphics2D g, Camera camera, int mWidth, int tileWidth, MapLayer mapLayer) {
 		if (mapLayer.backgroundImage != null) {
-			double bx = camera.x * mapLayer.backgroundImage.getWidth() / (mWidth * tileWidth);
-			double by = camera.y;
+			double bx = camera.pos.x * mapLayer.backgroundImage.getWidth() / (mWidth * tileWidth);
+			double by = camera.pos.y;
 			for (int x = (int) (bx - (1 * mapLayer.backgroundImage.getWidth())); x <= (bx
 					+ (2 * mapLayer.backgroundImage.getWidth())); x += mapLayer.backgroundImage.getWidth()) {
 				g.drawImage(mapLayer.backgroundImage, (int) x, (int) by, null);

@@ -7,6 +7,7 @@
 package core.system;
 
 import core.Game;
+import core.system.System;
 
 /**
  * The AbstractSystem class will implment the default behavior for any
@@ -37,5 +38,14 @@ public abstract class AbstractSystem implements System {
      * @return name of the system.
      */
     public abstract String getName();
+
+    /**
+     * Initialize the parent game attribute.
+     */
+    @Override
+    public int initialize(Game game) {
+        this.game = game;
+        return 1;
+    }
 
 }

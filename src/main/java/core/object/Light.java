@@ -1,6 +1,6 @@
 /**
  * SnapGames
- * 
+ *
  * Game Development Java
  *
  * DemoGame
@@ -37,7 +37,7 @@ public class Light extends GameObject {
 	public double glitterEffect = 1.0;
 
 	public double intensity;
-	public float[] dist = { 0.0f, 0.75f, 1.0f };
+	public float[] dist = { 0.0f, 0.25f, 1.0f };
 	public Color[] colors;
 
 	public RadialGradientPaint rgp;
@@ -46,7 +46,7 @@ public class Light extends GameObject {
 	 *
 	 */
 	public Light() {
-
+		super();
 	}
 
 	/**

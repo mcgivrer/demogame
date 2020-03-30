@@ -2,12 +2,16 @@ package core;
 
 import core.audio.SoundSystem;
 import core.collision.MapCollidingService;
+import core.gfx.Counter;
 import core.gfx.Renderer;
 import core.io.InputHandler;
+import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
+import core.object.World;
 import core.resource.ResourceManager;
+import core.scene.Scene;
+import core.scene.SceneManager;
 import core.scripts.LuaScriptSystem;
-import core.state.StateManager;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +34,8 @@ public class Game {
 	public SystemManager sysMan;
 	public InputHandler inputHandler;
 	public Renderer renderer;
-	public StateManager stateManager;
+	public PhysicEngineSystem physicEngine;
+	public SceneManager sceneManager;
 
 	/**
 	 * Create the Game container.
@@ -59,10 +64,13 @@ public class Game {
 	 * Initialization of the game.
 	 */
 	public void initialize() {
-		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
 		// start System Manager
 		sysMan = SystemManager.initialize(this);
+		sysMan.add(new ResourceManager(this));
+		
+		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
+
 
 		// add basic systems
 		inputHandler = new InputHandler(this);
@@ -72,9 +80,13 @@ public class Game {
 		ObjectManager objectManager = new ObjectManager(this);
 		sysMan.add(objectManager);
 
-		// rendering pipeline
+		// Renderer pipeline system
 		renderer = new Renderer(this);
 		sysMan.add(renderer);
+
+		// Physic Engine system
+		physicEngine = new PhysicEngineSystem(this, new World(this));
+		sysMan.add(physicEngine);
 
 		// Massive Sound system
 		SoundSystem soundSystem = new SoundSystem(this);
@@ -85,12 +97,11 @@ public class Game {
 		sysMan.add(mapCollider);
 
 		// start State manager system
-		stateManager = new StateManager(this);
-		sysMan.add(stateManager);
+		sceneManager = new SceneManager(this);
+		sysMan.add(sceneManager);
 
 		LuaScriptSystem luaSystem = new LuaScriptSystem(this);
 		sysMan.add(luaSystem);
-
 
 	}
 
@@ -98,42 +109,53 @@ public class Game {
 	 * Main loop for the game.
 	 */
 	private void loop() {
-		stateManager.startState(this);
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		int frames=0;
-		int realFPS = 0;
-		int elapsedFrameTime=0;
+		double waitFrameDuration = config.fps * 0.000001f;
+		double waitUpdateDuration = config.fps * 3 * 0.000001f;
+		Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
+		Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
+
+		renderer.setRealFPS(realFPS);
+		renderer.setRealUPS(realUPS);
+
+		sceneManager.startState(this);
 
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
 
-			float elapsed = startTime - previousTime;
+			double elapsed = startTime - previousTime;
 
-			stateManager.input(this);
-			stateManager.update(this, elapsed);
-			renderer.setRealFPS(realFPS);
-			stateManager.render(this, renderer, elapsed);
+			Scene current = sceneManager.getCurrent();
 
-			float wait = (elapsed-(config.fps * 0.001f));
-			frames++;
-			elapsedFrameTime+=elapsed;
-			if(elapsedFrameTime>1000){
-				frames=0;
-				elapsedFrameTime=0;
-				realFPS=frames;
-				log.debug("elapsed:{}, wait:{}",elapsed,wait);
+			physicEngine.update(this, current, elapsed);
+
+			sceneManager.input(this);
+			sceneManager.update(this, elapsed);
+
+			if (realFPS.isReached()) {
+				sceneManager.render(this, renderer, elapsed);
 			}
+			double wait = (waitUpdateDuration - elapsed);
 
-			/*if (wait > 0) {
-				try {
-					Thread.sleep((int) wait);
-				} catch (InterruptedException e) {
-					log.error("Unable to wait {} wait ms", wait, e);
-				}
-			}*/
+			waitNextFrame(waitUpdateDuration, wait);
+
+			realUPS.tick(elapsed);
+			realFPS.tick(elapsed);
+
 			previousTime = startTime;
+		}
+	}
+
+	private void waitNextFrame(double waitFrameDuration, double wait) {
+		if (wait > 0 && wait < waitFrameDuration) {
+			log.debug("wait for {}ms", wait);
+			try {
+				Thread.sleep((int) wait);
+			} catch (InterruptedException e) {
+				log.error("Unable to wait {} wait ms", wait, e);
+			}
 		}
 	}
 
