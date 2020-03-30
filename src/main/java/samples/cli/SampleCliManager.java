@@ -5,11 +5,8 @@ import samples.input.SampleInputHandler;
 
 @Slf4j
 public class SampleCliManager extends SampleInputHandler {
+
     CliManager clm;
-
-    public SampleCliManager() {
-
-    }
 
     public SampleCliManager(String title, String[] args) {
         this.title = title;

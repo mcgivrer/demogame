@@ -2,11 +2,24 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SampleGameLoop",
+            "request": "launch",
+            "mainClass": "samples.loop.SampleGameLoop",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - SampleCliManager",
             "request": "launch",
             "mainClass": "samples.cli.SampleCliManager",
             "projectName": "demogame",
-            "args":["d=2","w=640","h=400","s=1.5","title=demo"]
+            "args": [
+                "d=2",
+                "w=640",
+                "h=400",
+                "s=1.5",
+                "title=demo"
+            ]
         },
         {
             "type": "java",

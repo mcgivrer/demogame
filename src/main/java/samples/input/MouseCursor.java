@@ -29,7 +29,7 @@ public class MouseCursor extends GameObject {
     @Override
     public void update(Sample ga, double elapsed) {
         x += ga.getActiveCamera().x;
-        x += ga.getActiveCamera().y;
+        y += ga.getActiveCamera().y;
     }
 
     public void setCursorImage(BufferedImage image) {

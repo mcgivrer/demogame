@@ -1,6 +1,7 @@
 package samples.input;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -32,7 +33,7 @@ import samples.system.GameSystemManager;
 @Slf4j
 public class SampleInputHandler extends SampleGameSystemManagerCamera implements InputHandlerListener {
 
-    public SampleInputHandler(){
+    protected SampleInputHandler() {
 
     }
 
@@ -57,15 +58,12 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         frame.setLocationRelativeTo(null);
         frame.requestFocus();
         frame.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
-                new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB), 
-                new Point(0,0), 
-                "transparent_cursor"));
+                new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "transparent_cursor"));
         BufferStrategy bs = frame.getBufferStrategy();
         if (bs == null) {
             frame.createBufferStrategy(4);
         }
     }
-
 
     @Override
     public void initialize() {
@@ -97,6 +95,10 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             player.width = player.image.getWidth();
             player.height = player.image.getHeight();
             player.maxD = 4;
+            player.x = (screenBuffer.getWidth() - player.image.getWidth()) / 2;
+            player.y = (screenBuffer.getHeight() - player.image.getHeight()) / 2;
+            player.dx = 0;
+            player.dy = 0;
             player.attributes.put("elasticity", 0.0);
             objects.put(player.name, player);
 
@@ -107,7 +109,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             log.error("unable to read the tileset image");
         }
 
-        camera = new Camera("cam1", objects.get("player"), 0.018f,
+        camera = new Camera("cam1", objects.get("player"), 0.005f,
                 new Rectangle(screenBuffer.getWidth(), screenBuffer.getHeight()));
         objects.put(camera.name, camera);
     }
@@ -152,7 +154,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
     }
 
     public void input(InputHandler ih) {
-        final List<String> excludedObjects = Arrays.asList("player","mouse_cursor");
+        final List<String> excludedObjects = Arrays.asList("player", "mouse_cursor");
 
         MouseCursor m = (MouseCursor) objects.get("mouse_cursor");
         m.x = ih.getMouseX() / scale;
@@ -226,7 +228,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
                 go.color = squareColor;
             }
             go.update(this, elapsed);
-            if (!(go.name.equals("camera") || go.name.equals("mouse_cursor"))) {
+            if (!(go.name.equals("cam1") || go.name.equals("mouse_cursor"))) {
                 constrainGameObject(go);
             }
         }
@@ -269,9 +271,11 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
         }
 
         // draw play area
-        g.setColor(new Color(0.0f,0.0f,0.3f));
+        g.setColor(new Color(0.0f, 0.0f, 0.3f));
         g.fillRect(0, 0, width, height);
-        
+        g.setColor(new Color(0.6f, 0.6f, 0.6f));
+        g.drawRect(0, 0, width, height);
+
         // loop objects
         for (GameObject go : objects.values()) {
             go.draw(this, g);
@@ -298,13 +302,19 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             drawString(sg, xOffset, yOffset, lineHeight, 2, String.format("pos:%03.2f,%03.2f", go.x, go.y));
         }
         if (go instanceof Camera) {
-            int yOffset = (int) (4 * lineHeight);
-            sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
-            sg.fillRect(10, yOffset, 150, 3 * lineHeight);
+            int xOffset = (int) (0 * lineHeight);
+            int yOffset = (int) (2 * lineHeight);
+            // draw camera debug information
             sg.setColor(Color.ORANGE);
-            sg.drawRect(10, 10, (int) (width * scale) - 20, (int) (height * scale) - 20);
-            drawString(sg, 10, yOffset, lineHeight, 1, String.format("name:%s", go.name));
-            drawString(sg, 10, yOffset, lineHeight, 2, String.format("pos:%03.2f,%03.2f", go.x, go.y));
+            sg.drawRect((int) (go.x * scale) + 10, (int) (go.y * scale), (int) (width * scale) - 40,
+                    (int) (height * scale) - 40);
+            sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
+            sg.fillRect((int) (go.x * scale) + 10, (int) (go.y * scale) + yOffset, 150, 3 * lineHeight);
+            sg.setColor(Color.ORANGE);
+            drawString(sg, (int) (go.x * scale) + 10 + xOffset, (int) (go.y * scale) + yOffset, lineHeight, 1,
+                    String.format("name:%s", go.name));
+            drawString(sg, (int) (go.x * scale) + 10 + xOffset, (int) (go.y * scale) + yOffset, lineHeight, 2,
+                    String.format("pos:%03.2f,%03.2f", go.x, go.y));
         } else {
             super.displayDebug(sg, go);
         }

@@ -1,6 +1,9 @@
 package samples;
 
+import java.util.Map;
+
 import samples.camera.Camera;
+import samples.object.GameObject;
 
 /**
  * All Sample gaame will implements this interface, just to simplify

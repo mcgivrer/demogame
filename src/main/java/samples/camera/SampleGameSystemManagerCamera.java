@@ -23,6 +23,11 @@ import samples.system.SampleGameSystemManager;
 @Slf4j
 public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
 
+    protected SampleGameSystemManagerCamera(){
+        
+    }
+
+
     public SampleGameSystemManagerCamera(String title, int w, int h, int s) {
         super(title, w, h, s);
         log.info("Sample System Manager ready...");
