@@ -5,10 +5,12 @@ import java.awt.Rectangle;
 
 import samples.Sample;
 import samples.object.GameObject;
-import samples.object.SampleGameObject;
 
 /**
- * Camera to follow a
+ * <p>
+ * <code>Camera</code> to follow a targeted GameObject.
+ * <p>
+ * A tween factor gise some elasticity to the camera in the follwoing moves.
  */
 public class Camera extends GameObject {
     public GameObject target;
@@ -18,6 +20,16 @@ public class Camera extends GameObject {
     public double offsetX = 0.0;
     public double offsetY = 0.0;
 
+    /**
+     * Create a new Camera named <code>name</code> and follow the GameObject target,
+     * with a <code>tween</code> factor. The <code>viewport</code> is the size of
+     * the camera view.
+     * 
+     * @param name     name of the camera
+     * @param target   the GameObject to be tracked by the camera.
+     * @param tween    the elasticity factor
+     * @param viewport the size of the camera view in pixels.
+     */
     public Camera(String name, GameObject target, double tween, Rectangle viewport) {
         super(name);
         this.target = target;
@@ -29,11 +41,11 @@ public class Camera extends GameObject {
 
     @Override
     public void update(Sample ga, double elapsed) {
-        if(target==null){
+        if (target == null) {
             return;
         }
-        x += (target.x + target.width - offsetX - x) * tween * Math.max(elapsed,10);
-        y += (target.y + target.height - offsetY - y) * tween * Math.max(elapsed,10);
+        x += (target.x + target.width - offsetX - x) * tween * Math.max(elapsed, 10);
+        y += (target.y + target.height - offsetY - y) * tween * Math.max(elapsed, 10);
     }
 
     @Override

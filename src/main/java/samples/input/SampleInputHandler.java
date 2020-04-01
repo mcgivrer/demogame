@@ -126,7 +126,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
             go.dy = (int) (Math.random() * 8);
             go.color = squareColor;
 
-            go.attributes.put("elasticity", 1.0);
+            go.attributes.put("elasticity", 0.7);
 
             go.type = randomType();
 

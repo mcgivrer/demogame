@@ -242,7 +242,7 @@ The most interesting part is the `validate(String)` and `parse(String)` methods.
 The last trick provided by the CliManager class is the help generator. This method will parse all arguments description and aggregate all those well fitted text to output as an help text.
 
 ```bash
-$> java -jar target/BGF-x.y.z-shaded.jar h
+$> java -jar target/DemoGame-0.0.1-SNAPSHOT-shaded.jar h
 Command Usage:
 ---------------
 - [f / fps] : Define the frames per second ratio. ( min:30.0, max:60.0, default:60.0 )

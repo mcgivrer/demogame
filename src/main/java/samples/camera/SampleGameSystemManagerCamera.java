@@ -75,8 +75,7 @@ public class SampleGameSystemManagerCamera extends SampleGameSystemManager {
         g.drawRect(0, 0, camera.viewport.width, camera.viewport.height);
 
         if (camera != null) {
-            g.translate(camera.x, camera.y);
-
+            g.scale(1/camera.zoomFactor,1/camera.zoomFactor);
         }
         drawToScreen(camera, realFps);
     }
