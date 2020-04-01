@@ -45,7 +45,7 @@ public class Game {
 	 */
 	public Game(String[] argc) {
 		super();
-		config = Config.analyzeArgc(argc);
+		config = Config.analyzeArgc(this,argc);
 	}
 
 	/**
