@@ -84,19 +84,13 @@ public interface InputHandlerListener extends KeyListener{
 
 This new interface must be inherited by all class which need to process input events in our future game.
 
-<<<<<<< HEAD:src/docs/05-inputhandler.md
 ```java
 public class SampleInputHandler implements InputHandlerListener {
     
 }
 ```
 
-
-
 parsing the `keylisteners` list, we are going to call each `keyPressed()` methods.
-=======
-Parsing the `keylisteners` list, we are going to call each `keyPressed()` methods.
->>>>>>> add-input-handler:src/docs/04-inputhandler.md
 
 ```java
 public void keyPressed(KeyEvent e){
@@ -123,42 +117,7 @@ public void keyReleased(KeyEvent e){
 okay ! we now have a first step in our `InputHandler` implementation quest.
 
 Now, what we have to do is to register our `SampleInputHandler` game to the `InputHandler`.
-
-
-
-<<<<<<< HEAD:src/docs/05-inputhandler.md
-
-
-## Get mouse events
-
-To illustrate the use of mouse events, I propose to implement in our game engine a mouse cursor that can be used to interact with screen.
-
-So let's implement all the needed mouse listeners to interact with a mouse, and then, try to create a new `GameObject`, the `MouseCursor`.
-
-### The mouse listeners
-
-In the JDK all mouse events are split between multiple listeners:
-
-- `MouseListener` mainly to detect Mouse click,
-- `MouseMotionListener` to detect mouse moves,
-- ans the `MouseWheelListener` to interact with the mouse wheel.
-
-We must implement all of those event listeners to capture all mouse events.
-
-We need to enhance our InputHandler with those capabilities:
-
-```java
-public class InputHandler implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
-    ...
-}
-```
-
-Ok, and now we have to add new attributes to manage all those new events.
-
-We also add new Event Queue to be able to process those events on demand.
-
-
-=======
+S
 ```java
 public class SampleInputHandler implements InputHandlerListener {
     ...
@@ -340,15 +299,21 @@ To test that new mouse events,  we need a mouse cursor, and this `MouseCursor` o
 public class MouseCursor extends GameObject{
     public MouseCursor(String name){
         super(name);
+        mCursor.color = Color.WHITE;
+        mCursor.width = 16;
+        mCursor.height = 16;
+        type = GameObjectType.OTHER;
     }
     @Override
     public void draw(SampleGameObject ga, Graphics2D g) {
         g.setColor(color);
-        g.drawLine((int)(x-(width/2)),(int)(y),(int)(x+(width/2)),(int)(y+height));
-        g.drawLine((int)(x),(int)(y-(height/2)),(int)(x+width),(int)(y+(height/2)));
+        g.drawLine(
+            (int)(x-(width/2)),(int)(y),
+            (int)(x+(width/2)),(int)(y+height));
+        g.drawLine(
+            (int)(x),(int)(y-(height/2)),
+            (int)(x+width),(int)(y+(height/2)));
     }
-    @Override
-    public void update(SampleGameObject ga, double elapsed) {}
 }
 ```
 
@@ -358,9 +323,6 @@ Add an instance of this object to our `SampleInputHandler`:
 public void load() {
     ...
     MouseCursor mCursor = new MouseCursor("mouse_cursor");
-    mCursor.color = Color.WHITE;
-    mCursor.width = 16;
-    mCursor.height = 16;
     objects.put(mCursor.name, mCursor);
     ...
 }
@@ -378,12 +340,13 @@ public void input(InputHandler ih) {
 }
 ```
 
-And as the mouse cursor must stay centered on the screen it needs to follow the camera moves. Let's update the mouse cursor position :
+And as the mouse cursor must stay centered on the screen it needs to follow the `camera` moves. Let's update the `MouseCursor` object position :
 
 ```java
-public void update(Sample ga, double elapsed) {
-    offsetX = ga.getActiveCamera().x;
-    offsetY = ga.getActiveCamera().y;
+@Override
+public void update(SampleGameObject ga, double elapsed) {
+    x += ga.getActiveCamera().x;
+    y += ga.getActiveCamera().y;
 }
 ```
 
@@ -393,9 +356,9 @@ And now `MouseCursor` and `Camera` are moving as a duo.
 
 ## Complex input behaviors
 
-To be able to detect more complex input interpretation, we also add new Event Queue to be able to process those events on demand.
+To detect more complex input, like key chains, we also add new Event Queue to process events on demand.
 
-Add a buffer to store those event, we try to use a `Queue`;  let's back into the `initialize()`
+As a buffer to store event, we use a `Queue`;  let's back into the `initialize()`
 
 ```java
 public int initialize(Sample game){
@@ -418,7 +381,6 @@ private void pushEvent(InputEvent e) {
 ```
 
 
->>>>>>> add-input-handler:src/docs/04-inputhandler.md
 
 ## Get game device events
 
