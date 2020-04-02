@@ -83,9 +83,11 @@ public class DemoScene extends AbstractScene {
 		ResourceManager.addListener(new ProgressListener() {
 			@Override
 			public void update(float value, String path) {
-				log.info("reading resources: {} : {}", value * 100.0f, path);
+				log.info("reading resources: {} : {}", range(value,20), path);
 			}
 		});
+
+
 
 		mapLevel = MapReader.readFromFile("/res/maps/map_2.json");
 		BufferedImage imageAsset = ResourceManager.getImage("/res/images/tileset-1.png");
@@ -97,6 +99,14 @@ public class DemoScene extends AbstractScene {
 
 		inventory = new HudInventory(20, 12);
 		inventory.load(imageAsset);
+	}
+
+	private String range(float value,int nbCharacters){
+		int v = (int)(value*nbCharacters);
+		return repeat("#",v)+repeat("_",nbCharacters-v);
+	}
+	public String repeat(String str, int count) {
+		return count > 0 ?  repeat(str, count -1) + str: "";
 	}
 
 	@Override

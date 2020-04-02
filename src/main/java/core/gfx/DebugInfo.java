@@ -29,7 +29,7 @@ public class DebugInfo {
 	 * @param g
 	 * @param go
 	 */
-	public static void display(Graphics2D g, GameObject go) {
+	public static void display(Graphics2D g, GameObject go, double scale) {
 		g.setFont(debugFont);
 		FontMetrics fm = g.getFontMetrics(debugFont);
 
@@ -44,17 +44,17 @@ public class DebugInfo {
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
 		int height = (debugInfo.size() - 1) * (fontHeight - 3);
 
-		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, borderColor,
+		drawBackgroundPanel(g, offsetX*scale, offsetY*scale - fontHeight, width, height, borderColor,
 				backgroundColor);
 
-		drawAttributesText(g, debugInfo, offsetX, offsetY, maxWidth, maxLinePerColumn, fontHeight, Color.WHITE);
+		drawAttributesText(g, debugInfo, offsetX*scale, offsetY*scale, maxWidth, maxLinePerColumn, fontHeight, Color.WHITE);
 
 		// draw object size
 		g.setColor(Color.BLUE);
-		g.drawRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+		g.drawRect((int) (go.pos.x*scale), (int) (go.pos.y*scale), (int) go.size.x, (int) go.size.y);
 		// draw bounding box
 		g.setColor(Color.RED);
-		g.drawRect((int) go.bbox.pos.x, (int) go.bbox.pos.y, (int) go.bbox.size.x, (int) go.bbox.size.y);
+		g.drawRect((int) (go.bbox.pos.x*scale), (int) (go.bbox.pos.y*scale), (int) (go.bbox.size.x*scale), (int) (go.bbox.size.y*scale));
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	}
 
@@ -97,7 +97,7 @@ public class DebugInfo {
 		g.drawRect((int) offsetX - 4, (int) (offsetY), width, height);
 	}
 
-	public static void displayCollisionTest(Graphics2D g, GameObject go) {
+	public static void displayCollisionTest(Graphics2D g, GameObject go, double scale) {
 		int ox = (int) (go.bbox.pos.x / 16);
 		int ow = (int) (go.bbox.size.x / 16);
 		int oy = (int) (go.bbox.pos.y / 16);

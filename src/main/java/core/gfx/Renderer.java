@@ -210,12 +210,6 @@ public class Renderer extends AbstractSystem {
 				} else if (go instanceof GameObject) {
 					drawObject(dg, g, go);
 				}
-
-				// if debug mode activated, draw debug info
-				if (dg.config.debug > 2) {
-					DebugInfo.displayCollisionTest(g, go);
-					DebugInfo.display(g, go);
-				}
 			}
 		}
 	}
@@ -321,7 +315,7 @@ public class Renderer extends AbstractSystem {
 				drawLightAmbient(dg, g, l);
 				break;
 			case LIGHT_CONE:
-				drawLightCone(dg,g,l);
+				drawLightCone(dg, g, l);
 				break;
 			default:
 				break;
@@ -332,32 +326,21 @@ public class Renderer extends AbstractSystem {
 
 	private void drawLightSphere(Graphics2D g, Light l) {
 		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-		l.colors = new Color[] { 
-				l.foregroundColor,
-				new Color(	
-						l.foregroundColor.getRed() / 2, 
-						l.foregroundColor.getGreen() / 2,
-						l.foregroundColor.getBlue() / 2, 
-						l.foregroundColor.getAlpha() / 2),
+		l.colors = new Color[] { l.foregroundColor,
+				new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+						l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
 				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
 		l.rgp = new RadialGradientPaint(
-				new Point(
-						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+				new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
 						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-						(int) (l.size.x * 2), 
-						l.dist, 
-						l.colors);
+				(int) (l.size.x * 2), l.dist, l.colors);
 		g.setPaint(l.rgp);
 		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
 	}
 
 	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
-		final Area ambientArea = new Area(
-			new Rectangle2D.Double(
-				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
-				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
-				dg.config.screenWidth, 
-				dg.config.screenHeight));
+		final Area ambientArea = new Area(new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth, dg.config.screenHeight));
 		g.setColor(l.foregroundColor);
 		g.fill(ambientArea);
 
@@ -366,8 +349,8 @@ public class Renderer extends AbstractSystem {
 	/**
 	 * TODO implements the Conical Light drawing.
 	 */
-	private void drawLightCone(Game dg, Graphics2D g, Light l){
-		log.debug("draw Light cone {}",l.name);
+	private void drawLightCone(Game dg, Graphics2D g, Light l) {
+		log.debug("draw Light cone {}", l.name);
 	}
 
 	/**
@@ -424,7 +407,15 @@ public class Renderer extends AbstractSystem {
 			if (g != null) {
 				g.drawImage(screenBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, dg.config.screenWidth,
 						dg.config.screenHeight, Color.BLACK, null);
-
+				if (dg.config.debug > 2) {
+					for (Layer l : layers.values()) {
+						for (GameObject go : l.objects) {
+							// if debug mode activated, draw debug info
+							DebugInfo.displayCollisionTest(g, go, dg.config.screenScale);
+							DebugInfo.display(g, go, dg.config.screenScale);
+						}
+					}
+				}
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
 					g.drawString(

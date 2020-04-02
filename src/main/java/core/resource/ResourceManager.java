@@ -233,9 +233,11 @@ public class ResourceManager extends AbstractSystem {
      */
     public void dispose() {
         log.info("Resource not preloaded:");
+        String l="";
         for (String r : resourcesNotPreloaded) {
-            log.info("- {}", r);
+            l += String.format((l.equals("")?"[":",")+"\"%s\"", r);
         }
+        log.info(l+"]");
         resources.clear();
         log.debug("All resources have been removed.");
     }
