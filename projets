@@ -28,7 +28,11 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=-1
+current_page=0
+FILE_NAME_0=2442;Java;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2Fprojects%2Fprototypes%2Foneclassgame%2Fsrc%2Fmain%2Fjava%2FDemoGame.java;0;4
+FILE_NAME_1=0;XML;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2Fprojects%2Fprototypes%2Foneclassgame%2Fpom.xml;0;4
+FILE_NAME_2=0;None;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2Fprojects%2Fprototypes%2Foneclassgame%2Fsrc%2Fmain%2Fresources%2Fres%2Flevels%2F1-1.lvl;0;4
+FILE_NAME_3=187;Conf;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2Fprojects%2Fprototypes%2Foneclassgame%2Fsrc%2Fmain%2Fresources%2Fgame.properties;0;4
 
 [VTE]
 last_dir=/home/frederic
