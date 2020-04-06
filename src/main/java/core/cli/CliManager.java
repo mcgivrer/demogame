@@ -64,10 +64,11 @@ public class CliManager {
 	public void parse(String[] args) {
 		for (String arg : args) {
 			if (arg.equals("h") || arg.equals("help")) {
-				System.out.println("Command Usage:\n---------------");
+				System.out.println("\n\nCommand Usage:\n--------------");
 				for (IArgParser<?> ap : argParsers.values()) {
-					log.debug("- " + ap.getDescription());
+					System.out.println("- " + ap.getDescription());
 				}
+				System.exit(0);
 			} else {
 				String[] itemValue = arg.split("=");
 				for (IArgParser<?> ap : argParsers.values()) {

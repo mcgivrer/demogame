@@ -56,6 +56,31 @@ public interface IArgParser<T> {
 }
 ```
 
+The list of getters seams to be very long for simply reading command line arguments, but we want to provide more. The simple '-h' or '--help' will mean a lot of thing to any Linux lovers, this small argument will provide help information on how to to use those options !
+
+Requesting help will display this kind of display and giving back hands to user, because a `System.exit(0)` is performed at en d of display.
+
+```bash
+$> java -jar demogame.jar help
+
+Command Usage:
+---------------
+- [t / title] : Title of the displayed game window ( min:, max:, default:BGF )
+- [mm / musicVolume] : Define the sound volume value. ( min:0.0, max:1.0, default:0.2 )
+- [m / muteMode] : set the mute mode. ( min:true, max:false, default:false )
+- [f / fps] : Define the frames per second ratio. ( min:25, max:60, default:60 )
+- [u / ups] : Define the update per second ratio. ( min:25, max:60, default:60 )
+- [h / height] : Define the height of the game window. ( min:80, max:480, default:200 )
+- [s / scale] : Define the factor to be apply to pixel scale. ( min:1.0, max:4.0, default:2.0 )
+- [st / statePath] : Path where the game.json file exists ( min:, max:, default:/res/game.json )
+- [w / width] : Define the Width of the game window. ( min:120, max:640, default:320 )
+- [sm / soundVolume] : Define the sound volume value. ( min:0.0, max:1.0, default:0.2 )
+- [d / debug] : Define the Debug level to on screen display. ( min:0, max:5, default:0 )
+$> 
+```
+
+
+
 ### Manage all arguments
 
 the contract for the `CliManager` is very simple, only a few methods are necessary to do the job.
