@@ -10,6 +10,7 @@ import java.util.Map;
 
 import core.Game;
 import core.behaviors.Behavior;
+import core.collision.Collidable;
 import core.collision.MapTileCollision;
 import core.gfx.Animation;
 import core.gfx.Renderer;
@@ -32,7 +33,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class GameObject {
+public class GameObject implements Collidable {
 
 	public GameAction action = GameAction.IDLE;
 
@@ -100,6 +101,15 @@ public class GameObject {
 	 * If the object is active it will be processed as other, but not rendered.
 	 */
 	public boolean displayed = true;
+
+	/**
+	 * Attributes needed by the CollisionSystem (implemented through the Collidable
+	 * interface)
+	 * @see core.collision.Collidable
+	 */
+	public List<Collidable> colliders = new ArrayList<>();
+	public Color collidingColor;
+	public String collidableList = "";
 
 	/**
 	 * Create a new GameObject with some default values.
@@ -194,5 +204,39 @@ public class GameObject {
 		this.size.x = width;
 		this.size.y = height;
 		bbox.fromGameObject(this);
+	}
+
+	/*----- Method's implementations needed by the Collidable interface -----
+	* @see core.collision.Collidable
+	*/
+	@Override
+	public BBox getBoundingBox() {
+		return bbox;
+	}
+
+	@Override
+	public void addCollider(Collidable c) {
+		colliders.add(c);
+	}
+
+	@Override
+	public List<Collidable> getColliders() {
+		return colliders;
+	}
+
+	@Override
+	public void setCollidingColor(Color c) {
+		collidingColor = c;
+
+	}
+
+	@Override
+	public String getCollidableList() {
+		return collidableList;
+	}
+
+	@Override
+	public BBox getCollisionBox() {
+		return bbox;
 	}
 }

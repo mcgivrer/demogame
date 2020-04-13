@@ -18,17 +18,17 @@ import core.system.AbstractSystem;
  * @author Frédéric Delorme<frederic.delorme@gmail.com>
  * @since 2019
  */
-public class MapCollidingService extends AbstractSystem {
+public class MapCollidingSystem extends AbstractSystem {
 
     Map<Class<?>, OnCollision> listeners = new HashMap<>();
 
-    public MapCollidingService(Game g) {
+    public MapCollidingSystem(Game g) {
         super(g);
     }
 
     @Override
     public String getName() {
-        return MapCollidingService.class.getCanonicalName();
+        return MapCollidingSystem.class.getCanonicalName();
     }
 
     @Override

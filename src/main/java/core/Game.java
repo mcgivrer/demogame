@@ -1,7 +1,8 @@
 package core;
 
 import core.audio.SoundSystem;
-import core.collision.MapCollidingService;
+import core.collision.CollidingSystem;
+import core.collision.MapCollidingSystem;
 import core.gfx.Counter;
 import core.gfx.Renderer;
 import core.io.InputHandler;
@@ -34,6 +35,7 @@ public class Game {
 	public SystemManager sysMan;
 	public InputHandler inputHandler;
 	public Renderer renderer;
+	public CollidingSystem collidingSystem;
 	public PhysicEngineSystem physicEngine;
 	public SceneManager sceneManager;
 
@@ -84,6 +86,10 @@ public class Game {
 		renderer = new Renderer(this);
 		sysMan.add(renderer);
 
+		// Colliding System
+		collidingSystem = new CollidingSystem(this);
+		sysMan.add(collidingSystem);
+
 		// Physic Engine system
 		physicEngine = new PhysicEngineSystem(this, new World(this));
 		sysMan.add(physicEngine);
@@ -93,7 +99,7 @@ public class Game {
 		sysMan.add(soundSystem);
 
 		// Start some more advanced systems.
-		MapCollidingService mapCollider = new MapCollidingService(this);
+		MapCollidingSystem mapCollider = new MapCollidingSystem(this);
 		sysMan.add(mapCollider);
 
 		// start State manager system

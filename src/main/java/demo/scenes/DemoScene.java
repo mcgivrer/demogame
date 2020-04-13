@@ -13,7 +13,8 @@ import javax.script.ScriptException;
 
 import core.Game;
 import core.audio.SoundSystem;
-import core.collision.MapCollidingService;
+import core.collision.CollidingSystem;
+import core.collision.MapCollidingSystem;
 import core.gfx.Renderer;
 import core.map.MapLayer;
 import core.map.MapLevel;
@@ -45,10 +46,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DemoScene extends AbstractScene {
 
-	public MapLevel mapLevel;
-	public MapCollidingService mapCollider;
 	public LuaScriptSystem luas;
 	public PhysicEngineSystem physicEngine;
+	private CollidingSystem collidingSystem;
+	public MapCollidingSystem mapCollider;
+
+	public MapLevel mapLevel;
 
 	public int score = 0;
 	public int life = 4;
@@ -111,7 +114,7 @@ public class DemoScene extends AbstractScene {
 		infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
 		inputHandler.addListener(this);
-		mapCollider = g.sysMan.getSystem(MapCollidingService.class);
+		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class);
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.ogg");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.ogg");
@@ -122,9 +125,13 @@ public class DemoScene extends AbstractScene {
 		luas.loadAll(new String[] { "/res/scripts/enemy_update.lua" });
 
 		physicEngine = g.sysMan.getSystem(PhysicEngineSystem.class);
+		collidingSystem = g.sysMan.getSystem(CollidingSystem.class);
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new ObjectCollisionResolver(game));
+
+		Dimension d = new Dimension(mapLevel.getMaxSize());
+		g.sysMan.getSystem(CollidingSystem.class).setPlayArea(d);
 
 		if (mapLevel != null) {
 			// add the MapLevel
@@ -267,6 +274,8 @@ public class DemoScene extends AbstractScene {
 
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
+				collidingSystem.update(go, elapsed);
+
 				// TODO implement objects collision detection with an octree
 				// objectCollider.checkCollision(go);
 

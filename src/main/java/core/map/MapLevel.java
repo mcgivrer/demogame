@@ -1,5 +1,6 @@
 package core.map;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,10 +13,12 @@ import core.object.Light;
 import lombok.ToString;
 
 /**
- * A AmpLevel is a full Tilemap level loaded through the MapReader where all
- * level is computed and GameObjects are instantiated.
+ * A <code>MapLevel</code> is a full Tilemap level loaded through the
+ * <code>MapReader</code> where all level is computed and
+ * <code>GameObject<s/code>w are instantiated.
  *
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
+ * 
  * @see MapObject
  * @see MapObjectAsset
  * @see GameObject
@@ -29,8 +32,8 @@ public class MapLevel extends GameObject {
 
 	// raw text format for the map.
 	public Map<String, MapLayer> layers = new HashMap<>();
-	
-	public Map<String,Vector2D> initialPosition = new HashMap<>();
+
+	public Map<String, Vector2D> initialPosition = new HashMap<>();
 
 	// name of the output level
 	public String nextLevel;
@@ -39,9 +42,16 @@ public class MapLevel extends GameObject {
 	public double playerInitialX = 0;
 	public double playerInitialY = 0;
 
+	// Max Size of the level
+	public Dimension maxSize;
+
 	// Lights in the level.
 	public List<Light> lights = new ArrayList<>();
 
+	/**
+	 * THE map level object is the container for all the level design.
+	 * 
+	 */
 	public MapLevel() {
 		super();
 		this.physicType = PhysicType.STATIC;
@@ -70,5 +80,9 @@ public class MapLevel extends GameObject {
 			go.pos.y = 0.0f;
 			go.vel.y = -go.vel.y;
 		}
+	}
+
+	public Dimension getMaxSize() {
+		return maxSize;
 	}
 }

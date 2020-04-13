@@ -10,7 +10,6 @@ import java.awt.Graphics2D;
 import javax.swing.JFrame;
 
 import samples.DefaultSample;
-import samples.Sample;
 
 /**
  * project : DemoGame SampleGameLoop is a demonstration of a simple GameLoop the
