@@ -2,6 +2,7 @@ package demo.scenes;
 
 import core.Game;
 import core.audio.SoundSystem;
+import core.collision.CollidingSystem;
 import core.collision.CollisionEvent;
 import core.collision.OnCollision;
 import core.object.GameObject.GameAction;
@@ -29,7 +30,7 @@ public class ObjectCollisionResolver implements OnCollision {
      * @param e Collision Event to manage.
      */
     public void collide(CollisionEvent e) {
-        switch (e.type) {
+        switch (e.tileType) {
             case OBJECT:
                 collectCoin(e);
                 break;
@@ -50,10 +51,10 @@ public class ObjectCollisionResolver implements OnCollision {
      * @param e the CollisionEvent when the GameObject is moving
      */
     private void collectItem(CollisionEvent e) {
-        if (e.o1.attributes.containsKey("maxItems") && e.m2.collectible && e.o1.canCollect) {
-            double maxItems = (Double) e.o1.attributes.get("maxItems");
-            if (e.o1.items.size() <= maxItems) {
-                e.o1.items.add(e.m2);
+        if (e.a.attributes.containsKey("maxItems") && e.m2.collectible && e.a.canCollect) {
+            double maxItems = (Double) e.a.attributes.get("maxItems");
+            if (e.a.items.size() <= maxItems) {
+                e.a.items.add(e.m2);
                 e.map.tiles[e.mapX][e.mapY] = null;
                 soundSystem.play("item-1", (float) game.config.attributes.get("sound_volume"));
                 log.debug("Collect {}:{} at {},{}", e.m2.type, e.m2.name, e.mapX, e.mapY);
@@ -68,9 +69,9 @@ public class ObjectCollisionResolver implements OnCollision {
      */
     private void collectCoin(CollisionEvent e) {
 
-        if (e.m2.collectible && e.o1.canCollect && e.m2.money > 0) {
-            double value = (double) (e.o1.attributes.get("coins"));
-            e.o1.attributes.put("coins", (double) e.m2.money + value);
+        if (e.m2.collectible && e.a.canCollect && e.m2.money > 0) {
+            double value = (double) (e.a.attributes.get("coins"));
+            e.a.attributes.put("coins", (double) e.m2.money + value);
             e.map.tiles[e.mapX][e.mapY] = null;
             soundSystem.play("coins", (float) game.config.attributes.get("sound_volume"));
             log.debug("Collect {}:{} at {},{}", e.m2.type, e.m2.money, e.mapX, e.mapY);
@@ -79,22 +80,22 @@ public class ObjectCollisionResolver implements OnCollision {
 
     private void manageTileCollision(CollisionEvent e) {
         if (e.m2.block) {
-            e.o1.setTileCollisionObject(e.m2);
+            e.a.setTileCollisionObject(e.m2);
             log.debug("player  pos:{},{} collide with {}:{}", e.mapX, e.mapY, e.m2.type, e.m2.name);
-            if (Math.abs(e.o1.vel.x) > 0) {
-                e.o1.vel.x = 0;
-                e.o1.forces.clear();
+            if (Math.abs(e.a.vel.x) > 0) {
+                e.a.vel.x = 0;
+                e.a.forces.clear();
             }
-            if (Math.abs(e.o1.vel.y) > 0) {
-                e.o1.vel.y = 0;
-                e.o1.forces.clear();
-                e.o1.pos.y = e.mapY * e.map.assetsObjects.get(0).tileHeight;
-                e.o1.bbox.fromGameObject(e.o1);
-                if (e.o1.name.equals("player")) {
+            if (Math.abs(e.a.vel.y) > 0) {
+                e.a.vel.y = 0;
+                e.a.forces.clear();
+                e.a.pos.y = e.mapY * e.map.assetsObjects.get(0).tileHeight;
+                e.a.bbox.fromGameObject(e.a);
+                if (e.a.name.equals("player")) {
                     log.info("player  pos:{},{}", e.mapX, e.mapY);
                 }
-                if (e.o1.action == GameAction.FALL) {
-                    e.o1.action = GameAction.IDLE;
+                if (e.a.action == GameAction.FALL) {
+                    e.a.action = GameAction.IDLE;
                 }
             }
 

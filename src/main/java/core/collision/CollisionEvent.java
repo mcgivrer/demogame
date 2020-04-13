@@ -3,6 +3,7 @@ package core.collision;
 import core.map.MapLayer;
 import core.map.MapObject;
 import core.map.MapReader.TileType;
+import core.math.Vector2D;
 import core.object.GameObject;
 
 /**
@@ -15,20 +16,30 @@ import core.object.GameObject;
  */
 public class CollisionEvent {
 	public MapLayer map;
-	public TileType type;
-	public GameObject o1;
-	public GameObject o2;
+	public TileType tileType;
+	public CollisionType type;
+	public GameObject a;
+	public GameObject b;
 	public MapObject m2;
 	public int mapX, mapY;
+	public Vector2D penetrationVector;
 
 	public CollisionEvent(TileType type, GameObject o1, GameObject o2, MapObject m2, MapLayer map, int x, int y) {
-		this.type = type;
-		this.o1 = o1;
-		this.o2 = o2;
+		this.tileType = type;
+		this.type = CollisionType.COLLISION_MAP;
+		this.a = o1;
+		this.b = o2;
 		this.m2 = m2;
 		this.map = map;
 		this.mapX = x;
 		this.mapY = y;
+	}
+
+	public CollisionEvent(GameObject go1, GameObject go2){
+		this.type = CollisionType.COLLISION_OBJECT;
+		this.a = go1;
+		this.b = go2;
+		this.penetrationVector=new Vector2D(go1.pos.sub(go2.pos));
 	}
 
 	public enum CollisionType {

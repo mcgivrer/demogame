@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SampleCollision",
+            "request": "launch",
+            "mainClass": "samples.collision.SampleCollision",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - SampleGameLoop",
             "request": "launch",
             "mainClass": "samples.loop.SampleGameLoop",

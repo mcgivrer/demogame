@@ -1,5 +1,6 @@
 package core.map;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,9 @@ public class MapLevel extends GameObject {
 	public double playerInitialX = 0;
 	public double playerInitialY = 0;
 
+	// Max Size of the level
+	public Dimension maxSize;
+
 	// Lights in the level.
 	public List<Light> lights = new ArrayList<>();
 
@@ -70,5 +74,9 @@ public class MapLevel extends GameObject {
 			go.pos.y = 0.0f;
 			go.vel.y = -go.vel.y;
 		}
+	}
+
+	public Dimension getMaxSize() {
+		return maxSize;
 	}
 }
