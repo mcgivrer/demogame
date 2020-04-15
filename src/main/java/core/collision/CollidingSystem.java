@@ -17,7 +17,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import core.Game;
 import core.object.GameObject;
 import core.system.AbstractSystem;
-import demo.scenes.ObjectCollisionResolver;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -148,9 +147,9 @@ public class CollidingSystem extends AbstractSystem {
 	/**
 	 * Process events on all identified and filtered objects.
 	 */
-	public void processEvents(ObjectCollisionResolver cr) {
+	public void processEvents(OnCollision oc) {
 		for (CollisionEvent ce : events) {
-			cr.collide(ce);
+			oc.collide(ce);
 		}
 	}
 
