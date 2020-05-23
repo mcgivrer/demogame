@@ -5,7 +5,6 @@ import java.awt.Rectangle;
 
 import samples.Sample;
 import samples.object.GameObject;
-import samples.object.SampleGameObject;
 
 /**
  * Camera to follow a
@@ -29,11 +28,11 @@ public class Camera extends GameObject {
 
     @Override
     public void update(Sample ga, double elapsed) {
-        if(target==null){
+        if (target == null) {
             return;
         }
-        x += (target.x + target.width - offsetX - x) * tween * Math.max(elapsed,10);
-        y += (target.y + target.height - offsetY - y) * tween * Math.max(elapsed,10);
+        x += (target.x + target.width - offsetX - x) * tween * Math.max(elapsed, 10);
+        y += (target.y + target.height - offsetY - y) * tween * Math.max(elapsed, 10);
     }
 
     @Override

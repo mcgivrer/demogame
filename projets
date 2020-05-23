@@ -28,9 +28,8 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=1965;Markdown;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2FRBPi4-install-ubuntu-gnome-desktop-1910.md;0;4
-FILE_NAME_1=171;Sh;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2F.bash_aliases;0;4
+current_page=0
+FILE_NAME_0=1289;Java;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2Fprojects%2Fprototypes%2Fmonoclassgame%2FDemoGame.java;0;4
 
 [VTE]
 last_dir=/home/frederic
@@ -56,3 +55,13 @@ NF_02_WD=
 EX_00_LB=_Exécuter
 EX_00_CM=mvn exec:java
 EX_00_WD=
+JavaFT_01_LB=clean
+JavaFT_01_CM=rm -f *.class
+JavaFT_01_WD=
+filetypes=Java;
+EX_01_LB=Exécuter classe courante
+EX_01_CM=java "%f".class
+EX_01_WD=
+JavaFT_00_LB=_Compiler
+JavaFT_00_CM=javac "%f" -d classes
+JavaFT_00_WD=

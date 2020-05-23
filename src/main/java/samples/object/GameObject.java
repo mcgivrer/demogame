@@ -19,19 +19,21 @@ public class GameObject {
 
     public static int index = 0;
     public String name;
-    public double x;
-    public double y;
-    public double dx;
-    public double dy;
-    public double maxD;
-    public double width;
-    public double height;
-    public Color color;
-    public int direction = 1; 
-    public GameObjectType type;
+    public double x = 0;
+    public double y = 0;
+    public double dx = 0;
+    public double dy = 0;
+    public double maxD = 0;
+    public double width = 0;
+    public double height = 0;
+    public Color color = Color.WHITE;
+    public int direction = 1;
+    public GameObjectType type = GameObjectType.RECT;
     public BufferedImage image;
-    public double offsetX=0;
-    public double offsetY=0;
+    public double offsetX = 0;
+    public double offsetY = 0;
+    public int layer = 0;
+    public int priority = 1;
 
     public Map<String, Object> attributes = new HashMap<>();
 
@@ -62,7 +64,7 @@ public class GameObject {
     public void update(Sample ga, double elapsed) {
         x += dx * (elapsed * timeFactor);
         y += dy * (elapsed * timeFactor);
-        direction = (dx>0?1:-1);
+        direction = (dx > 0 ? 1 : -1);
     }
 
     /**
@@ -73,32 +75,31 @@ public class GameObject {
      */
     public void draw(Sample ga, Graphics2D g) {
         g.setColor(this.color);
-        int ox = (int)(x + offsetX);
-        int oy = (int)(y + offsetY);
+        int ox = (int) (x + offsetX);
+        int oy = (int) (y + offsetY);
 
         switch (type) {
-            case POINT:
-                g.drawLine(ox, oy, ox, oy);
-                break;
-            case LINE:
-                g.drawLine(ox, oy, ox+(int)(dx), oy+(int)(dy));
-                break;
-            case RECT:
-                g.fillRect(ox, oy, (int) width, (int) height);
-                break;
-            case ELLIPSE:
-                g.fillOval(ox, oy, (int) width, (int) height);
-                break;
-            case IMAGE:
+        case POINT:
+            g.drawLine(ox, oy, ox, oy);
+            break;
+        case LINE:
+            g.drawLine(ox, oy, ox + (int) (dx), oy + (int) (dy));
+            break;
+        case RECT:
+            g.fillRect(ox, oy, (int) width, (int) height);
+            break;
+        case ELLIPSE:
+            g.fillOval(ox, oy, (int) width, (int) height);
+            break;
+        case IMAGE:
             if (direction < 0) {
-                g.drawImage(image, (int) (x + width), (int) y, (int) (-width),
-                        (int) height, null);
+                g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
             } else {
-                g.drawImage(image, (int)x, (int) y, (int) width, (int) height, null);
+                g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
             }
             break;
-            default:
-                break;
+        default:
+            break;
         }
     }
 }

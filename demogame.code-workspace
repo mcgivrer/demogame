@@ -2,12 +2,10 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "/home/frederic/projects/prototypes/oneclassgame"
 		}
 	],
 	"settings": {
-		"java.configuration.updateBuildConfiguration": "automatic"
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.format.settings.url": "eclipse-formatter.xml"
 	}
 }

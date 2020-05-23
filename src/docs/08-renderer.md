@@ -10,7 +10,7 @@ The `GameObject` has a `layer` attribute defining to which of the layer the obje
 
 According to these attributes, a layers list is created each time an object is added or removed from the rendering object list.
 
-*Let's visit this incrrredible part of code !*
+_Let's visit this incrrredible part of code !_
 
 ## Class structure 
 
