@@ -5,15 +5,14 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import lombok.extern.slf4j.Slf4j;
 import samples.Sample;
@@ -34,7 +33,7 @@ public class InputHandler extends AbstractGameSystem
     private double mouseX = 0;
     private double mouseY = 0;
 
-    protected InputHandler(Sample game) {
+    public InputHandler(Sample game) {
         super(game);
     }
 

@@ -9,10 +9,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -117,6 +117,7 @@ public class SampleInputHandler extends SampleGameSystemManagerCamera implements
     protected void createObjects(int max) {
         for (int i = 0; i < max; i++) {
             GameObject go = new GameObject();
+            
             go.x = (int) Math.random() * (screenBuffer.getWidth() - 16);
             go.y = (int) Math.random() * (screenBuffer.getHeight() - 16);
             go.width = 16;

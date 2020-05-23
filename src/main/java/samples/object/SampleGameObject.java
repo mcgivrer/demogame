@@ -214,7 +214,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     }
 
     protected GameObjectType randomType() {
-        // all type but not IMAGE => max 4
+        // all type but NOT IMAGE => max 4
         int vt = (int) (Math.random() * 4);
         return GameObjectType.values()[vt];
     }
@@ -354,6 +354,21 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         int xOffset = (int) ((go.x + go.width + 8) * scale);
         int yOffset = (int) (go.y * scale);
 
+        sg.setColor(Color.BLUE);
+        switch(go.type){
+            case ELLIPSE:
+                sg.drawArc(
+                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
+                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale),
+                    0,360);
+                break;
+            default:
+                sg.drawRect(
+                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
+                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale));
+                break;
+        }
+
         sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
         sg.fillRect(xOffset - 4, yOffset, 150, 6 * lineHeight);
 
@@ -363,6 +378,10 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03.2f,%03.2f", go.dx, go.dy));
         drawString(sg, xOffset, yOffset, lineHeight, 4, String.format("type:%s", go.type.name()));
         drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03.2f,%03.2f", go.width, go.height));
+        int i=0;
+        for(String d : go.debugInfo){
+            drawString(sg, xOffset, yOffset, lineHeight, 5+(i++), d);
+        }
     }
 
     protected void drawString(Graphics2D sg, int xOffset, int yOffset, int lineHeight, int line, String message) {
