@@ -13,7 +13,7 @@ import core.behaviors.Behavior;
 import core.collision.Collidable;
 import core.collision.MapTileCollision;
 import core.gfx.Animation;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.map.MapObject;
 import core.math.Material;
 import core.math.PhysicEngineSystem.PhysicType;
@@ -105,6 +105,7 @@ public class GameObject implements Collidable {
 	/**
 	 * Attributes needed by the CollisionSystem (implemented through the Collidable
 	 * interface)
+	 * 
 	 * @see core.collision.Collidable
 	 */
 	public List<Collidable> colliders = new ArrayList<>();
@@ -173,7 +174,7 @@ public class GameObject implements Collidable {
 	 *
 	 * @param dg the core.Game containing the object.
 	 * @param g  the graphics API.
-	 * @see Renderer#render(Game, double)
+	 * @see IRenderer#render(Game, double)
 	 */
 	public void render(Game dg, Graphics2D g) {
 

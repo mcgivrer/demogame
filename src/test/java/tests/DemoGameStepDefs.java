@@ -1,11 +1,11 @@
 package tests;
 
+import static org.junit.Assert.assertTrue;
+
 import core.Game;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-
-import static org.junit.Assert.assertTrue;
 
 public class DemoGameStepDefs {
     Game dg;
@@ -39,7 +39,7 @@ public class DemoGameStepDefs {
 
     @And("^the DemoGame screenBuffer is width=(\\d+) and height=(\\d+)$")
     public void theDemoGameScreenBufferIsWidthAndHeight(int width, int height) {
-        assertTrue("screenBuffer width has not been set correctly to " + width, dg.renderer.screenBuffer.getWidth() == width);
-        assertTrue("screenBuffer height has not been set correctly to " + height, dg.renderer.screenBuffer.getHeight() == height);
+        assertTrue("screenBuffer width has not been set correctly to " + width, dg.renderer.getScreenBuffer().getWidth() == width);
+        assertTrue("screenBuffer height has not been set correctly to " + height, dg.renderer.getScreenBuffer().getHeight() == height);
     }
 }

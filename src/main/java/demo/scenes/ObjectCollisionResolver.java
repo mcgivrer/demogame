@@ -2,7 +2,6 @@ package demo.scenes;
 
 import core.Game;
 import core.audio.SoundSystem;
-import core.collision.CollidingSystem;
 import core.collision.CollisionEvent;
 import core.collision.OnCollision;
 import core.object.GameObject.GameAction;
@@ -21,7 +20,7 @@ public class ObjectCollisionResolver implements OnCollision {
 
     public ObjectCollisionResolver(Game g) {
         this.game = g;
-        soundSystem = SystemManager.get(SoundSystem.class);
+        soundSystem = SystemManager.get(SoundSystem.class.getSimpleName());
     }
 
     /**

@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import com.google.gson.Gson;
 
 import core.Game;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
@@ -112,7 +112,7 @@ public class SceneManager extends AbstractSystem {
         current.update(g, elapsed);
     }
 
-    public void render(final Game g, final Renderer r, final double elapsed) {
+    public void render(final Game g, final IRenderer r, final double elapsed) {
         current.render(g, r, elapsed);
     }
 

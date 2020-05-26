@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import core.Game;
 import core.audio.SoundSystem;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.io.InputHandler;
 import core.object.Camera;
 import core.object.GameObject;
@@ -62,11 +62,11 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	public abstract void input(Game g);
 
 	public void initialize(Game g) {
-		objectManager = g.sysMan.getSystem(ObjectManager.class);
+		objectManager = g.sysMan.getSystem(ObjectManager.class.getSimpleName());
 		// prepare user input handler
-		inputHandler = g.sysMan.getSystem(InputHandler.class);
+		inputHandler = g.sysMan.getSystem(InputHandler.class.getSimpleName());
 		// load Sounds
-		soundSystem = g.sysMan.getSystem(SoundSystem.class);
+		soundSystem = g.sysMan.getSystem(SoundSystem.class.getSimpleName());
 
 	};
 
@@ -77,7 +77,7 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	public abstract void update(Game g, double elapsed);
 
 	@Override
-	public abstract void render(Game g, Renderer r, double elpased);
+	public abstract void render(Game g, IRenderer r, double elpased);
 
 	@Override
 	public void onFocus(Game g) {
@@ -171,7 +171,7 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
-		Renderer r = game.sysMan.getSystem(Renderer.class);
+		IRenderer r = game.sysMan.getSystem("renderer");
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_D:
 				// roll the debug level.

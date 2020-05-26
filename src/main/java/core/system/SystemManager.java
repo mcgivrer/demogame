@@ -6,11 +6,11 @@
  */
 package core.system;
 
-import core.Game;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import core.Game;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <p>
@@ -30,7 +30,7 @@ public class SystemManager {
 	/**
 	 * list of systems to be managed.
 	 */
-	private static Map<Class<?>, AbstractSystem> systems = new HashMap<>();
+	private static Map<String, System> systems = new HashMap<>();
 	/**
 	 * the parent game.
 	 */
@@ -63,7 +63,7 @@ public class SystemManager {
 	 * @return the <T> instalce for the systemName system.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends AbstractSystem> T get(Class<T> systemName) {
+	public static <T extends AbstractSystem> T get(String systemName) {
 		return (T) systems.get(systemName);
 	}
 
@@ -72,10 +72,9 @@ public class SystemManager {
 	 *
 	 * @param s the system to be managed.
 	 */
-	public void add(AbstractSystem s) {
+	public void add(System s) {
 		if (s != null) {
-			Class<? extends AbstractSystem> systemType = s.getClass();
-			systems.put(systemType, s);
+			systems.put(s.getName(), s);
 			log.debug("Add system {}", s.getName());
 			s.initialize(game);
 			log.debug("System {} initialized.", s.getName());
@@ -90,8 +89,8 @@ public class SystemManager {
 	 * @return the <T> system instance.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends AbstractSystem> T getSystem(Class<T> systemName) {
-		log.debug("retrieve system {}", systemName.getCanonicalName());
+	public <T extends AbstractSystem> T getSystem(String systemName) {
+		log.debug("retrieve system {}", systemName);
 		return (T) systems.get(systemName);
 	}
 

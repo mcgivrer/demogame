@@ -1,10 +1,9 @@
 package core.object;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import core.Game;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.map.MapObject;
 
 public class HudInventory extends GameObject {
@@ -51,7 +50,7 @@ public class HudInventory extends GameObject {
      * @param dg the parent Game
      * @param g  the Graphics API to render the object.
      */
-    public void render(Game dg, Renderer r) {
+    public void render(Game dg, IRenderer r) {
         // draw Items
         for (int itmNb = 1; itmNb <= maxItems; itmNb++) {
 

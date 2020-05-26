@@ -3,7 +3,7 @@ package core.scene;
 import java.awt.Graphics2D;
 
 import core.Game;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.object.Camera;
 import core.object.ObjectManager;
 
@@ -41,7 +41,7 @@ public interface Scene {
 
     void update(Game g, double elapsed);
 
-    void render(Game g, Renderer r, double elapsed);
+    void render(Game g, IRenderer r, double elapsed);
 
     void dispose(Game g);
 
@@ -51,7 +51,7 @@ public interface Scene {
 
     Camera getActiveCamera();
 
-    void drawHUD(Game ga, Renderer r, Graphics2D g);
+    void drawHUD(Game ga, IRenderer r, Graphics2D g);
 
     void setGame(Game g);
 

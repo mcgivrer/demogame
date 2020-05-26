@@ -1,10 +1,12 @@
 package core;
 
+import java.lang.reflect.InvocationTargetException;
+
 import core.audio.SoundSystem;
 import core.collision.CollidingSystem;
 import core.collision.MapCollidingSystem;
 import core.gfx.Counter;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.io.InputHandler;
 import core.math.PhysicEngineSystem;
 import core.object.ObjectManager;
@@ -13,6 +15,7 @@ import core.resource.ResourceManager;
 import core.scene.Scene;
 import core.scene.SceneManager;
 import core.scripts.LuaScriptSystem;
+import core.system.AbstractSystem;
 import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +37,7 @@ public class Game {
 	 */
 	public SystemManager sysMan;
 	public InputHandler inputHandler;
-	public Renderer renderer;
+	public IRenderer renderer;
 	public CollidingSystem collidingSystem;
 	public PhysicEngineSystem physicEngine;
 	public SceneManager sceneManager;
@@ -45,9 +48,9 @@ public class Game {
 	 * @param argc list of arguments.
 	 * @see Config#analyzeArgc(String[])
 	 */
-	public Game(String[] argc) {
+	public Game(final String[] argc) {
 		super();
-		config = Config.analyzeArgc(this,argc);
+		config = Config.analyzeArgc(this, argc);
 	}
 
 	/**
@@ -70,20 +73,28 @@ public class Game {
 		// start System Manager
 		sysMan = SystemManager.initialize(this);
 		sysMan.add(new ResourceManager(this));
-		
-		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
+		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
 		// add basic systems
 		inputHandler = new InputHandler(this);
 		sysMan.add(inputHandler);
 
 		// GameObject manager system
-		ObjectManager objectManager = new ObjectManager(this);
+		final ObjectManager objectManager = new ObjectManager(this);
 		sysMan.add(objectManager);
 
 		// Renderer pipeline system
-		renderer = new Renderer(this);
+		try {
+			final Class<? extends AbstractSystem> r = (Class<? extends AbstractSystem>) Class
+					.forName(config.services.get("renderer"));
+
+			renderer = (IRenderer) (r.getConstructor(Game.class).newInstance(this));
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			log.error("Unable to instanciate the IRenderer class");
+			System.exit(1);
+		}
 		sysMan.add(renderer);
 
 		// Colliding System
@@ -95,18 +106,18 @@ public class Game {
 		sysMan.add(physicEngine);
 
 		// Massive Sound system
-		SoundSystem soundSystem = new SoundSystem(this);
+		final SoundSystem soundSystem = new SoundSystem(this);
 		sysMan.add(soundSystem);
 
 		// Start some more advanced systems.
-		MapCollidingSystem mapCollider = new MapCollidingSystem(this);
+		final MapCollidingSystem mapCollider = new MapCollidingSystem(this);
 		sysMan.add(mapCollider);
 
 		// start State manager system
 		sceneManager = new SceneManager(this);
 		sysMan.add(sceneManager);
 
-		LuaScriptSystem luaSystem = new LuaScriptSystem(this);
+		final LuaScriptSystem luaSystem = new LuaScriptSystem(this);
 		sysMan.add(luaSystem);
 
 	}
@@ -118,10 +129,10 @@ public class Game {
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		double waitFrameDuration = config.fps * 0.000001f;
-		double waitUpdateDuration = config.fps * 3 * 0.000001f;
-		Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
-		Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
+		final double waitFrameDuration = config.fps * 0.000001f;
+		final double waitUpdateDuration = config.fps * 3 * 0.000001f;
+		final Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
+		final Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
 
 		renderer.setRealFPS(realFPS);
 		renderer.setRealUPS(realUPS);
@@ -131,9 +142,9 @@ public class Game {
 		while (!exitRequest) {
 			startTime = System.currentTimeMillis();
 
-			double elapsed = startTime - previousTime;
+			final double elapsed = startTime - previousTime;
 
-			Scene current = sceneManager.getCurrent();
+			final Scene current = sceneManager.getCurrent();
 
 			physicEngine.update(this, current, elapsed);
 
@@ -143,7 +154,7 @@ public class Game {
 			if (realFPS.isReached()) {
 				sceneManager.render(this, renderer, elapsed);
 			}
-			double wait = (waitUpdateDuration - elapsed);
+			final double wait = (waitUpdateDuration - elapsed);
 
 			waitNextFrame(waitUpdateDuration, wait);
 
@@ -154,12 +165,12 @@ public class Game {
 		}
 	}
 
-	private void waitNextFrame(double waitFrameDuration, double wait) {
+	private void waitNextFrame(final double waitFrameDuration, final double wait) {
 		if (wait > 0 && wait < waitFrameDuration) {
 			log.debug("wait for {}ms", wait);
 			try {
 				Thread.sleep((int) wait);
-			} catch (InterruptedException e) {
+			} catch (final InterruptedException e) {
 				log.error("Unable to wait {} wait ms", wait, e);
 			}
 		}
@@ -177,8 +188,8 @@ public class Game {
 	 *
 	 * @param argc list of arguments from command lines
 	 */
-	public static void main(String[] argc) {
-		Game dg = new Game(argc);
+	public static void main(final String[] argc) {
+		final Game dg = new Game(argc);
 		dg.run();
 	}
 }

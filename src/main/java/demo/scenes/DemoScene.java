@@ -15,7 +15,7 @@ import core.Game;
 import core.audio.SoundSystem;
 import core.collision.CollidingSystem;
 import core.collision.MapCollidingSystem;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.map.MapLayer;
 import core.map.MapLevel;
 import core.map.MapReader;
@@ -107,31 +107,33 @@ public class DemoScene extends AbstractScene {
 		super.initialize(g);
 
 		objectManager.clear();
-		g.sysMan.getSystem(Renderer.class).clear();
+		IRenderer r = g.sysMan.getSystem("renderer");
+		r.clear();
 
 		messageFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(16.0f);
 		scoreFont = messageFont.deriveFont(24.0f);
 		infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
 		inputHandler.addListener(this);
-		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class);
+		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class.getSimpleName());
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.ogg");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.ogg");
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
 		soundSystem.setMute(g.config.mute);
 
-		luas = g.sysMan.getSystem(LuaScriptSystem.class);
+		luas = g.sysMan.getSystem(LuaScriptSystem.class.getSimpleName());
 		luas.loadAll(new String[] { "/res/scripts/enemy_update.lua" });
 
-		physicEngine = g.sysMan.getSystem(PhysicEngineSystem.class);
-		collidingSystem = g.sysMan.getSystem(CollidingSystem.class);
+		physicEngine = g.sysMan.getSystem(PhysicEngineSystem.class.getSimpleName());
+		collidingSystem = g.sysMan.getSystem(CollidingSystem.class.getSimpleName());
 
 		// define the OnCollision listener
 		mapCollider.addListener(GameObject.class, new ObjectCollisionResolver(game));
 
 		Dimension d = new Dimension(mapLevel.getMaxSize());
-		g.sysMan.getSystem(CollidingSystem.class).setPlayArea(d);
+		CollidingSystem cs = g.sysMan.getSystem(CollidingSystem.class.getSimpleName());
+		cs.setPlayArea(d);
 
 		if (mapLevel != null) {
 			// add the MapLevel
@@ -169,7 +171,7 @@ public class DemoScene extends AbstractScene {
 			inventory.setPlayer(player);
 
 			// start game music background
-			soundSystem = g.sysMan.getSystem(SoundSystem.class);
+			soundSystem = g.sysMan.getSystem(SoundSystem.class.getSimpleName());
 			soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
 
 		}
@@ -316,7 +318,7 @@ public class DemoScene extends AbstractScene {
 	}
 
 	@Override
-	public void render(Game g, Renderer r, double elapsed) {
+	public void render(Game g, IRenderer r, double elapsed) {
 		r.render(g, elapsed);
 	}
 
@@ -325,7 +327,7 @@ public class DemoScene extends AbstractScene {
 		ResourceManager.clear();
 	}
 
-	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
+	public void drawHUD(Game ga, IRenderer r, Graphics2D g) {
 		GameObject player = objectManager.get("player");
 
 		int offsetX = 24;

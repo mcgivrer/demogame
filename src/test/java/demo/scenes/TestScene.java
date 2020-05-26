@@ -3,7 +3,7 @@ package demo.scenes;
 import java.awt.Graphics2D;
 
 import core.Game;
-import core.gfx.Renderer;
+import core.gfx.IRenderer;
 import core.scene.AbstractScene;
 
 public class TestScene extends AbstractScene {
@@ -34,7 +34,7 @@ public class TestScene extends AbstractScene {
     }
 
     @Override
-    public void render(Game g, Renderer r, double elapsed) {
+    public void render(Game g, IRenderer r, double elapsed) {
 
     }
 
@@ -43,6 +43,6 @@ public class TestScene extends AbstractScene {
 
     }
 
-    public void drawHUD(Game ga, Renderer r, Graphics2D g) {
+    public void drawHUD(Game ga, IRenderer r, Graphics2D g) {
     }
 }

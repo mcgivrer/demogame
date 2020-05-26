@@ -33,8 +33,8 @@ public class PlayerInputBehavior implements Behavior {
 
     @Override
     public void initialize(Game dg) {
-        inputHandler = SystemManager.get(InputHandler.class);
-        pes = SystemManager.get(PhysicEngineSystem.class);
+        inputHandler = SystemManager.get(InputHandler.class.getSimpleName());
+        pes = SystemManager.get(PhysicEngineSystem.class.getSimpleName());
         log.debug("inputHandler and pes system are kept");
     }
 

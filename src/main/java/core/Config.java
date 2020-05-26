@@ -10,6 +10,8 @@ import core.cli.CliManager;
 import core.cli.FloatArgParser;
 import core.cli.IntArgParser;
 import core.cli.StringArgParser;
+import core.gfx.opengl.GLRenderer;
+import core.gfx.soft.Renderer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,6 +43,7 @@ public class Config {
 	public boolean mute;
 	public float soundVolume;
 	public float musicVolume;
+	public Map<String, String> services = new HashMap<>();
 
 	public Map<String, Object> attributes = new HashMap<>();
 	private final CliManager clm;
@@ -60,22 +63,27 @@ public class Config {
 		this.mute = false;
 		this.soundVolume = 0.0f;
 		this.musicVolume = 0.0f;
+		this.attributes.put("renderer", "core.gfx.soft.Renderer");
 		clm = new CliManager(g);
 
 		// Define title attribute.
 		clm.add(new StringArgParser("WindowTitle", "t", "title", this.title, "Title of the displayed game window",
 				"the title must be a simple character's string"));
 		// Add debug attribute
-		clm.add(new IntArgParser("Debug", "d", "debug", this.debug,0, 5, "Define the Debug level to on screen display.",
+		clm.add(new IntArgParser("Debug", "d", "debug", this.debug, 0, 5,
+				"Define the Debug level to on screen display.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the Width attribute
-		clm.add(new IntArgParser("Width", "w", "width", this.screenWidth, 120, 640, "Define the Width of the game window.",
+		clm.add(new IntArgParser("Width", "w", "width", this.screenWidth, 120, 640,
+				"Define the Width of the game window.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// add the Height attribute
-		clm.add(new IntArgParser("Height", "h", "height", this.screenHeight, 80, 480, "Define the height of the game window.",
+		clm.add(new IntArgParser("Height", "h", "height", this.screenHeight, 80, 480,
+				"Define the height of the game window.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the scale factor.
-		clm.add(new FloatArgParser("Scale", "s", "scale", this.screenScale, 1, 4, "Define the factor to be apply to pixel scale.",
+		clm.add(new FloatArgParser("Scale", "s", "scale", this.screenScale, 1, 4,
+				"Define the factor to be apply to pixel scale.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the frame per second.
 		clm.add(new IntArgParser("FPS", "f", "fps", this.fps, 25, 60, "Define the frames per second ratio.",
@@ -84,7 +92,7 @@ public class Config {
 		clm.add(new IntArgParser("UPS", "u", "ups", this.ups, 25, 60, "Define the update per second ratio.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the soundVolume factor.
-		clm.add(new BooleanArgParser("MuteMode", "m", "muteMode", this.mute,true, false, "set the mute mode.",
+		clm.add(new BooleanArgParser("MuteMode", "m", "muteMode", this.mute, true, false, "set the mute mode.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the soundVolume factor.
 		clm.add(new FloatArgParser("SoundVolume", "sm", "soundVolume", this.soundVolume, 0.0f, 1.0f,
@@ -95,8 +103,14 @@ public class Config {
 				"Define the sound volume value.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the states configuration path.
-		clm.add(new StringArgParser("StatePath", "st", "statePath", this.statesPath, "Path where the game.json file exists",
-		"the state path must be a simple path string"));
+		clm.add(new StringArgParser("StatePath", "st", "statePath", this.statesPath,
+				"Path where the game.json file exists", "the state path must be a simple path string"));
+		// Add the Renderer component
+		String rendererOptions = "\n -`" + Renderer.class.getCanonicalName() + "`" 
+							   + "\n -`" + GLRenderer.class.getCanonicalName() + "`";
+		clm.add(new StringArgParser("Renderer", "rd", "renderer", this.services.get("renderer"),
+				"Renderer library to be used. possible values are :"+rendererOptions,
+				"the renderer must be one of the 2 proposed values:" + rendererOptions));
 	}
 
 	/**
@@ -121,7 +135,8 @@ public class Config {
 			config.mute = (Boolean) (config.clm.getValue("MuteMode"));
 			config.soundVolume = (Float) (config.clm.getValue("SoundVolume"));
 			config.musicVolume = (Float) (config.clm.getValue("MusicVolume"));
-			config.statesPath = ((String) config.clm.getValue("StatePath"));;
+			config.statesPath = ((String) config.clm.getValue("StatePath"));
+			config.services.put("renderer",((String) config.clm.getValue("Renderer")));
 		} catch (ArgumentUnknownException e) {
 			log.error(e.getMessage());
 		}
@@ -142,6 +157,7 @@ public class Config {
 		this.soundVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.sound"));
 		this.musicVolume = Float.parseFloat(cfgFromFile.getString("audio.volume.music"));
 		this.statesPath = cfgFromFile.getString("game.states.path");
+		this.services.put("renderer", cfgFromFile.getString("game.renderer"));
 	}
 
 }

@@ -1,4 +1,4 @@
-package core.gfx;
+package core.gfx.soft;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -39,6 +39,9 @@ import javax.swing.JFrame;
 
 import core.Config;
 import core.Game;
+import core.gfx.Counter;
+import core.gfx.DebugInfo;
+import core.gfx.IRenderer;
 import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
@@ -59,7 +62,7 @@ import lombok.extern.slf4j.Slf4j;
  * @year 2019
  */
 @Slf4j
-public class Renderer extends AbstractSystem {
+public class Renderer extends AbstractSystem implements IRenderer {
 
 	private static int screenShotIndex = 0;
 	public BufferedImage screenBuffer;
@@ -112,7 +115,7 @@ public class Renderer extends AbstractSystem {
 		jf.setSize(dim);
 		jf.setPreferredSize(dim);
 		jf.pack();
-		InputHandler kih = dg.sysMan.getSystem(InputHandler.class);
+		InputHandler kih = dg.sysMan.getSystem(InputHandler.class.getSimpleName());
 		jf.addKeyListener(kih);
 		jf.setIconImage(ResourceManager.getImage("/res/bgf-icon.png"));
 		jf.addComponentListener(new ComponentAdapter() {
@@ -154,6 +157,7 @@ public class Renderer extends AbstractSystem {
 	/**
 	 * Render all objects !
 	 */
+	@Override
 	public void render(Game dg, double elapsed) {
 		if (!renderingPause) {
 			DebugInfo.debugFont = g.getFont().deriveFont(8.0f);
@@ -399,10 +403,12 @@ public class Renderer extends AbstractSystem {
 		}
 	}
 
+	@Override
 	public void setRealFPS(Counter realFPS) {
 		this.realFPS = realFPS;
 	}
 
+	@Override
 	public void setRealUPS(Counter realUPS) {
 		this.realUPS = realUPS;
 	}
@@ -483,6 +489,7 @@ public class Renderer extends AbstractSystem {
 		drawOutLinedText(g, text, x, y, textColor, borderColor);
 	}
 
+	@Override
 	public void add(GameObject go) {
 		disptachToLayer(go);
 		if (!go.child.isEmpty()) {
@@ -520,6 +527,7 @@ public class Renderer extends AbstractSystem {
 	 * 
 	 * @param objects
 	 */
+	@Override
 	public void addAll(Collection<GameObject> objects) {
 		for (GameObject go : objects) {
 			add(go);
@@ -548,6 +556,7 @@ public class Renderer extends AbstractSystem {
 	/**
 	 * Save a screenshot of the current buffer.
 	 */
+	@Override
 	public void saveScreenshot(Config config) {
 		final String path = this.getClass().getResource("/").getFile();
 		Path targetDir = Paths.get(path + File.separator);
@@ -573,7 +582,7 @@ public class Renderer extends AbstractSystem {
 
 	@Override
 	public String getName() {
-		return Renderer.class.getCanonicalName();
+		return "renderer";
 	}
 
 	@Override
@@ -605,6 +614,7 @@ public class Renderer extends AbstractSystem {
 	 * 
 	 * @param pause
 	 */
+	@Override
 	public void setPause(boolean pause) {
 		this.renderingPause = pause;
 
@@ -625,6 +635,11 @@ public class Renderer extends AbstractSystem {
 	public void drawImage(BufferedImage image, int x, int y) {
 		g.drawImage(image, x, y, null);
 
+	}
+
+	@Override
+	public BufferedImage getScreenBuffer() {
+		return screenBuffer;
 	}
 
 }
