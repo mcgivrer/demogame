@@ -1,16 +1,16 @@
 package samples.loop;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.Graphics2D;
+
 import javax.swing.JFrame;
 
 import samples.DefaultSample;
-import samples.Sample;
 
 /**
  * project : DemoGame SampleGameLoop is a demonstration of a simple GameLoop the
@@ -53,7 +53,7 @@ public class SampleGameLoop extends DefaultSample implements KeyListener {
      * @param height height for this window.
      */
     public SampleGameLoop(String title, int width, int height, int s) {
-        super(title,width,height,s);
+        super(title, width, height, s);
         scale = s;
         screenBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         frame = new JFrame(title);

@@ -1,5 +1,7 @@
 package core.scene;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,14 +56,15 @@ public class SceneManager extends AbstractSystem {
             final Gson gs = new Gson();
             final ScenesMap scenesMap = gs.fromJson(gameScenes, ScenesMap.class);
             for (final Entry<String, String> stateItem : scenesMap.scenes.entrySet()) {
-                final Class<Scene> cs = (Class<Scene>) Class.forName(stateItem.getValue());
-                final Scene s = cs.newInstance();
-                s.setGame(game);
+                final Class<?> cs = Class.forName(stateItem.getValue());
+                final Constructor<?> sceneConstructor = cs.getConstructor(new Class[] { Game.class });
+                final Scene s = (Scene) sceneConstructor.newInstance(game);
                 states.put(stateItem.getKey(), s);
                 log.info("load state {}", stateItem.getKey());
             }
             activate(scenesMap.defaultScene);
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             log.info("Unable to create class", e);
         }
     }
