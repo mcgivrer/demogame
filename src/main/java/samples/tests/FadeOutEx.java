@@ -73,7 +73,7 @@ class Surface extends JPanel implements ActionListener {
 
 	private void step() {
 
-		alpha += -0.01f;
+		alpha += -0.05f;
 
 		if (alpha <= 0) {
 

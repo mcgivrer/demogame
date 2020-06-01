@@ -1,14 +1,13 @@
 package core.gfx;
 
-public class Counter {
+public class Counter extends Metric {
 	private double stepValue;
 	private double startCounter;
-	private double value, counterValue;
+	private double counterValue;
 	private double count = 0;
-	private String name;
 
 	public Counter(String name, double startCounter, double step) {
-		this.name = name;
+		super(name);
 		this.startCounter = startCounter;
 		this.stepValue = step;
 		this.count = startCounter;

@@ -238,7 +238,7 @@ public class DemoScene extends AbstractScene {
 			if (go.name.contentEquals("player")) {
 				go.action = GameAction.IDLE2;
 				go.setSpeed(0.0f, 0.0f);
-
+				go.newPos = go.pos;
 			}
 		}
 	}

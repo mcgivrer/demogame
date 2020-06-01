@@ -38,7 +38,7 @@ public class PhysicEngineSystem extends AbstractSystem {
 		DYNAMIC // object will move according to a full physic simulation.
 	}
 
-	private static final double TIME_SCALE_FACTOR = 0.05;
+	private static final double TIME_SCALE_FACTOR = 0.025;
 	private static final double VELOCITY_THRESHOLD_MIN = 0.001;
 
 	private Scene scene;

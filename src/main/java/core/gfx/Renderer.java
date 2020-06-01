@@ -33,6 +33,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -75,6 +76,8 @@ public class Renderer extends AbstractSystem {
 
 	private Graphics2D g;
 
+	private Map<String,Metric> metrics = new ConcurrentHashMap<>();
+
 	/**
 	 * Create the Game renderer.
 	 *
@@ -85,6 +88,7 @@ public class Renderer extends AbstractSystem {
 		jf = createWindow(dg);
 		screenBuffer = new BufferedImage(dg.config.screenWidth, dg.config.screenHeight, BufferedImage.TYPE_INT_ARGB);
 		g = screenBuffer.createGraphics();
+		retrieveMonitorSizes();
 	}
 
 	@Override
@@ -101,7 +105,7 @@ public class Renderer extends AbstractSystem {
 	 */
 	private JFrame createWindow(Game dg) {
 		// log.info("Java Library Path: {}", System.getProperty("java.library.path"));
-		log.info(getMonitorSizes());
+		log.info(retrieveMonitorSizes());
 
 		jf = new JFrame(dg.config.title);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,13 +144,14 @@ public class Renderer extends AbstractSystem {
 		return jf;
 	}
 
-	private String getMonitorSizes() {
+	private String retrieveMonitorSizes() {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
 		StringBuilder sb = new StringBuilder();
+		log.info("Available Graphics resolutions:");
 		for (int i = 0; i < gs.length; i++) {
 			DisplayMode dm = gs[i].getDisplayMode();
-			sb.append(i + ", width: " + dm.getWidth() + ", height: " + dm.getHeight() + "\n");
+			log.info(String.format("%d : (%dx%d)",i,dm.getWidth(),dm.getHeight()));
 		}
 		return sb.toString();
 	}
@@ -182,7 +187,7 @@ public class Renderer extends AbstractSystem {
 			// draw HUD
 			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
 			// render image to real screen (applying scale factor)
-			renderToScreen(dg, realFPS, realUPS);
+			renderToScreen(dg);
 		}
 	}
 
@@ -393,12 +398,8 @@ public class Renderer extends AbstractSystem {
 		}
 	}
 
-	public void setRealFPS(Counter realFPS) {
-		this.realFPS = realFPS;
-	}
-
-	public void setRealUPS(Counter realUPS) {
-		this.realUPS = realUPS;
+	public void setMetrics(Map<String, Metric> metrics) {
+		this.metrics = metrics;
 	}
 
 	public class Layer {
@@ -407,9 +408,12 @@ public class Renderer extends AbstractSystem {
 		List<GameObject> objects = new ArrayList<>();
 	}
 
-	private void renderToScreen(Game dg, Counter realFPS, Counter realUPS) {
+	private void renderToScreen(Game dg) {
 		BufferStrategy bs = jf.getBufferStrategy();
 		Camera camera = dg.sceneManager.getCurrent().getActiveCamera();
+		Counter realFPS = (Counter)metrics.get("fps");
+		Counter realUPS = (Counter)metrics.get("ups");
+
 		if (bs != null) {
 			Graphics2D g = (Graphics2D) bs.getDrawGraphics();
 			float sX = jf.getWidth() / dg.config.screenWidth;
@@ -421,27 +425,38 @@ public class Renderer extends AbstractSystem {
 				0, 0, dg.config.screenWidth, dg.config.screenHeight, 
 				Color.BLACK, null);
 
-				// if debug mode activated, draw debug info
-				if (dg.config.debug > 2) {
-					for(GameObject go:renderingObjectPipeline){
-						DebugInfo.scale = sX;
-						DebugInfo.displayCollisionTest(g, go);
-						DebugInfo.display(g, go);
-					}
-				}
-
 				if (dg.config.debug > 0) {
+					
+					g.setColor(new Color(0.3f,0.1f,0.0f,0.8f));
+					g.fillRect(0, jf.getHeight()-20 ,jf.getWidth(),20);
+					
 					g.setColor(Color.ORANGE);
 					g.drawString(
-							String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
-									realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
-							4, jf.getHeight() - 20);
+							String.format("debug:%01d | FPS: %03.0f | UPS: %03.0f | cam:(%04.0f,%04.0f)", 
+							dg.config.debug,
+							realFPS.getCounter(), 
+							realUPS.getCounter(), 
+							camera.pos.x, camera.pos.y),
+							4, jf.getHeight()-4);
 
 					if (dg.config.debug > 2) {
 						g.setColor(Color.ORANGE);
-						g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
-						g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX),
-								(int) ((dg.config.screenHeight - 20) * sY));
+						g.drawString("cam:" + camera.name, 
+							(int) (20 + sX), 
+							(int) (20 * sY));
+						g.drawRect(
+							(int) ((10) * sX), 
+							(int) ((10) * sY), 
+							(int) ((dg.config.screenWidth - 20) * sX),
+							(int) ((dg.config.screenHeight - 20) * sY));
+						DebugInfo.scale = sX;
+						// if debug mode activated, draw debug info
+						for(GameObject go:renderingObjectPipeline){
+
+							DebugInfo.displayCollisionTest(g, go);
+							DebugInfo.display(g, go);
+						}
+						DebugInfo.scale = 1.0;
 					}
 				}
 			}
