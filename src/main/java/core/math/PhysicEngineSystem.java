@@ -112,15 +112,15 @@ public class PhysicEngineSystem extends AbstractSystem {
 					acceleration = acceleration.add(world.getGravity());
 					acceleration = acceleration.add(vForces);
 
-					acceleration = acceleration.multiply(1.0 / go.getMass()).multiply(t).maximize(7);
+					acceleration = acceleration.multiply(1.0 / go.getMass()).multiply(t).maximize(2);
 
 					// TODO add contact detection
 					if (go.getTileCollisionObject()!=null) {
-						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction).maximize(3);
+						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction).maximize(2);
 					}
 
-					speed = speed.add(acceleration.multiply(t * t)).maximize(3);
-					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
+					speed = speed.add(acceleration.multiply(t * t)).maximize(4);
+					nextPosition = nextPosition.add(speed.multiply(t).maximize(1)).threshold(1);
 					break;
 
 				case KINETIC:

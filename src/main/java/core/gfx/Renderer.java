@@ -210,12 +210,6 @@ public class Renderer extends AbstractSystem {
 				} else if (go instanceof GameObject) {
 					drawObject(dg, g, go);
 				}
-
-				// if debug mode activated, draw debug info
-				if (dg.config.debug > 2) {
-					DebugInfo.displayCollisionTest(g, go);
-					DebugInfo.display(g, go);
-				}
 			}
 		}
 	}
@@ -422,8 +416,19 @@ public class Renderer extends AbstractSystem {
 			float sY = jf.getHeight() / dg.config.screenHeight;
 
 			if (g != null) {
-				g.drawImage(screenBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, dg.config.screenWidth,
-						dg.config.screenHeight, Color.BLACK, null);
+				g.drawImage(screenBuffer, 
+				0, 0, jf.getWidth(), jf.getHeight(), 
+				0, 0, dg.config.screenWidth, dg.config.screenHeight, 
+				Color.BLACK, null);
+
+				// if debug mode activated, draw debug info
+				if (dg.config.debug > 2) {
+					for(GameObject go:renderingObjectPipeline){
+						DebugInfo.scale = sX;
+						DebugInfo.displayCollisionTest(g, go);
+						DebugInfo.display(g, go);
+					}
+				}
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);

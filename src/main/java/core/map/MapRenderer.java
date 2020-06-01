@@ -78,15 +78,36 @@ public class MapRenderer {
 					}
 					g.drawImage(mo.imageBuffer, x * mo.width, y * mo.height, null);
 				}
+
+			}
+		}
+	}
+	
+	public void drawDebuginfo(Game dg, Graphics2D g, double elapsed, Camera camera, int mHeight, int mWidth,
+	MapLayer mapLayer, double scale){
+		int cx = (int) ((camera.pos.x / mapLayer.assetsObjects.get(0).tileWidth)*scale);
+		int cy = (int) ((camera.pos.y / mapLayer.assetsObjects.get(0).tileHeight)*scale);
+		int offCx = (int) (((camera.viewport.width / (mapLayer.assetsObjects.get(0).tileWidth)) + 2)*scale);
+		int offCy = (int) (((camera.viewport.height / (mapLayer.assetsObjects.get(0).tileHeight)) + 2)*scale);
+
+		int top = (cy < 0 ? 0 : cy);
+		int bottom = (cy + offCy > mHeight ? mHeight : cy + offCy);
+		int left = (cx < 0 ? 0 : cx);
+		int right = (cx + offCx > mHeight ? mWidth : cx + offCx);
+		for (int y = top; y < bottom; y++) {
+			for (int x = left; x < right; x++) {
+				MapObject mo = getTile(mapLayer, x, y);
 				if (dg.config.debug > 4) {
 					if (mo != null) {
 						g.setColor(Color.GRAY);
 					} else {
 						g.setColor(Color.BLUE);
 					}
-					g.drawRect((int) x * mapLayer.assetsObjects.get(0).tileWidth,
-							(int) y * mapLayer.assetsObjects.get(0).tileHeight, mapLayer.assetsObjects.get(0).tileWidth,
-							mapLayer.assetsObjects.get(0).tileHeight);
+					g.drawRect(
+						(int)(x * mapLayer.assetsObjects.get(0).tileWidth*scale),
+						(int)(y * mapLayer.assetsObjects.get(0).tileHeight*scale),
+						(int)(mapLayer.assetsObjects.get(0).tileWidth*scale),
+						(int)(mapLayer.assetsObjects.get(0).tileHeight*scale));
 				}
 			}
 		}

@@ -22,6 +22,7 @@ public class DebugInfo {
 	public static Font debugFont;
 	public static final Color backgroundColor = new Color(0.3f, 0.3f, 0.3f,0.45f);
 	public static final Color borderColor = Color.BLACK;
+	public static double scale = 1.0;
 
 	/**
 	 * display information to an information panel on right of GameObject
@@ -37,8 +38,8 @@ public class DebugInfo {
 		int maxWidth = 70;
 		int maxLinePerColumn = 5;
 		int fontHeight = fm.getHeight();
-		double offsetX = go.pos.x + go.size.x + 2;
-		double offsetY = go.pos.y;
+		double offsetX = (go.pos.x + go.size.x + 2)*DebugInfo.scale;
+		double offsetY = (go.pos.y)*DebugInfo.scale;
 
 		List<String> debugInfo = prepareDebugInfo(go);
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
@@ -51,10 +52,14 @@ public class DebugInfo {
 
 		// draw object size
 		g.setColor(Color.BLUE);
-		g.drawRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+		g.drawRect(
+			(int) (go.pos.x*DebugInfo.scale), (int) (go.pos.y*DebugInfo.scale), 
+			(int) (go.size.x*DebugInfo.scale), (int) (go.size.y*DebugInfo.scale));
 		// draw bounding box
 		g.setColor(Color.RED);
-		g.drawRect((int) go.bbox.pos.x, (int) go.bbox.pos.y, (int) go.bbox.size.x, (int) go.bbox.size.y);
+		g.drawRect(
+			(int) (go.bbox.pos.x*DebugInfo.scale), (int) (go.bbox.pos.y*DebugInfo.scale), 
+			(int) (go.bbox.size.x*DebugInfo.scale), (int) (go.bbox.size.y*DebugInfo.scale));
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 	}
 
@@ -80,7 +85,9 @@ public class DebugInfo {
 		g.setColor(textColor);
 		int x = 0, y = 0;
 		for (String line : debugInfo) {
-			g.drawString(String.format("%s", line), (int) (x + offsetX), (int) ((y * (fontHeight)) + offsetY + 4));
+			g.drawString(String.format("%s", line), 
+				(int) ((x + offsetX)*DebugInfo.scale), 
+				(int) (((y * (fontHeight)) + offsetY + 4)*DebugInfo.scale));
 			y += 1;
 			if (y > maxLinePerColumn) {
 				y = 0;
@@ -91,25 +98,29 @@ public class DebugInfo {
 
 	private static void drawBackgroundPanel(Graphics2D g, double offsetX, double offsetY, int width, int height,
 			Color borderColor, Color backgroundColor) {
+		int dx = (int) ((offsetX - 4)*DebugInfo.scale);
+		int dy =(int) (offsetY*DebugInfo.scale);
 		g.setColor(backgroundColor);
-		g.fillRect((int) offsetX - 4, (int) (offsetY), width, height);
+		g.fillRect(dx, dy , width, height);
 		g.setColor(borderColor);
-		g.drawRect((int) offsetX - 4, (int) (offsetY), width, height);
+		g.drawRect(dx, dy, width, height);
 	}
 
 	public static void displayCollisionTest(Graphics2D g, GameObject go) {
-		int ox = (int) (go.bbox.pos.x / 16);
-		int ow = (int) (go.bbox.size.x / 16);
-		int oy = (int) (go.bbox.pos.y / 16);
-		int oh = (int) (go.bbox.size.y / 16);
+		int ox = (int) (go.bbox.pos.x*DebugInfo.scale / 16);
+		int ow = (int) (go.bbox.size.x*DebugInfo.scale / 16);
+		int oy = (int) (go.bbox.pos.y*DebugInfo.scale / 16);
+		int oh = (int) (go.bbox.size.y*DebugInfo.scale / 16);
 		// draw GameObject in the Map Tiles coordinates
 		g.setColor(Color.ORANGE);
 		g.drawRect(ox * 16, oy * 16, ow * 16, oh * 16);
 		// draw the bounding box
 		g.setColor(Color.RED);
-		g.drawRect((int) (go.bbox.pos.x + go.bbox.left), (int) (go.bbox.pos.y + go.bbox.top),
-				(int) (go.bbox.size.x - go.bbox.left - go.bbox.right),
-				(int) (go.bbox.size.y - go.bbox.top - go.bbox.bottom));
+		g.drawRect(
+				(int) ((go.bbox.pos.x + go.bbox.left)*DebugInfo.scale), 
+				(int) ((go.bbox.pos.y + go.bbox.top)*DebugInfo.scale),
+				(int) ((go.bbox.size.x - go.bbox.left - go.bbox.right)*DebugInfo.scale),
+				(int) ((go.bbox.size.y - go.bbox.top - go.bbox.bottom)*DebugInfo.scale));
 		// draw the tested Tiles to detect Fall action.
 		g.setColor(Color.BLUE);
 		if (!go.collidingZone.isEmpty()) {
@@ -119,7 +130,10 @@ public class DebugInfo {
 					g.setFont(d.deriveFont(9.5f));
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 					g.setColor(Color.WHITE);
-					g.drawString(mtc.mo.type.toString(), mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
+					g.drawString(
+						mtc.mo.type.toString(), 
+						(int)((mtc.rX + 2)*DebugInfo.scale), 
+						(int)((((mtc.rY + (mtc.h / 2) + 4))*DebugInfo.scale)));
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					g.setFont(d);
 					switch (mtc.mo.type) {
@@ -136,7 +150,9 @@ public class DebugInfo {
 				} else {
 					g.setColor(Color.BLUE);
 				}
-				g.drawRect(mtc.rX, mtc.rY, mtc.w, mtc.h);
+				g.drawRect(
+					(int)(mtc.rX*DebugInfo.scale), (int)(mtc.rY*DebugInfo.scale), 
+					(int)(mtc.w*DebugInfo.scale), (int)(mtc.h*DebugInfo.scale));
 			}
 		}
 	}

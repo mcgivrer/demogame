@@ -181,7 +181,6 @@ public class MapReader {
 		try {
 			// create GameObject from MapOpbject
 			GameObject go = createObjectFromClass(ml, mo, x, y);
-			mapLevel.initialPosition.put(go.name,go.pos);
 			switch (mo.type) {
 			case ENEMY:
 				// add the object to the MapLevel object.
@@ -203,7 +202,8 @@ public class MapReader {
 				log.error(String.format("Unknown object type %s", mo.type));
 				break;
 			}
-
+			// Store intialized position (to restart level)
+			mapLevel.initialPosition.put(go.name,go.pos);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			log.error("Unable to instantiate the {}  object.", mo.clazz);
 		}
