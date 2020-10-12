@@ -31,6 +31,7 @@ import core.resource.ResourceManager;
 import core.scene.AbstractScene;
 import core.scene.Scene;
 import core.scripts.LuaScriptSystem;
+import javazoom.jl.player.Player;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -208,18 +209,18 @@ public class DemoScene extends AbstractScene {
 		super.keyReleased(e);
 		boolean control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_R:
-			if (control) {
-				resetGameObjects();
-			}
-			break;
-		case KeyEvent.VK_Z:
-			if (control) {
-				resetState();
-			}
-			break;
-		default:
-			break;
+			case KeyEvent.VK_R:
+				if (control) {
+					resetGameObjects();
+				}
+				break;
+			case KeyEvent.VK_Z:
+				if (control) {
+					resetState();
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -275,10 +276,6 @@ public class DemoScene extends AbstractScene {
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
 				collidingSystem.update(go, elapsed);
-
-				// TODO implement objects collision detection with an octree
-				// objectCollider.checkCollision(go);
-
 				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}

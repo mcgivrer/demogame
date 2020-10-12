@@ -3,6 +3,7 @@ package samples.render.entity;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 
+import samples.Sample;
 import samples.object.entity.GameObject;
 
 public class MouseCursor extends GameObject {
@@ -20,5 +21,10 @@ public class MouseCursor extends GameObject {
 		this.width = image.getWidth();
 		this.height = image.getHeight();
 		this.type = GameObjectType.IMAGE;
+	}
+
+	@Override
+	public void update(Sample ga, double elapsed) {
+		bbox.update(this);
 	}
 }

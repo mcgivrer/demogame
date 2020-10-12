@@ -27,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2019
  */
 @Slf4j
-public class ObjectManager extends AbstractSystem {
+
+public  class ObjectManager extends AbstractSystem {
 
 	public Map<String, GameObject> objects = new ConcurrentHashMap<>();
 

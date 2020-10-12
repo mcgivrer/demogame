@@ -61,26 +61,16 @@ public class MapCollidingSystem extends AbstractSystem {
             MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
             int ox = (int) (go.bbox.pos.x / asset.tileWidth);
             int oy = (int) ((go.newPos.y + go.bbox.size.y / 2) / asset.tileHeight);
-            //int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y / 2) / asset.tileHeight);
-
             int ow = (int) (go.bbox.size.x / asset.tileWidth);
             int oh = (int) (go.bbox.size.y / asset.tileHeight);
 
             go.collidingZone.clear();
             go.setContact(false);
-
-            if (go.vel.x > 0) {
-                testMoveRight(frontLayer, go, ox, ow, oy, oh);
-            }
-            if (go.vel.x < 0) {
-                testMoveLeft(frontLayer, go, ox, oy, oh);
-            }
-            if (go.vel.y < 0) {
-                testMoveUp(frontLayer, go);
-            }
-            if (go.vel.y > 0) {
-                testIfMoveDown(frontLayer, go);
-            }
+            go.tileCollisionObject = null;
+            testMoveRight(frontLayer, go, ox, ow, oy, oh);
+            testMoveLeft(frontLayer, go, ox, oy, oh);
+            testMoveUp(frontLayer, go);
+            testIfMoveDown(frontLayer, go);
             testIfFall(frontLayer, go, true);
         }
     }
@@ -95,27 +85,25 @@ public class MapCollidingSystem extends AbstractSystem {
         /**
          * Compute bottom coordinate of bottom corners tiles.
          */
-        int y0 = (int) ((go.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
-
         int x1 = (int) (go.bbox.pos.x / layer.assetsObjects.get(0).tileWidth);
-        int y1 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
+        int y1 = (int) (go.bbox.pos.y / layer.assetsObjects.get(0).tileHeight);
 
         int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / layer.assetsObjects.get(0).tileWidth);
-        //int y2 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
 
         // test all tiles from old to new position
-        for (int y = y0; y <= y1; y += 1) {
-            // get Tile at bottom corners
-            MapObject m1 = getTileInMap(layer, x1, y);
-            MapObject m2 = getTileInMap(layer, x2, y);
-            // if no tile on both bottom corners, fall !
-            if (m1 == null && m2 == null) {
-                go.action = GameAction.FALL;
-            }
-            // add some debugging information on detected tiles
-            createDebugInfo(go, layer, m1, x1, y);
-            createDebugInfo(go, layer, m2, x2, y);
+        int y = y1;
+        // get Tile at bottom corners
+        MapObject m1 = getTileInMap(layer, x1, y);
+        go.setTileCollisionObject(m1);
+        MapObject m2 = getTileInMap(layer, x2, y);
+        // if no tile on both bottom corners, fall !
+        if (m1 == null && m2 == null) {
+            go.action = GameAction.FALL;
         }
+        // add some debugging information on detected tiles
+        createDebugInfo(go, layer, m1, x1, y);
+        createDebugInfo(go, layer, m2, x2, y);
+
         // if Go is not falling and not on a tile, recompute right Y value according to
         // tile height.
         if (!falling && go.action != GameAction.FALL && (go.pos.y % layer.assetsObjects.get(0).tileHeight) > 0) {
@@ -196,7 +184,10 @@ public class MapCollidingSystem extends AbstractSystem {
      */
     private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y) {
         go.setContact(true);
-        listeners.get(go.getClass()).collide(new CollisionEvent(mo.type, go, null, mo, map, x, y));
+        OnCollision collisioner = listeners.get(go.getClass());
+        if (collisioner != null) {
+            collisioner.collide(new CollisionEvent(mo.type, go, null, mo, map, x, y));
+        }
     }
 
     /**

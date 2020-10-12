@@ -91,13 +91,10 @@ public class PhysicEngineSystem extends AbstractSystem {
 		} else if (go != null && go.pos != null && go.vel != null) {
 
 			// This is a standard obect, must be updated.
-			//final Vector2D oldPosition = go.pos;
 			Vector2D nextPosition = go.pos;
 			Vector2D speed = go.vel;
 			Vector2D acceleration = go.acc;
 			final Vector2D objectGameSpeed = go.vel;
-			//final double friction = go.material.friction;
-			//final double mass = go.mass;
 			
 
 			final Vector2D vForces = new Vector2D(0.0f, 0.0f);

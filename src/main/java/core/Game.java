@@ -47,7 +47,7 @@ public class Game {
 	 */
 	public Game(String[] argc) {
 		super();
-		config = Config.analyzeArgc(this,argc);
+		config = Config.analyzeArgc(this, argc);
 	}
 
 	/**
@@ -70,9 +70,8 @@ public class Game {
 		// start System Manager
 		sysMan = SystemManager.initialize(this);
 		sysMan.add(new ResourceManager(this));
-		
-		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
+		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
 		// add basic systems
 		inputHandler = new InputHandler(this);
@@ -118,8 +117,8 @@ public class Game {
 
 		long startTime = System.currentTimeMillis();
 		long previousTime = startTime;
-		double waitFrameDuration = config.fps * 0.000001f;
-		double waitUpdateDuration = config.fps * 3 * 0.000001f;
+		double waitFrameDuration = config.fps * 0.001f;
+		double waitUpdateDuration = config.fps * 3 * 0.001f;
 		Counter realUPS = new Counter("UPS", 0, waitUpdateDuration);
 		Counter realFPS = new Counter("FPS", 0, waitFrameDuration);
 
@@ -161,6 +160,8 @@ public class Game {
 				Thread.sleep((int) wait);
 			} catch (InterruptedException e) {
 				log.error("Unable to wait {} wait ms", wait, e);
+				Thread.currentThread().interrupt();
+				System.exit(-1);
 			}
 		}
 	}

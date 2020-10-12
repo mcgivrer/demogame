@@ -290,10 +290,10 @@ public class SampleRendererSystem extends SampleCollision {
 			case COLLISION_OBJECT:
 				e.a.dx = 0;
 				e.a.dy = 0;
-				e.a.collidingColor = Color.WHITE;
+				e.a.collidingColor = Color.ORANGE;
 				e.b.dx = -e.b.dx;
 				e.b.dy = -e.b.dy;
-				e.b.collidingColor = Color.WHITE;
+				e.b.collidingColor = Color.ORANGE;
 				break;
 			default:
 				break;
