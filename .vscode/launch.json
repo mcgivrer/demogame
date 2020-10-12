@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SampleRendererSystem",
+            "request": "launch",
+            "mainClass": "samples.render.SampleRendererSystem",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Game",
+            "request": "launch",
+            "mainClass": "core.Game",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - SampleCollision",
             "request": "launch",
             "mainClass": "samples.collision.SampleCollision",
@@ -62,7 +76,9 @@
             "request": "launch",
             "mainClass": "core.Game",
             "projectName": "DemoGame",
-            "args":["s=2.5"]
+            "args": [
+                "s=2.5"
+            ]
         }
     ]
 }

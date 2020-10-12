@@ -28,4 +28,6 @@ public interface Sample {
     public void update(double elapsed);
 
     public void render(long realFps);
+
+	public boolean getPause();
 }

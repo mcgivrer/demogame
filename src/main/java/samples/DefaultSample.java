@@ -12,7 +12,8 @@ public abstract class DefaultSample implements Sample {
     protected int height;
     protected double scale;
     protected Camera camera;
-
+    // pause flag
+    protected boolean pause = false;
     // list of managed objects
     protected Map<String, GameObject> objects = new HashMap<>();
 
@@ -54,6 +55,18 @@ public abstract class DefaultSample implements Sample {
     @Override
     public Map<String, GameObject> getObjects() {
         return objects;
+    }
+
+    @Override
+    public boolean getPause() {
+        return pause;
+    }
+
+    /**
+     * @param pause the pause to set
+     */
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
 }

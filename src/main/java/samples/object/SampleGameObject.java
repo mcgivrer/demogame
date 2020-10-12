@@ -47,8 +47,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     protected int FPS = 30;
     // debug display mode
     protected int debug = 0;
-    // pause flag
-    protected boolean pause = false;
+
 
     // internal rendering information.
     protected Color collidingColor;
