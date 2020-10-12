@@ -8,14 +8,18 @@ public class SampleCliManager extends SampleInputHandler {
 
     CliManager clm;
 
+    public SampleCliManager() {
+
+    }
+
     public SampleCliManager(String title, String[] args) {
         this.title = title;
-        configuraCliArguments();
+        configureCliArguments();
         parseArgs(args);
         createWindow(title, width, height, (int) scale);
     }
 
-    private void configuraCliArguments() {
+    protected void configureCliArguments() {
         clm = new CliManager(this);
         // Define title attribute.
         clm.add(new StringArgParser("WindowTitle", "t", "title", "BGF", "Title of the displayed game window",
@@ -37,7 +41,7 @@ public class SampleCliManager extends SampleInputHandler {
                 "%s set to %s is wrong, default value is %d and can be between %d and %d"));
     }
 
-    private void parseArgs(String[] args) {
+    protected void parseArgs(String[] args) {
         clm.parse(args);
         try {
             debug = (Integer) (clm.getValue("Debug"));

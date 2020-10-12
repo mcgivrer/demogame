@@ -1,7 +1,9 @@
 package samples.collision;
 
+import java.awt.Rectangle;
+
 import core.math.Vector2D;
-import samples.object.GameObject;
+import samples.object.entity.GameObject;
 
 public class BoundingBox {
 	public double x;
@@ -46,6 +48,12 @@ public class BoundingBox {
 		return other != null && this.x + this.right >= other.x + other.left
 				&& this.x + this.left <= other.x + other.right && this.y + this.top >= other.y + other.bottom
 				&& this.y + this.bottom <= other.y + other.top;
+	}
+
+	public boolean intersect(Rectangle other) {
+		return other != null && this.x + this.right >= other.x 
+				&& this.x + this.left <= other.x  && this.y + this.top >= other.y 
+				&& this.y + this.bottom <= other.y ;
 	}
 
 	public void update(GameObject go) {

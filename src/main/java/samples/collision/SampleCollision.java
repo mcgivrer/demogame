@@ -16,12 +16,12 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import lombok.extern.slf4j.Slf4j;
-import samples.camera.Camera;
+import samples.camera.entity.Camera;
 import samples.cli.SampleCliManager;
 import samples.input.InputHandler;
-import samples.input.MouseCursor;
-import samples.object.GameObject;
-import samples.object.GameObject.GameObjectType;
+import samples.input.entity.MouseCursor;
+import samples.object.entity.GameObject;
+import samples.object.entity.GameObject.GameObjectType;
 import samples.system.GameSystemManager;
 
 /**
@@ -33,14 +33,22 @@ import samples.system.GameSystemManager;
 @Slf4j
 public class SampleCollision extends SampleCliManager implements OnCollision {
 
-    CollisionSystem cs;
+    protected CollisionSystem cs;
+
+    public SampleCollision() {
+
+    }
 
     public SampleCollision(final String title, final String[] args) {
         super(title, args);
     }
 
+    /**
+     * Initialization of the game.
+     */
     @Override
     public void initialize() {
+        // Re-implement initialization() to split initialization() and a load()
         gsm = GameSystemManager.initialize(this);
 
         final InputHandler ih = new InputHandler(this);
@@ -54,21 +62,53 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         frame.addMouseWheelListener(ih);
 
         // Add the CollisionSystem
-        cs = new CollisionSystem(this, 500);
+        cs = new CollisionSystem(this, 500){
+            @Override
+            public CollisionEvent createEvent(GameObject o1, GameObject o2) {
+                return new CollisionEvent(o1,o2);
+            }
+        };
         gsm.add(cs);
 
         load();
+
     }
 
+    /**
+     * The main method for this sample game.
+     */
+    @Override
+    public void run() {
+        // now intialize and load are separated actions.
+        initialize();
+        loop();
+        frame.dispose();
+        System.exit(0);
+    }
+
+    /**
+     * Add a GameObject go.
+     * 
+     * @param go
+     */
     public void addObject(GameObject go) {
         objects.put(go.name, go);
         cs.add(go);
     }
 
+    /**
+     * get a specific GameObject on its name.
+     * 
+     * @param name
+     * @return
+     */
     public GameObject getObject(String name) {
         return objects.get(name);
     }
 
+    /**
+     * Load all resources and objects to be managed by the game.
+     */
     @Override
     public void load() {
         collidingColor = Color.WHITE;
@@ -109,6 +149,12 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         addObject(camera);
     }
 
+    /**
+     * Create some random positioned object across the game screen.
+     * 
+     * @param max the max nimber of object to be generated ont he screen.
+     */
+    @Override
     protected void createObjects(int max) {
         for (int i = 0; i < max; i++) {
             GameObject go = new GameObject();
@@ -141,6 +187,11 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         }
     }
 
+    /**
+     * Processing of the player input events.
+     * 
+     * @param ih the InputHandler.
+     */
     @Override
     public void input(InputHandler ih) {
         final List<String> excludedObjects = Arrays.asList("player", "mouse_cursor");
@@ -174,6 +225,11 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         }
     }
 
+    /**
+     * Implementation of the KeyListener keyReleased event processing.
+     * 
+     * @see java.awt.KeyListener#keyReleased(KeyEvent)
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()) {
@@ -192,6 +248,9 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         }
     }
 
+    /**
+     * The main Game loop for this sample.
+     */
     @Override
     public void loop() {
         long nextTime = System.currentTimeMillis();
@@ -224,6 +283,11 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         }
     }
 
+    /**
+     * The update of the objects in the main loop.
+     * 
+     * @param elapsed the elapsed time since previous call.
+     */
     @Override
     public void update(double elapsed) {
 
@@ -247,6 +311,11 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         cs.processEvents(this);
     }
 
+    /**
+     * Render all game's objects to game screen.
+     * 
+     * @param realFps the number of frame per seconds
+     */
     @Override
     public void render(long realFps) {
         Graphics2D g = (Graphics2D) screenBuffer.getGraphics();
@@ -277,6 +346,12 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         drawToScreen(camera, realFps);
     }
 
+    /**
+     * Draw to screen all the Objects.
+     * 
+     * @param camera  the main camera of the game.
+     * @param realFps the number of rendered frames per seconds.
+     */
     @Override
     protected void drawToScreen(Camera camera, long realFps) {
         // render to screen
@@ -307,6 +382,12 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         bs.show();
     }
 
+    /**
+     * Display specific debug information about hte go GameObject.
+     * 
+     * @param sg the Graphics2D interface to render the debug info.
+     * @param go the GmaeObjerct to be debug.
+     */
     @Override
     protected void displayDebug(Graphics2D sg, GameObject go) {
         Font f = sg.getFont().deriveFont(9);
@@ -375,6 +456,7 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
         }
     }
 
+    /*---- Display debug infomation for this game ----*/
     @Override
     protected void displayGlobalDebug(Graphics2D sg, long realFps) {
         sg.setColor(new Color(0.6f, 0.3f, 0.0f, 0.7f));
@@ -386,11 +468,7 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
                 10, frame.getHeight() - 4);
     }
 
-    public static void main(final String[] args) {
-        final SampleCollision g = new SampleCollision("Sample Collision", args);
-        g.run();
-    }
-
+    /*---- Manage collision ----*/
     /**
      * Implementation for the Collision processing.
      */
@@ -409,6 +487,13 @@ public class SampleCollision extends SampleCliManager implements OnCollision {
                 break;
         }
 
+    }
+
+    /*---- the main method for the SampleCollision sample ----*/
+
+    public static void main(final String[] args) {
+        final SampleCollision g = new SampleCollision("Sample Collision", args);
+        g.run();
     }
 
 }

@@ -1,4 +1,4 @@
-package samples.object;
+package samples.object.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -37,8 +37,11 @@ public class GameObject implements Collidable {
     public BufferedImage image;
     public double offsetX = 0;
     public double offsetY = 0;
+
     public int layer = 0;
     public int priority = 1;
+    public boolean displayed = true;
+    public boolean debug = false;
 
     public BoundingBox bbox;
     public boolean collidable = true;
@@ -50,6 +53,9 @@ public class GameObject implements Collidable {
     public Map<String, Object> attributes = new HashMap<>();
 
     public double timeFactor = 0.05;
+
+    // Debug information for this GameObject.
+    public List<String> debugInfo = new ArrayList<>();
 
     /**
      * Default constructor initializing all main attribtues.
@@ -119,6 +125,19 @@ public class GameObject implements Collidable {
         }
     }
 
+    public void prepareDebugInfo() {
+        debugInfo.clear();
+        debugInfo.add(String.format("name:%s", name));
+        debugInfo.add(String.format("pos:%03.2f,%03.2f", x, y));
+        debugInfo.add(String.format("vel:%03.2f,%03.2f", dx, dy));
+        debugInfo.add(String.format("type:%s", type.name()));
+        debugInfo.add(String.format("dir:%s", (direction < 0 ? "LEFT" : "RIGHT")));
+        debugInfo.add(String.format("siz:%03.2f,%03.2f", width, height));
+        attributes.entrySet().stream().forEach(a -> {
+            debugInfo.add(String.format("attr:%s=%s", a.getKey(), a.getValue()));
+        });
+    }
+
     @Override
     public BoundingBox getBoundingBox() {
         return bbox;
@@ -149,9 +168,9 @@ public class GameObject implements Collidable {
         return null;
     }
 
-	public boolean isDisplayed() {
-		return displayed;
-	}
+    public boolean isDisplayed() {
+        return displayed;
+    }
 
     @Override
     public String getName() {

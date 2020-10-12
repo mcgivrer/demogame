@@ -1,6 +1,6 @@
 package samples.collision;
 
-import samples.object.GameObject;
+import samples.object.entity.GameObject;
 
 public class CollisionEvent {
 
@@ -19,7 +19,8 @@ public class CollisionEvent {
     }
 
     public enum CollisionType {
-        COLLISION_OBJECT("object");
+        COLLISION_OBJECT("game_object"),
+        COLLISION_MOUSE("mouse_cursor");
 
         private String value = "";
 

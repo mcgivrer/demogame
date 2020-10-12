@@ -165,7 +165,7 @@ public void render(Game dg, double elapsed){
 }
 ```
 
-###Â renderObjects(...)
+### renderObjects(...)
 
 Where the magic happened !
 
