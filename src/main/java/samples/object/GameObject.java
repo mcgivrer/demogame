@@ -43,6 +43,8 @@ public class GameObject implements Collidable {
     public BoundingBox bbox;
     public boolean collidable = true;
 
+    public boolean displayed = true;
+
     public List<Collidable> colliders = new ArrayList<>();
     public Color collidingColor;
     public String collidableList = "";
@@ -50,6 +52,9 @@ public class GameObject implements Collidable {
     public Map<String, Object> attributes = new HashMap<>();
 
     public double timeFactor = 0.05;
+
+    public boolean debug = false;
+    public List<String> debugInfo = new ArrayList<>();
 
     /**
      * Default constructor initializing all main attribtues.
@@ -95,27 +100,27 @@ public class GameObject implements Collidable {
         int oy = (int) (y + offsetY);
 
         switch (type) {
-            case POINT:
-                g.drawLine(ox, oy, ox, oy);
-                break;
-            case LINE:
-                g.drawLine(ox, oy, ox + (int) (dx), oy + (int) (dy));
-                break;
-            case RECT:
-                g.fillRect(ox, oy, (int) width, (int) height);
-                break;
-            case ELLIPSE:
-                g.fillOval(ox, oy, (int) width, (int) height);
-                break;
-            case IMAGE:
-                if (direction < 0) {
-                    g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
-                } else {
-                    g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
-                }
-                break;
-            default:
-                break;
+        case POINT:
+            g.drawLine(ox, oy, ox, oy);
+            break;
+        case LINE:
+            g.drawLine(ox, oy, ox + (int) (dx), oy + (int) (dy));
+            break;
+        case RECT:
+            g.fillRect(ox, oy, (int) width, (int) height);
+            break;
+        case ELLIPSE:
+            g.fillOval(ox, oy, (int) width, (int) height);
+            break;
+        case IMAGE:
+            if (direction < 0) {
+                g.drawImage(image, (int) (x + width), (int) y, (int) (-width), (int) height, null);
+            } else {
+                g.drawImage(image, (int) x, (int) y, (int) width, (int) height, null);
+            }
+            break;
+        default:
+            break;
         }
     }
 
@@ -149,9 +154,9 @@ public class GameObject implements Collidable {
         return null;
     }
 
-	public boolean isDisplayed() {
-		return displayed;
-	}
+    public boolean isDisplayed() {
+        return displayed;
+    }
 
     @Override
     public String getName() {
