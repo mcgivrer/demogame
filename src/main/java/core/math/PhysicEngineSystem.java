@@ -116,10 +116,10 @@ public class PhysicEngineSystem extends AbstractSystem {
 
 					// TODO add contact detection
 					if (go.getTileCollisionObject()!=null) {
-						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction).maximize(7);
+						acceleration = acceleration.multiply(go.getMaterial().friction*go.getTileCollisionObject().friction).maximize(3);
 					}
 
-					speed = speed.add(acceleration.multiply(t * t)).maximize(7);
+					speed = speed.add(acceleration.multiply(t * t)).maximize(3);
 					nextPosition = nextPosition.add(speed.multiply(0.5f * t)).threshold(1);
 					break;
 

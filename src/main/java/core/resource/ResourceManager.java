@@ -46,7 +46,6 @@ public class ResourceManager extends AbstractSystem {
     private static Map<String, Object> resources = new ConcurrentHashMap<>();
     private static List<ProgressListener> listeners = new ArrayList<>();
     private static List<String> resourcesNotPreloaded = new ArrayList<>();
-    private Game game;
 
     public ResourceManager(Game game) {
         super(game);

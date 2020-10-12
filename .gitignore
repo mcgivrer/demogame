@@ -31,6 +31,9 @@ hs_err_pid*
 target/
 /stale_outputs_checked
 /DemoGame.iml
+.vscode/
+.apt*/
+/wiki
 
 #Visual Studio Code files
 .factorypath

@@ -33,12 +33,14 @@ public class MapCollidingSystem extends AbstractSystem {
 
     @Override
     public int initialize(Game game) {
+        this.game = game;
         return 0;
     }
 
     @Override
     public void dispose() {
-
+        listeners.clear();
+        listeners = null;
     }
 
     public void addListener(Class<?> clazz, OnCollision oc) {

@@ -28,9 +28,7 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=1965;Markdown;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2FRBPi4-install-ubuntu-gnome-desktop-1910.md;0;4
-FILE_NAME_1=171;Sh;0;EUTF-8;1;1;1;%2Fhome%2Ffrederic%2F.bash_aliases;0;4
+current_page=-1
 
 [VTE]
 last_dir=/home/frederic
