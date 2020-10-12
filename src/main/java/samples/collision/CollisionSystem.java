@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import core.Game;
 import lombok.extern.slf4j.Slf4j;
 import samples.Sample;
-import samples.object.GameObject;
+import samples.object.entity.GameObject;
 import samples.system.AbstractGameSystem;
 
 /**
@@ -20,13 +21,13 @@ import samples.system.AbstractGameSystem;
  * all those collisions.
  */
 @Slf4j
-public class CollisionSystem extends AbstractGameSystem {
+public abstract class CollisionSystem<T extends CollisionEvent> extends AbstractGameSystem {
 
     List<GameObject> objects = new ArrayList<>();
-    private List<Collidable> colliders = new ArrayList<>();
-    private Queue<CollisionEvent> events;
+    private List<Collidable> colliders = new CopyOnWriteArrayList<>();
+    private Queue<T> events;
 
-    protected CollisionSystem(Sample game, int maxCollisionEventQueueSize) {
+    public CollisionSystem(Sample game, int maxCollisionEventQueueSize) {
         super(game);
         events = new ArrayBlockingQueue<>(maxCollisionEventQueueSize);
     }
@@ -79,7 +80,12 @@ public class CollisionSystem extends AbstractGameSystem {
      * @param elapsed the elapsed time since previous call
      */
     public void update(GameObject o, double elapsed) {
-        List<Collidable> collisionList = colliders.stream().filter(c->!getName().equals(o.getName())).collect(Collectors.toList());
+        List<Collidable> collisionList = colliders.stream()
+            .filter(c -> {
+                boolean flag = c != null && o != null && !c.getName().equals(o.getName());
+                return flag;
+            })
+            .collect(Collectors.toList());
         if (collisionList != null && !collisionList.isEmpty()) {
             o.getColliders().clear();
             o.setCollidingColor(null);
@@ -92,7 +98,7 @@ public class CollisionSystem extends AbstractGameSystem {
                         ago.addCollider(o);
                         o.setCollidingColor(Color.WHITE);
 
-                        events.add(new CollisionEvent(o, ago));
+                        events.add(createEvent(o, ago));
                         log.debug("object {} collide object {}", o.getName(), ago.getName());
                     }
                 }
@@ -108,6 +114,8 @@ public class CollisionSystem extends AbstractGameSystem {
         }
         return false;
     }
+
+    public abstract T createEvent(GameObject o1, GameObject o2);
 
     /**
      * Process events on all identified and filtered objects.
@@ -156,14 +164,13 @@ public class CollisionSystem extends AbstractGameSystem {
     public void draw(Game game, Graphics2D g) {
         for (CollisionEvent ce : events) {
             g.setColor(Color.RED);
-            g.drawLine((int) ce.a.x, (int) ce.a.y, (int) (ce.a.x + ce.vx),
-                    (int) (ce.a.y + ce.vy));
+            g.drawLine((int) ce.a.x, (int) ce.a.y, (int) (ce.a.x + ce.vx), (int) (ce.a.y + ce.vy));
         }
     }
 
     @Override
     public void dispose() {
-
+        // Nothing special to de here !
     }
 
     @Override

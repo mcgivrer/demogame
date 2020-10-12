@@ -3,15 +3,14 @@ package samples;
 import java.util.HashMap;
 import java.util.Map;
 
-import samples.camera.Camera;
-import samples.object.GameObject;
+import samples.camera.entity.Camera;
+import samples.object.entity.GameObject;
 
 public abstract class DefaultSample implements Sample {
     protected String title;
     protected int width;
     protected int height;
     protected double scale;
-    protected Camera camera;
     // pause flag
     protected boolean pause = false;
     // list of managed objects
@@ -49,9 +48,6 @@ public abstract class DefaultSample implements Sample {
         return title;
     }
 
-    public Camera getActiveCamera(){
-        return camera;
-    }
     @Override
     public Map<String, GameObject> getObjects() {
         return objects;

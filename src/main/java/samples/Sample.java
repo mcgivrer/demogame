@@ -2,32 +2,33 @@ package samples;
 
 import java.util.Map;
 
-import samples.camera.Camera;
-import samples.object.GameObject;
+import samples.camera.entity.Camera;
+import samples.object.entity.GameObject;
 
 /**
- * All Sample gaame will implements this interface, just to simplify
- * implmentation between all example thoorugh inheritance.
+ * All Sample game will implements this interface, just to simplify
+ * implementation between all example through inheritance.
  */
 public interface Sample {
-    public int getWidth();
+	public int getWidth();
 
-    public int getHeight();
+	public int getHeight();
 
-    public double getScale();
+	public double getScale();
 
-    public String getTitle();
-    public Camera getActiveCamera();
+	public String getTitle();
 
-    public Map<String, GameObject> getObjects();
+	public Camera getActiveCamera();
 
-    public void initialize();
+	public Map<String, GameObject> getObjects();
 
-    public void loop();
+	public void initialize();
 
-    public void update(double elapsed);
+	public void loop();
 
-    public void render(long realFps);
+	public void update(double elapsed);
+
+	public void render(long realFps);
 
 	public boolean getPause();
 }

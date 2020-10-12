@@ -1,10 +1,10 @@
-package samples.camera;
+package samples.camera.entity;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import samples.Sample;
-import samples.object.GameObject;
+import samples.object.entity.GameObject;
 
 /**
  * Camera to follow a

@@ -10,182 +10,302 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import lombok.extern.slf4j.Slf4j;
-import samples.Sample;
-import samples.camera.Camera;
+import samples.camera.entity.Camera;
+import samples.collision.CollisionEvent;
+import samples.collision.CollisionSystem;
 import samples.collision.SampleCollision;
 import samples.input.InputHandler;
-import samples.input.MouseCursor;
-import samples.object.GameObject;
-import samples.object.GameObject.GameObjectType;
+import samples.input.entity.MouseCursor;
+import samples.object.entity.GameObject;
+import samples.object.entity.GameObject.GameObjectType;
+import samples.render.collision.ColEvent;
+import samples.system.AbstractGameSystem;
 import samples.system.GameSystemManager;
 
 @Slf4j
 public class SampleRendererSystem extends SampleCollision {
-    Renderer rs;
-    InputHandler ih;
-    public SampleRendererSystem(String title, String[] args) {
-        super(title, args);
-    }
+	IRenderer rs;
+	BufferedImage sprites;
 
-    @Override
-    public void initialize() {
+	public SampleRendererSystem(String title, String[] args) {
+		this.title = title;
+		configureCliArguments();
+		parseArgs(args);
+	}
 
-        gsm = GameSystemManager.initialize(this);
-        
-        rs = new Renderer(this);
-        gsm.add(rs);
+	/*---- Initialize the Game and all its resources ----*/
 
-        ih = new InputHandler((Sample)this);
-        // add this new GameSystem to the manager
-        gsm.add(ih);
-        ih.register(this);
-        rs.addKeyListener(ih);
+	public int initializeGame() {
+		// Re-implement initialization() to split initialization() and a load()
+		gsm = GameSystemManager.initialize(this);
 
+		// add this InputHandler to the manager
+		final InputHandler ih = new InputHandler(this);
+		gsm.add(ih);
+		ih.register(this);
 
-        collidingColor = Color.WHITE;
-        squareColor = Color.RED;
-        createObjects(20);
-        try {
-            BufferedImage sprites = ImageIO.read(this.getClass().getResourceAsStream("/res/images/tileset-1.png"));
+		// add this Renderer to the manager
+		rs = new Renderer(this);
+		gsm.add((AbstractGameSystem) rs);
 
-            GameObject player = objects.get("gameobject_1");
-            player.type = GameObjectType.IMAGE;
-            player.image = sprites.getSubimage(0, 48, 32, 32);
-            player.width = player.image.getWidth();
-            player.height = player.image.getHeight();
+		// initialize Key listener in the rendering frame.
+		rs.addKeyListener(gsm.getSystem(InputHandler.class));
 
-        } catch (IOException ioe) {
-            log.error("unable to read the tileset image");
-        }
-    }
+		/**
+		 * Add the CollisionSystem with new Collision event triggering Mouse Collision
+		 */
+		cs = new CollisionSystem<ColEvent>(this, 500) {
+			@Override
+			public ColEvent createEvent(GameObject o1, GameObject o2) {
+				return new ColEvent(o1, o2);
+			}
+		};
+		gsm.add(cs);
 
-    public void load() {
-        collidingColor = Color.WHITE;
-        squareColor = Color.RED;
-        createObjects(5);
-        try {
-            BufferedImage sprites = ImageIO.read(this.getClass().getResourceAsStream("/res/images/tileset-1.png"));
+		try {
+			sprites = ImageIO.read(this.getClass().getResourceAsStream("/res/images/tileset-1.png"));
 
-            GameObject player = new GameObject("player");
-            player.type = GameObjectType.IMAGE;
-            player.image = sprites.getSubimage(0, 48, 32, 32);
-            player.width = player.image.getWidth();
-            player.height = player.image.getHeight();
-            player.maxD = 4;
-            player.x = (screenBuffer.getWidth() - player.image.getWidth()) / 2;
-            player.y = (screenBuffer.getHeight() - player.image.getHeight()) / 2;
-            player.dx = 0;
-            player.dy = 0;
-            player.attributes.put("elasticity", 0.0);
-            objects.put(player.name, player);
+		} catch (IOException ioe) {
+			log.error("unable to read the tileset image");
+			return -1;
+		}
+		return 0;
+	}
 
-            MouseCursor mCursor = new MouseCursor("mouse_cursor");
-            objects.put(mCursor.name, mCursor);
+	/**
+	 * Add a GameObject go.
+	 * 
+	 * @param go
+	 */
+	public void addObject(GameObject go) {
+		objects.put(go.name, go);
+		cs.add(go);
+		rs.addObject(go);
+	}
 
-        } catch (IOException ioe) {
-            log.error("unable to read the tileset image");
-        }
+	/*---- Load game objects and all needed things to be manage in the game ----*/
+	@Override
+	public void load() {
+		collidingColor = Color.WHITE;
+		squareColor = Color.RED;
 
-        camera = new Camera("cam1", objects.get("player"), 0.005f,
-                rs.getViewport());
-        objects.put(camera.name, camera);
-    }
+		// Add Player
+		GameObject player = new GameObject("player");
+		player.type = GameObjectType.IMAGE;
+		player.image = sprites.getSubimage(0, 48, 32, 32);
+		player.width = player.image.getWidth();
+		player.height = player.image.getHeight();
+		player.maxD = 4;
+		player.x = (getWidth() - player.image.getWidth()) / 2;
+		player.y = (getHeight() - player.image.getHeight()) / 2;
+		player.dx = 0;
+		player.dy = 0;
+		player.attributes.put("elasticity", 0.0);
+		player.layer = 1;
+		addObject(player);
 
-    protected void createObjects(int max) {
-        for (int i = 0; i < max; i++) {
-            GameObject go = new GameObject();
-            go.x = (int) Math.random() * (screenBuffer.getWidth() - 16);
-            go.y = (int) Math.random() * (screenBuffer.getHeight() - 16);
-            go.width = 16;
-            go.height = 16;
-            go.maxD = 4;
-            go.dx = (int) (Math.random() * 8);
-            go.dy = (int) (Math.random() * 8);
-            go.color = squareColor;
+		// Add a mouse cursor
+		MouseCursor mCursor = new MouseCursor("mouse_cursor");
+		mCursor.layer = 0;
+		addObject(mCursor);
 
-            go.attributes.put("elasticity", 1.0);
+		// Add some other objects
+		createObjects(5);
 
-            go.type = randomType();
+		Camera camera = new Camera("cam1", objects.get("player"), 0.005f, rs.getViewport());
+		addObject(camera);
 
-            objects.put(go.name, go);
-            // Add the GameObject to the rendering pipeline.
-            rs.addObject(go);
+	}
 
-            log.info("Add a new GameObject named {}", go.name);
-        }
-    }
+	@Override
+	protected void createObjects(int max) {
+		for (int i = 0; i < max; i++) {
+			GameObject go = new GameObject();
+			go.x = (Math.random() * getWidth()) - 16;
+			go.y = (Math.random() * getHeight()) - 16;
+			go.width = 16;
+			go.height = 16;
+			go.maxD = 4;
+			go.dx = (Math.random() * 8);
+			go.dy = (Math.random() * 8);
+			go.color = squareColor;
+			go.layer = 2;
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE:
-                exit = true;
-                break;
-            case KeyEvent.VK_D:
-                debug = (debug < 5 ? debug + 1 : 0);
-                break;
-            case KeyEvent.VK_P:
-            case KeyEvent.VK_PAUSE:
-                pause = !pause;
-                break;
-            default:
-                break;
-        }
-    }
+			go.attributes.put("elasticity", 1.0);
 
-    public void input(InputHandler ih) {
-        final List<String> excludedObjects = Arrays.asList("player", "mouse_cursor");
+			go.type = randomType();
 
-        MouseCursor m = (MouseCursor) objects.get("mouse_cursor");
-        m.x = ih.getMouseX() / scale;
-        m.y = ih.getMouseY() / scale;
+			addObject(go);
 
-        GameObject go = objects.get("player");
+			log.info("Add a new GameObject named {}", go.name);
+		}
+	}
 
-        if (ih.getKey(KeyEvent.VK_UP)) {
-            go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
-        }
-        if (ih.getKey(KeyEvent.VK_DOWN)) {
-            go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
-        }
-        if (ih.getKey(KeyEvent.VK_LEFT)) {
-            go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
-        }
-        if (ih.getKey(KeyEvent.VK_RIGHT)) {
-            go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
-        }
-        if (ih.getKey(KeyEvent.VK_SPACE)) {
-            // Break the first object of the objects map.
-            go.dx = 0;
-            go.dy = 0;
-            go.color = Color.BLUE;
-        }
-        if (ih.getKey(KeyEvent.VK_R)) {
-            reshuffleVelocity(excludedObjects);
-        }
-    }
+	/*---- the main run to start this Sample implmentation with a renderer ----*/
+	@Override
+	public void run() {
+		// now initialize and load are separated actions.
+		if (initializeGame() == 0) {
+			load();
+			loop();
+			gsm.dispose();
+		}
+		System.exit(0);
+	}
 
-    @Override
-    public void loop() {
-        super.loop();
+	/*---- Manage input from player ----*/
 
-    }
+	@Override
+	public void input(InputHandler ih) {
+		setMousePosition(ih);
+		GameObject go = objects.get("player");
+		if (go != null) {
+			movePlayerVerticaly(ih, go);
+			movePlayerHorizontaly(ih, go);
+			stopPlayer(ih, go);
+			reshuffleObjects(ih);
+		}
+	}
 
-    @Override
-    public void update(double elapsed) {
-        super.update(elapsed);
+	private void setMousePosition(InputHandler ih) {
 
-    }
+		MouseCursor m = (MouseCursor) objects.get("mouse_cursor");
+		if (m != null) {
+			m.x = ih.getMouseX() / scale;
+			m.y = ih.getMouseY() / scale;
+			if (m.getBoundingBox().intersect(rs.getViewport())) {
+				m.color = Color.WHITE;
+			} else {
+				m.color = Color.GRAY;
+			}
+		}
+	}
 
-    @Override
-    public void render(long realFps) {
-        Renderer render = gsm.getSystem(Renderer.class);
-        render.render(this, realFps);
-    }
+	private void reshuffleObjects(InputHandler ih) {
+		final List<String> excludedObjects = Arrays.asList("player", "mouse_cursor");
+		if (ih.getKey(KeyEvent.VK_R)) {
+			reshuffleVelocity(excludedObjects);
+		}
+	}
 
-    public static void main(String[] args) {
-        SampleRendererSystem g = new SampleRendererSystem("Sample Render System", args);
-        g.run();
-    }
+	private void stopPlayer(InputHandler ih, GameObject go) {
+		if (ih.getKey(KeyEvent.VK_SPACE)) {
+			go.dx = 0;
+			go.dy = 0;
+			go.color = Color.BLUE;
+		}
+	}
+
+	private void movePlayerHorizontaly(InputHandler ih, GameObject go) {
+		if (ih.getKey(KeyEvent.VK_LEFT)) {
+			go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
+		}
+		if (ih.getKey(KeyEvent.VK_RIGHT)) {
+			go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
+		}
+	}
+
+	private void movePlayerVerticaly(InputHandler ih, GameObject go) {
+		if (ih.getKey(KeyEvent.VK_UP)) {
+			go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
+		}
+		if (ih.getKey(KeyEvent.VK_DOWN)) {
+			go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		super.keyReleased(e);
+		switch (e.getKeyCode()) {
+			case KeyEvent.VK_D:
+				rs.setDebug(this.debug);
+				break;
+			default:
+				break;
+		}
+	}
+
+	@Override
+	protected void constrainGameObject(GameObject go) {
+		double elasticity = (go.attributes.containsKey("elasticity") ? (double) go.attributes.get("elasticity") : 0.0);
+		if (go.x > getWidth() - go.width) {
+			go.x = getWidth() - go.width;
+			go.dx = -go.dx * elasticity;
+			go.color = collidingColor;
+		}
+		if (go.y >= getHeight() - go.height) {
+			go.y = getHeight() - go.height;
+			go.dy = -go.dy * elasticity;
+			go.color = collidingColor;
+		}
+		if (go.x <= 0) {
+			go.x = 0;
+			go.dx = -go.dx * elasticity;
+			go.color = collidingColor;
+		}
+		if (go.y <= 0) {
+			go.y = 0;
+			go.dy = -go.dy * elasticity;
+			go.color = collidingColor;
+		}
+	}
+
+	@Override
+	public void update(double elapsed) {
+
+		// reset collision system
+		cs.clearEvents();
+
+		// loop objects
+		for (GameObject go : objects.values()) {
+
+			go.update(this, elapsed);
+
+			// verify collision for this object.
+			cs.update(go, elapsed);
+
+			if (!(go.name.equals("cam1") || go.name.equals("mouse_cursor"))) {
+				constrainGameObject(go);
+			}
+		}
+		cs.processEvents(this);
+	}
+
+	/*---- Render the game display through this new Renderer ----*/
+
+	@Override
+	public void render(long realFps) {
+		IRenderer render = gsm.getSystem(Renderer.class);
+		render.render(this, realFps);
+	}
+
+	@Override
+	public void collide(CollisionEvent e) {
+		switch (e.type) {
+			case COLLISION_MOUSE:
+				e.b.debug = true;
+				e.b.color = Color.ORANGE;
+				break;
+			case COLLISION_OBJECT:
+				e.a.dx = 0;
+				e.a.dy = 0;
+				e.a.collidingColor = Color.WHITE;
+				e.b.dx = -e.b.dx;
+				e.b.dy = -e.b.dy;
+				e.b.collidingColor = Color.WHITE;
+				break;
+			default:
+				break;
+		}
+
+	}
+
+	/*---- The main method for this sample using the new Rendering System ----*/
+
+	public static void main(String[] args) {
+		SampleRendererSystem g = new SampleRendererSystem("Sample Render System", args);
+		g.run();
+	}
 
 }

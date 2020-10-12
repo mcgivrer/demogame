@@ -21,10 +21,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import lombok.extern.slf4j.Slf4j;
-import samples.camera.Camera;
 import samples.camera.SampleGameSystemManagerCamera;
-import samples.object.GameObject;
-import samples.object.GameObject.GameObjectType;
+import samples.camera.entity.Camera;
+import samples.input.entity.MouseCursor;
+import samples.object.entity.GameObject;
+import samples.object.entity.GameObject.GameObjectType;
 import samples.system.GameSystemManager;
 
 /**

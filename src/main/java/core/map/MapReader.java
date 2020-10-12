@@ -449,6 +449,7 @@ public class MapReader {
 	 * 
 	 * @param go the GameObject to add behaviors to.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void addBehaviors(GameObject go) {
 		if (go.attributes.containsKey("behaviors")) {
 			List<String> behaviors = (List<String>) go.attributes.get("behaviors");

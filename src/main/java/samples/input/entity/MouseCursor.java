@@ -1,11 +1,11 @@
-package samples.input;
+package samples.input.entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import samples.Sample;
-import samples.object.GameObject;
+import samples.object.entity.GameObject;
 
 public class MouseCursor extends GameObject {
 
@@ -28,8 +28,11 @@ public class MouseCursor extends GameObject {
 
     @Override
     public void update(Sample ga, double elapsed) {
-        x += ga.getActiveCamera().x;
-        y += ga.getActiveCamera().y;
+       /*
+        *  x += ga.getActiveCamera().x;
+        *  y += ga.getActiveCamera().y;
+        */
+        
     }
 
     public void setCursorImage(BufferedImage image) {
