@@ -1,6 +1,7 @@
 package core.map;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,6 +101,9 @@ public class MapReader {
 					}
 					// generate tiles
 					mapLevel = generateTilesAndObject(mapLevel, ml);
+					mapLevel.maxSize = new Dimension(
+						(int)ml.width*ml.assetsObjects.get(0).tileWidth,
+						(int)ml.height*ml.assetsObjects.get(0).tileHeight);
 					break;
 
 				default:

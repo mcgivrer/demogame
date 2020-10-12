@@ -49,7 +49,7 @@ public class Config {
 	 * Initialization of default values for configuraiton.
 	 */
 	public Config(final Game g) {
-		this.title = "notitle";
+		this.title = "Kingdom of Asperia";
 		this.screenWidth = 360;
 		this.screenHeight = 200;
 		this.screenScale = 2.0f;
@@ -63,41 +63,40 @@ public class Config {
 		clm = new CliManager(g);
 
 		// Define title attribute.
-		clm.add(new StringArgParser("WindowTitle", "t", "title", "BGF", "Title of the displayed game window",
+		clm.add(new StringArgParser("WindowTitle", "t", "title", this.title, "Title of the displayed game window",
 				"the title must be a simple character's string"));
 		// Add debug attribute
-		clm.add(new IntArgParser("Debug", "d", "debug", 0, 0, 5, "Define the Debug level to on screen display.",
+		clm.add(new IntArgParser("Debug", "d", "debug", this.debug,0, 5, "Define the Debug level to on screen display.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the Width attribute
-		clm.add(new IntArgParser("Width", "w", "width", 320, 120, 640, "Define the Width of the game window.",
+		clm.add(new IntArgParser("Width", "w", "width", this.screenWidth, 120, 640, "Define the Width of the game window.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// add the Height attribute
-		clm.add(new IntArgParser("Height", "h", "height", 200, 80, 480, "Define the height of the game window.",
+		clm.add(new IntArgParser("Height", "h", "height", this.screenHeight, 80, 480, "Define the height of the game window.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the scale factor.
-		clm.add(new FloatArgParser("Scale", "s", "scale", 2.0f, 1, 4, "Define the factor to be apply to pixel scale.",
+		clm.add(new FloatArgParser("Scale", "s", "scale", this.screenScale, 1, 4, "Define the factor to be apply to pixel scale.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the frame per second.
-		clm.add(new IntArgParser("FPS", "f", "fps", 60, 25, 60, "Define the frames per second ratio.",
+		clm.add(new IntArgParser("FPS", "f", "fps", this.fps, 25, 60, "Define the frames per second ratio.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the update per second.
-		clm.add(new IntArgParser("UPS", "u", "ups", 60, 25, 60, "Define the update per second ratio.",
+		clm.add(new IntArgParser("UPS", "u", "ups", this.ups, 25, 60, "Define the update per second ratio.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the soundVolume factor.
-		clm.add(new BooleanArgParser("MuteMode", "m", "muteMode", false, true, false, "set the mute mode.",
+		clm.add(new BooleanArgParser("MuteMode", "m", "muteMode", this.mute,true, false, "set the mute mode.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the soundVolume factor.
-		clm.add(new FloatArgParser("SoundVolume", "sm", "soundVolume", 0.2f, 0.0f, 1.0f,
+		clm.add(new FloatArgParser("SoundVolume", "sm", "soundVolume", this.soundVolume, 0.0f, 1.0f,
 				"Define the sound volume value.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the musicVolume factor.
-		clm.add(new FloatArgParser("MusicVolume", "mm", "musicVolume", 0.2f, 0.0f, 1.0f,
+		clm.add(new FloatArgParser("MusicVolume", "mm", "musicVolume", this.musicVolume, 0.0f, 1.0f,
 				"Define the sound volume value.",
 				"%s set to %s is wrong, default value is %d and can be between %d and %d"));
 		// Add the states configuration path.
-		clm.add(new StringArgParser("StatePath", "st", "statePath", "/res/game.json", "Path where the game.json file exists",
+		clm.add(new StringArgParser("StatePath", "st", "statePath", this.statesPath, "Path where the game.json file exists",
 		"the state path must be a simple path string"));
-
 	}
 
 	/**

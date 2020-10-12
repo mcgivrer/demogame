@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SampleCollision",
+            "request": "launch",
+            "mainClass": "samples.collision.SampleCollision",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - SampleGameLoop",
             "request": "launch",
             "mainClass": "samples.loop.SampleGameLoop",
@@ -51,44 +58,11 @@
         },
         {
             "type": "java",
-            "name": "CodeLens (Launch) - FadeOutEx",
-            "request": "launch",
-            "mainClass": "core.tests.FadeOutEx",
-            "projectName": "demogame"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - DemoViewer",
-            "request": "launch",
-            "mainClass": "core.tests.DemoViewer",
-            "projectName": "demogame"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - Game",
-            "request": "launch",
-            "mainClass": "core.Game",
-            "projectName": "demogame"
-        },
-        {
-            "type": "java",
-            "name": "CodeLens (Launch) - FadeOutEx",
-            "request": "launch",
-            "mainClass": "core.tests.FadeOutEx",
-            "projectName": "DemoGame"
-        },
-        {
-            "type": "java",
             "name": "Game debug(Launch)",
             "request": "launch",
             "mainClass": "core.Game",
-            "projectName": "DemoGame"
-        },
-        {
-            "type": "java",
-            "name": "FrameInfo debug (Launch)",
-            "request": "launch",
-            "mainClass": "core.tests.FrameInfo"
+            "projectName": "DemoGame",
+            "args":["s=2.5"]
         }
     ]
 }

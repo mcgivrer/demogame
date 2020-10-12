@@ -34,6 +34,11 @@ public class Vector2D {
         this.y = 0.0f;
         name = "v_noname";
     }
+    public Vector2D(Vector2D v1) {
+        this.x = v1.x;
+        this.y = v1.y;
+        name = v1.name+"";
+    }
 
     /**
      * Create a Vector2D

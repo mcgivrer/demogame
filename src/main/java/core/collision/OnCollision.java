@@ -8,10 +8,11 @@ package core.collision;
  * @author Frédéric Delorme <frederic.delorme@gmail.com>
  * @since 2019
  * 
- * @see MapCollidingService
+ * @see MapCollidingSystem
  * @see CollisionEvent
  **/
 public interface OnCollision {
 
 	public void collide(CollisionEvent e);
+
 }
