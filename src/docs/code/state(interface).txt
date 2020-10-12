@@ -1,0 +1,23 @@
+public interface State {
+
+    String getName();
+
+    void initialize(Game g);
+    void load(Game g);
+    boolean isLoaded();
+    void onFocus(Game g);
+    void lostFocus(Game g);
+    void dispose(Game g);
+
+    void input(Game g);
+    void update(Game g, float elapsed);
+    void render(Game g, Renderer r);
+
+    void addObject(GameObject go);
+    void addAllObject(Collection<GameObject> objects);
+    void removeObject(GameObject go);
+    void removeObject(String name);
+    void removeFilteredObjects(String nameFilter);
+
+    void drawHUD(Game ga, Renderer r, Graphics2D g);
+}

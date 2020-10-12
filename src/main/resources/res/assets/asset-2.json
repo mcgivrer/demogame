@@ -1,0 +1,300 @@
+{
+  "name": "Objects Set 1",
+  "image": "/res/images/tileset-1.png",
+  "tileWidth": 16,
+  "tileHeight": 16,
+  "objects": {
+    "E": {
+      "id": "E",
+      "type": "ENEMY",
+      "name": "enemy_#",
+      "clazz": "core.object.GameObject",
+      "image": "todo",
+      "offset": "6,1",
+      "size": "32,32",
+      "priority": 2,
+      "layer": 2,
+      "bbox": {
+        "top": 8.0,
+        "bottom": 0.0,
+        "left": 4.0,
+        "right": 4.0
+      },
+      "color": "RED",
+      "canCollect": false,
+      "attributes": {
+        "energy": 100.0,
+        "damage": 10.0,
+        "coins": 5,
+        "physic": {
+          "physicType":"DYNAMIC",
+          "material": {
+            "name": "player",
+            "elasticity": 0.12,
+            "friction": 0.9,
+            "density": 1.2,
+            "magnetism": 0.0
+          }
+        }
+      }
+    },
+    "F": {
+      "id": "E",
+      "type": "ENEMY",
+      "name": "enemy_#",
+      "clazz": "core.object.GameObject",
+      "image": "todo",
+      "offset": "6,1",
+      "size": "32,32",
+      "priority": 2,
+      "layer": 2,
+      "bbox": {
+        "top": 8.0,
+        "bottom": 0.0,
+        "left": 4.0,
+        "right": 4.0
+      },
+      "color": "RED",
+      "canCollect": false,
+      "attributes": {
+        "energy": 100.0,
+        "damage": 10.0,
+        "coins": 5,
+        "scripts": ["/res/scripts/enemy_update.lua"],
+        "physic": {
+          "physicType":"DYNAMIC",
+          "material": {
+            "name": "enemy",
+            "elasticity": 0.12,
+            "friction": 0.9,
+            "density": 1.2,
+            "magnetism": 0.0
+          }
+        }
+      }
+    },
+    "P": {
+      "id": "P",
+      "type": "PLAYER",
+      "name": "player",
+      "clazz": "core.object.GameObject",
+      "image": "todo",
+      "offset": "4,1",
+      "size": "32,32",
+      "priority": 10,
+      "layer": 3,
+      "bbox": {
+        "top": 8.0,
+        "bottom": 0.0,
+        "left": 4.0,
+        "right": 4.0
+      },
+      "color": "BLUE",
+      "canCollect": true,
+      "attributes": {
+        "energy": 100.0,
+        "mana": 100.0,
+        "damage": 50.0,
+        "coins": 250,
+        "items": ["sword-15", "nrj+10"],
+        "maxItems": 3,
+        "selectedItem": 1,
+        "behaviors": ["core.behaviors.PlayerInputBehavior"],
+        "physic": {
+          "physicType":"DYNAMIC",
+          "material": {
+            "name": "player",
+            "elasticity": 0.12,
+            "friction": 0.9,
+            "density": 1.2,
+            "magnetism": 0.0
+          }
+        }
+      }
+    },
+    "L": {
+      "id": "L",
+      "type": "LIGHT",
+      "name": "light_#",
+      "clazz": "core.object.Light",
+      "lightType": "LIGHT_AMBIANT",
+      "priority": 10,
+      "layer": 4,
+      "bboxType":"CIRCLE",
+      "color": "[0.6,0.5,0.12,0.5]",
+      "attributes": {
+        "intensity": 0.2
+      }
+    },
+    "l": {
+      "id": "l",
+      "type": "LIGHT",
+      "name": "light_#",
+      "clazz": "core.object.Light",
+      "lightType": "LIGHT_SPHERE",
+      "priority": 10,
+      "layer": 5,
+      "bboxType":"CIRCLE",
+      "color": "[0.9,0.6,0.3,0.6]",
+      "attributes": {
+        "intensity": 0.5,
+        "radius": 160,
+        "glittering": 1.2
+      }
+    },
+    "1": {
+      "type": "ITEM",
+      "name": "sword",
+      "id": "1",
+      "description": "sword-1",
+      "usage": "weapon",
+      "collectible": true,
+      "damage": 10.0,
+      "offset": "7,1"
+    },
+    "2": {
+      "type": "ITEM",
+      "name": "boost-energy",
+      "id": "2",
+      "description": "nrj-10",
+      "usage": "health",
+      "collectible": true,
+      "energy": 10.0,
+      "offset": "4,1"
+    },
+    "3": {
+      "type": "ITEM",
+      "name": "arc",
+      "id": "3",
+      "description": "arc-10",
+      "usage": "weapon",
+      "collectible": true,
+      "energy": 10.0,
+      "offset": "5,1"
+    },
+    "o": {
+      "type": "OBJECT",
+      "id": "o",
+      "collectible": true,
+      "money": 10,
+      "frameSet": [
+        "7,7,40",
+        "8,7,40",
+        "9,7,40",
+        "10,7,40",
+        "11,7,40",
+        "10,7,40",
+        "9,7,40",
+        "8,7,40"
+      ]
+    },
+    "O": {
+      "type": "OBJECT",
+      "id": "O",
+      "collectible": true,
+      "money": 100,
+      "frameSet": [
+        "7,6,60",
+        "8,6,60",
+        "9,6,60",
+        "10,6,60",
+        "11,6,60",
+        "10,6,60",
+        "9,6,60",
+        "8,6,60"
+      ]
+    },
+    ">": {
+      "type": "TILE",
+      "id": ">",
+      "image": "pic-right.png",
+      "hit": true,
+      "damage": 10
+    },
+    "<": {
+      "type": "TILE",
+      "id": "<",
+      "image": "pic-left.png",
+      "hit": true,
+      "damage": 10
+    },
+    "V": {
+      "type": "TILE",
+      "id": "V",
+      "image": "pic-down.png",
+      "hit": true,
+      "damage": 10
+    },
+    "|": {
+      "type": "TILE",
+      "id": "|",
+      "image": "pic-up.png",
+      "hit": true,
+      "damage": 10
+    },
+    "b": {
+      "type": "TILE",
+      "id": "b",
+      "block": true,
+      "offset": "17,8"
+    },
+    "B": {
+      "type": "TILE",
+      "id": "B",
+      "block": true,
+      "offset": "19,8"
+    },
+    "H": {
+      "type": "TILE",
+      "id": "H",
+      "block": false,
+      "offset": "13,6",
+      "climbable": true
+    },
+    "h": {
+      "type": "TILE",
+      "id": "h",
+      "block": false,
+      "offset": "19,5",
+      "climbable": true
+    },
+    "T": {
+      "type": "TILE",
+      "id": "T",
+      "block": false,
+      "offset": "19,6",
+      "friction": "0.87"
+    },
+    "k": {
+      "type": "TILE",
+      "id": "k",
+      "block": false,
+      "offset": "19,5"
+    },
+    "=": {
+      "type": "TILE",
+      "id": "=",
+      "block": true,
+      "offset": "19,5"
+    },
+    "X": {
+      "type": "TILE",
+      "id": "X",
+      "image": "door-level-out.png",
+      "levelOutput": true,
+      "nextLevel": "map_2"
+    },
+    "(": {
+      "type": "TILE",
+      "id": "(",
+      "block": true,
+      "offset": "13,10"
+    },
+    ")": {
+      "type": "TILE",
+      "id": "(",
+      "block": true,
+      "offset": "14,10"
+    }
+  }
+}

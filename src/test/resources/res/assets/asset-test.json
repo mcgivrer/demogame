@@ -1,0 +1,116 @@
+{
+  "name": "Objects Set 1",
+  "image": "/res/images/tileset-1.png",
+  "tileWidth": 16,
+  "tileHeight": 16,
+  "objects": {
+    "E": {
+      "id": "E",
+      "type": "enemy_",
+      "clazz": "demo.object.GameObject",
+      "image": "todo",
+      "offset": "6,1",
+      "size": "32,32",
+      "color": "RED",
+      "attributes": {
+        "energy": 100,
+        "damage": 10,
+        "coins": 5
+      }
+    },
+    "P": {
+      "id": "P",
+      "type": "player",
+      "clazz": "demo.object.GameObject",
+      "image": "todo",
+      "offset": "4,1",
+      "size": "32,32",
+      "color": "BLUE",
+      "attributes": {
+        "energy": 100,
+        "mana": 100,
+        "damage": 50,
+        "coins": 25
+      }
+    },
+    "o": {
+      "type": "object",
+      "id": "o",
+      "collectible": true,
+      "money": 10,
+      "offset": "10,2"
+    },
+    "O": {
+      "type": "object",
+      "id": "O",
+      "collectible": true,
+      "money": 100,
+      "offset": "11,2"
+    },
+    ">": {
+      "type": "tile",
+      "id": ">",
+      "image": "pic-right.png",
+      "hit": true,
+      "damage": 10
+    },
+    "<": {
+      "type": "tile",
+      "id": "<",
+      "image": "pic-left.png",
+      "hit": true,
+      "damage": 10
+    },
+    "V": {
+      "type": "tile",
+      "id": "V",
+      "image": "pic-down.png",
+      "hit": true,
+      "damage": 10
+    },
+    "|": {
+      "type": "tile",
+      "id": "|",
+      "image": "pic-up.png",
+      "hit": true,
+      "damage": 10
+    },
+    "B": {
+      "type": "tile",
+      "id": "B",
+      "block": true,
+      "offset": "19,8"
+    },
+    "H": {
+      "type": "tile",
+      "id": "H",
+      "block": false,
+      "offset": "13,6"
+    },
+    "h": {
+      "type": "tile",
+      "id": "h",
+      "block": false,
+      "offset": "19,5"
+    },
+    "k": {
+      "type": "tile",
+      "id": "k",
+      "block": false,
+      "offset": "19,5"
+    },
+    "=": {
+      "type": "tile",
+      "id": "=",
+      "block": true,
+      "offset": "19,5"
+    },
+    "X": {
+      "type": "tile",
+      "id": "X",
+      "image": "door-level-out.png",
+      "levelOutput": true,
+      "nextLevel": "map_2"
+    }
+  }
+}

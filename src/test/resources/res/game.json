@@ -1,0 +1,6 @@
+{
+  "defaultScene": "test",
+  "scenes": {
+    "test": "demo.scenes.TestScene"
+  }
+}

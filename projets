@@ -1,0 +1,66 @@
+[editor]
+line_wrapping=true
+line_break_column=78
+auto_continue_multiline=true
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=true
+strip_trailing_spaces=true
+replace_tabs=false
+
+[indentation]
+indent_width=4
+indent_type=1
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=DemoGame
+base_path=/home/frederic/projects/prototypes/demogame
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=72
+
+[files]
+current_page=-1
+
+[VTE]
+last_dir=/home/frederic
+
+[prjorg]
+source_patterns=*.c;*.C;*.cpp;*.cxx;*.c++;*.cc;*.m;
+header_patterns=*.h;*.H;*.hpp;*.hxx;*.h++;*.hh;
+ignored_dirs_patterns=.*;CVS;
+ignored_file_patterns=*.o;*.obj;*.a;*.lib;*.so;*.dll;*.lo;*.la;*.class;*.jar;*.pyc;*.mo;*.gmo;
+generate_tag_prefs=0
+external_dirs=
+
+[build-menu]
+NF_00_LB=_Compile
+NF_00_CM=mvn clean compile
+NF_00_WD=
+NF_01_LB=_Install
+NF_01_CM=mvn install -DskipTests=true
+NF_01_WD=
+NF_02_LB=_package
+NF_02_CM=mvn package
+NF_02_WD=
+EX_00_LB=_Exécuter
+EX_00_CM=mvn exec:java
+EX_00_WD=
+JavaFT_01_LB=clean
+JavaFT_01_CM=rm -f *.class
+JavaFT_01_WD=
+filetypes=Java;
+EX_01_LB=Exécuter classe courante
+EX_01_CM=java "%f".class
+EX_01_WD=
+JavaFT_00_LB=_Compiler
+JavaFT_00_CM=javac "%f" -d classes
+JavaFT_00_WD=

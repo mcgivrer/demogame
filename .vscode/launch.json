@@ -1,0 +1,84 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleRendererSystem",
+            "request": "launch",
+            "mainClass": "samples.render.SampleRendererSystem",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Game",
+            "request": "launch",
+            "mainClass": "core.Game",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleCollision",
+            "request": "launch",
+            "mainClass": "samples.collision.SampleCollision",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleGameLoop",
+            "request": "launch",
+            "mainClass": "samples.loop.SampleGameLoop",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleCliManager",
+            "request": "launch",
+            "mainClass": "samples.cli.SampleCliManager",
+            "projectName": "demogame",
+            "args": [
+                "d=2",
+                "w=640",
+                "h=400",
+                "s=1.5",
+                "title=demo"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleGameSystemManagerCamera",
+            "request": "launch",
+            "mainClass": "samples.camera.SampleGameSystemManagerCamera",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleGameSystemManager",
+            "request": "launch",
+            "mainClass": "samples.system.SampleGameSystemManager",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleGameObject",
+            "request": "launch",
+            "mainClass": "samples.object.SampleGameObject",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - SampleInputHandler",
+            "request": "launch",
+            "mainClass": "samples.input.SampleInputHandler",
+            "projectName": "demogame"
+        },
+        {
+            "type": "java",
+            "name": "Game debug(Launch)",
+            "request": "launch",
+            "mainClass": "core.Game",
+            "projectName": "DemoGame",
+            "args": [
+                "s=2.5"
+            ]
+        }
+    ]
+}
