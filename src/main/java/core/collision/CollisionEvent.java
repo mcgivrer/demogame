@@ -23,8 +23,9 @@ public class CollisionEvent {
 	public MapObject m2;
 	public int mapX, mapY;
 	public Vector2D penetrationVector;
+	public String cpId;
 
-	public CollisionEvent(TileType type, GameObject o1, GameObject o2, MapObject m2, MapLayer map, int x, int y) {
+	public CollisionEvent(TileType type, GameObject o1, GameObject o2, MapObject m2, MapLayer map, String cpId, int x, int y) {
 		this.tileType = type;
 		this.type = CollisionType.COLLISION_MAP;
 		this.a = o1;
@@ -33,6 +34,7 @@ public class CollisionEvent {
 		this.map = map;
 		this.mapX = x;
 		this.mapY = y;
+		this.cpId = cpId;
 	}
 
 	public CollisionEvent(GameObject go1, GameObject go2){

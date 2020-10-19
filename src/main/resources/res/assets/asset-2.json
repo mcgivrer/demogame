@@ -20,6 +20,15 @@
         "left": 4.0,
         "right": 4.0
       },
+      "collisionPoints":{
+        "A":{"dx":2,"dy":16,"side":"LEFT"},
+        "B":{"dx":28,"dy":16,"side":"RIGHT"},
+        "C":{"dx":8,"dy":31,"side":"BOTTOM"},
+        "D":{"dx":28,"dy":31,"side":"BOTTOM"},
+        "E":{"dx":12,"dy":8,"side":"TOP"},
+        "F":{"dx":16,"dy":6,"side":"TOP"},
+        "G":{"dx":24,"dy":8,"side":"TOP"}
+      },
       "color": "RED",
       "canCollect": false,
       "attributes": {
@@ -39,7 +48,7 @@
       }
     },
     "F": {
-      "id": "E",
+      "id": "F",
       "type": "ENEMY",
       "name": "enemy_#",
       "clazz": "core.object.GameObject",
@@ -53,6 +62,15 @@
         "bottom": 0.0,
         "left": 4.0,
         "right": 4.0
+      },
+      "collisionPoints":{
+        "A":{"dx":2,"dy":16,"side":"LEFT"},
+        "B":{"dx":28,"dy":16,"side":"RIGHT"},
+        "C":{"dx":8,"dy":31,"side":"BOTTOM"},
+        "D":{"dx":22,"dy":31,"side":"BOTTOM"},
+        "E":{"dx":12,"dy":8,"side":"TOP"},
+        "F":{"dx":16,"dy":6,"side":"TOP"},
+        "G":{"dx":24,"dy":8,"side":"TOP"}
       },
       "color": "RED",
       "canCollect": false,
@@ -88,6 +106,15 @@
         "bottom": 0.0,
         "left": 4.0,
         "right": 4.0
+      },
+      "collisionPoints":{
+        "A":{"dx":2,"dy":16,"side":"LEFT"},
+        "B":{"dx":28,"dy":16,"side":"RIGHT"},
+        "C":{"dx":8,"dy":31,"side":"BOTTOM"},
+        "D":{"dx":22,"dy":31,"side":"BOTTOM"},
+        "E":{"dx":12,"dy":8,"side":"TOP"},
+        "F":{"dx":16,"dy":6,"side":"TOP"},
+        "G":{"dx":24,"dy":8,"side":"TOP"}
       },
       "color": "BLUE",
       "canCollect": true,
@@ -209,92 +236,105 @@
       "id": ">",
       "image": "pic-right.png",
       "hit": true,
-      "damage": 10
+      "damage": 10,
+      "friction": 1.0
     },
     "<": {
       "type": "TILE",
       "id": "<",
       "image": "pic-left.png",
       "hit": true,
-      "damage": 10
+      "damage": 10,
+      "friction": 1.0
     },
     "V": {
       "type": "TILE",
       "id": "V",
       "image": "pic-down.png",
       "hit": true,
-      "damage": 10
+      "damage": 10,
+      "friction": 1.0
     },
     "|": {
       "type": "TILE",
       "id": "|",
       "image": "pic-up.png",
       "hit": true,
-      "damage": 10
+      "damage": 10,
+      "friction": 1.0
     },
     "b": {
       "type": "TILE",
       "id": "b",
       "block": true,
-      "offset": "17,8"
+      "offset": "17,8",
+      "friction":0.87
     },
     "B": {
       "type": "TILE",
       "id": "B",
       "block": true,
-      "offset": "19,8"
+      "offset": "19,8",
+      "friction":0.87
     },
     "H": {
       "type": "TILE",
       "id": "H",
       "block": false,
       "offset": "13,6",
-      "climbable": true
+      "climbable": true,
+      "friction": 1.0
     },
     "h": {
       "type": "TILE",
       "id": "h",
       "block": false,
       "offset": "19,5",
-      "climbable": true
+      "climbable": true,
+      "friction": 1.0
     },
     "T": {
       "type": "TILE",
       "id": "T",
       "block": false,
       "offset": "19,6",
-      "friction": "0.87"
+      "friction": 0.87
     },
     "k": {
       "type": "TILE",
       "id": "k",
       "block": false,
-      "offset": "19,5"
+      "offset": "19,5",
+      "friction": 1.0
     },
     "=": {
       "type": "TILE",
       "id": "=",
       "block": true,
-      "offset": "19,5"
+      "offset": "19,5",
+      "friction": 1.0
     },
     "X": {
       "type": "TILE",
       "id": "X",
       "image": "door-level-out.png",
       "levelOutput": true,
-      "nextLevel": "map_2"
+      "nextLevel": "map_2",
+      "friction": 1.0
     },
     "(": {
       "type": "TILE",
       "id": "(",
       "block": true,
-      "offset": "13,10"
+      "offset": "13,10",
+      "friction": 1.0
     },
     ")": {
       "type": "TILE",
       "id": "(",
       "block": true,
-      "offset": "14,10"
+      "offset": "14,10",
+      "friction": 1.0
     }
   }
 }

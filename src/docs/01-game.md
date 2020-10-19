@@ -239,8 +239,19 @@ If you press 3 times the `D` key, some debugging information will be displayed. 
 
 ## In our framework
 
-> TODO
+This new `Game` will go as is in the root `core` package.
 
+The latest version of the `SampleGameLoop` class will be moved as the Game class into the core package.
+
+```text
+src
+|_ main
+   |_ java
+      |_ core
+      |  |_ Game.java
+```
+
+We need to go one the game's object !
 
 
 

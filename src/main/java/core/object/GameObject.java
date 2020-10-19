@@ -11,6 +11,7 @@ import java.util.Map;
 import core.Game;
 import core.behaviors.Behavior;
 import core.collision.Collidable;
+import core.collision.CollisionPoint;
 import core.collision.MapTileCollision;
 import core.gfx.Animation;
 import core.gfx.Renderer;
@@ -69,6 +70,7 @@ public class GameObject implements Collidable {
 	public boolean canCollect;
 
 	public boolean collidable = true;
+    public Map<String,CollisionPoint> collisionPoints = new HashMap<>();
 
 	public boolean fixed = false;
 

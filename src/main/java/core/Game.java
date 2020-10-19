@@ -42,12 +42,13 @@ public class Game {
 	/**
 	 * Create the Game container.
 	 *
-	 * @param argc list of arguments.
+	 * @param argc
+	 *                 list of arguments.
 	 * @see Config#analyzeArgc(String[])
 	 */
 	public Game(String[] argc) {
 		super();
-		config = Config.analyzeArgc(this,argc);
+		config = Config.analyzeArgc(this, argc);
 	}
 
 	/**
@@ -70,9 +71,8 @@ public class Game {
 		// start System Manager
 		sysMan = SystemManager.initialize(this);
 		sysMan.add(new ResourceManager(this));
-		
-		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
+		ResourceManager.add(new String[] { "/res/game.json", "/res/bgf-icon.png" });
 
 		// add basic systems
 		inputHandler = new InputHandler(this);
@@ -161,6 +161,8 @@ public class Game {
 				Thread.sleep((int) wait);
 			} catch (InterruptedException e) {
 				log.error("Unable to wait {} wait ms", wait, e);
+				Thread.currentThread().interrupt();
+				System.exit(-1);
 			}
 		}
 	}
@@ -175,7 +177,8 @@ public class Game {
 	/**
 	 * The famous java Execution entry point.
 	 *
-	 * @param argc list of arguments from command lines
+	 * @param argc
+	 *                 list of arguments from command lines
 	 */
 	public static void main(String[] argc) {
 		Game dg = new Game(argc);

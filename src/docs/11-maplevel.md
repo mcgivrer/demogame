@@ -343,7 +343,61 @@ This MapLevel is read from a map file, where used asset and map are defined (see
 
 ### MapLayer
 
-A map, defined in a `map_*.json` file is composed of one or more layer. Each layer can be map of ile or an image, and have their own size (rows, columns. The tiles and entities used are the one defined in an `asset_*.json` file.
+A map, defined in a `map_*.json` file is composed of one or more layer. Each layer can be map of tiles or an image, and have their own size (rows, columns. The tiles and entities used are the one defined in an `asset_*.json` file.
+
+The map JSON file is a clear definition of each Map layer, using the defined tiles or map objects in an asset as seen before.
+
+```javascript
+{
+    ...
+    "layers": {
+		"background": {
+			"name": "background",
+			"index": "1",
+			"type": "LAYER_BACKGROUND_IMAGE",
+			"background": "/res/images/background-1.jpg"
+		},
+		"mid": {
+			"name": "mid",
+			"index": "2",
+			"type": "LAYER_TILEMAP",
+			"assets": [
+				"/res/assets/asset-1.json"
+			],
+			"map": ["", ... ]
+		},
+		"front": {
+			"name": "front",
+			"index": "3",
+			"type": "LAYER_TILEMAP",
+			"assets": [
+				"/res/assets/asset-2.json",
+				"/res/assets/asset-3.json"
+			],
+			"map": [ "", ... ]
+		}
+    }
+    ...
+}
+```
+
+In the file, there are two main parts:
+
+1. Definition of the map with a `name` and a `description` and some `environment` elements (we will see later this subpart).
+
+2. A list of `layers` in there corresponding rendering order specified by the `index` attribute. Each layer have a `name` and `type`. According to there type, tilemap or background, the next attributes will defined a list of tiles map or an image.
+
+In the previous JSON sample, there are 1 "background" layer, and 2 tilemaps "mid" and "front". 
+
+As you can see about the tilemap layer, a list of `assets` can be specified to draw the maps.
+
+If only one asset is specified, the list of tile identifier int each map will are simple letter according to the asset identifiers.
+
+>_**WARNING**<br/>
+>In a near future, if more than one asset will be provided, all tiles from assets will be identified as `9:X` where `9` is the asset number (starting at 1) and `X` is the asset item identifier._
+
+The `MapLayer` will reflect exactly this *JSON* structure.
+
 
 ### MapObjectAsset
 
@@ -361,7 +415,77 @@ An asset is a list of objects to be use (and reuse) in some map levels. Those de
 
 The `MapReader` is the builder to read a map_\[99\].json file and organize all tiles, items, objects and entities in to a `MapLevel` to be played with.
 
+To dive into the complexity of the Map reading, please let's parse the framework code. we won't go in details on this part.
+
+>_**NOTE**<br/>
+>What is to be known is that `MapObject`, `MapObjectAsset` and `MapLayer` are loaded and prepared into memrory ready to be displayed by the `MapRenderer`. 
+>And all dynamic objects like `player`, `enemies`, `lights` and so on, are created in memory, ready to be animated and rendered by the main `Game` loop._
 
 ## The MapRenderer
 
-TODO
+The MapRenderer is a specific renderer processor to display all objects and the tiles on the game screen.
+
+Depending on the layer nature, LAYER_TILEMAP or LAYER_BACKGROUND_IMAGE, the layer rendering (see `MapRenderer.render()` method) is delegated to 2 private methods, one to render a background image, and a second to render all tiles of the leyer.
+
+```java
+public void render(Game dg, Graphics2D g, MapLevel map, Camera camera, double elapsed) {
+    ...
+    for (MapLayer mapLayer : map.layers.values()) {
+        switch (mapLayer.type) {
+        case LAYER_BACKGROUND_IMAGE:
+            drawBackgroundLayer(...);
+            break;
+        case LAYER_TILEMAP:
+            drawTilemapLayer(...);
+            break;
+        }
+    }
+}
+```
+Displaying the background is very simple, just draw an image, using the Java AWT `Graphics2D` API.
+
+
+Drawing all the tiles from a tilemap layer is not so tricky, just parse the tilemap by lines and columns, and draw each tile fgraphics at the right place.
+
+```java
+private void drawTilemapLayer(Game dg, Graphics2D g, double elapsed, Camera camera, int mHeight, int mWidth,
+			MapLayer mapLayer) {
+    ...
+    for (int y = top; y < bottom; y++) {
+        for (int x = left; x < right; x++) {
+            MapObject mo = getTile(mapLayer, x, y);
+            if (mo != null) {
+                if (mo.frameSet.size() > 0) {
+                    animateMapObject(...);
+                }
+                g.drawImage(...);
+            }
+        }
+    }
+}
+```
+
+In some specific casen, when the tile to vbe drawn is a animated set, we need to render the right image from the set. This will nbe delegated to the `animateMapObject()` private method.
+
+## In our Framework
+
+Allthose classes will be layered into the `core.map package`.
+
+Usage of `MapRenderer` for the rendering will be delegated by the `Renderer.render()` main method according to the class of `GameObject` to be displayed.
+
+```java
+private void renderObjects(Game game, double elapsed, Graphics2D g, Camera camera, Layer layer) {
+    // draw all objects
+    for (GameObject go : layer.objects) {
+        if (go.enable && go.displayed) {
+            // Rendering of a tilemap.
+            if (go instanceof MapLevel) {
+                mapRenderer.render(game, g, (MapLevel) go, camera, elapsed);
+            } else {
+                // existing code
+                ...
+            }
+        }
+    }
+}
+```
