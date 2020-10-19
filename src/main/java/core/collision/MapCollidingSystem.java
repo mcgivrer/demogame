@@ -2,13 +2,13 @@ package core.collision;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import core.Game;
 import core.map.MapLayer;
 import core.map.MapObject;
 import core.map.MapObjectAsset;
 import core.object.GameObject;
-import core.object.GameObject.GameAction;
 import core.system.AbstractSystem;
 
 /**
@@ -52,113 +52,51 @@ public class MapCollidingSystem extends AbstractSystem {
     /**
      * Check the collision between the MapLevel tiles and a GameObject
      *
-     * @param map the map to check against
-     * @param go  the GameObject to be verified.
+     * @param map
+     *                the map to check against
+     * @param go
+     *                the GameObject to be verified.
      */
-    public void checkCollision(MapLayer frontLayer, int indexAsset, GameObject go) {
+    public void checkCollision(MapLayer mLayer, int indexAsset, GameObject go) {
 
         if (go.collidable) {
-            MapObjectAsset asset = frontLayer.assetsObjects.get(indexAsset);
-            int ox = (int) (go.bbox.pos.x / asset.tileWidth);
-            int oy = (int) ((go.newPos.y + go.bbox.size.y / 2) / asset.tileHeight);
-            //int oy2 = (int) ((go.bbox.pos.y + go.bbox.size.y / 2) / asset.tileHeight);
-
-            int ow = (int) (go.bbox.size.x / asset.tileWidth);
-            int oh = (int) (go.bbox.size.y / asset.tileHeight);
-
+            MapObjectAsset asset = mLayer.assetsObjects.get(indexAsset);
             go.collidingZone.clear();
             go.setContact(false);
-
-            if (go.vel.x > 0) {
-                testMoveRight(frontLayer, go, ox, ow, oy, oh);
-            }
-            if (go.vel.x < 0) {
-                testMoveLeft(frontLayer, go, ox, oy, oh);
-            }
-            if (go.vel.y < 0) {
-                testMoveUp(frontLayer, go);
-            }
-            if (go.vel.y > 0) {
-                testIfMoveDown(frontLayer, go);
-            }
-            testIfFall(frontLayer, go, true);
-        }
-    }
-
-    private void testIfMoveDown(MapLayer layer, GameObject go) {
-        testIfFall(layer, go, false);
-    }
-
-    public void testIfFall(MapLayer layer, GameObject go, boolean falling) {
-        int dy = 0;
-
-        /**
-         * Compute bottom coordinate of bottom corners tiles.
-         */
-        int y0 = (int) ((go.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
-
-        int x1 = (int) (go.bbox.pos.x / layer.assetsObjects.get(0).tileWidth);
-        int y1 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
-
-        int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / layer.assetsObjects.get(0).tileWidth);
-        //int y2 = (int) ((go.bbox.pos.y + go.bbox.size.y) / layer.assetsObjects.get(0).tileHeight) + dy;
-
-        // test all tiles from old to new position
-        for (int y = y0; y <= y1; y += 1) {
-            // get Tile at bottom corners
-            MapObject m1 = getTileInMap(layer, x1, y);
-            MapObject m2 = getTileInMap(layer, x2, y);
-            // if no tile on both bottom corners, fall !
-            if (m1 == null && m2 == null) {
-                go.action = GameAction.FALL;
-            }
-            // add some debugging information on detected tiles
-            createDebugInfo(go, layer, m1, x1, y);
-            createDebugInfo(go, layer, m2, x2, y);
-        }
-        // if Go is not falling and not on a tile, recompute right Y value according to
-        // tile height.
-        if (!falling && go.action != GameAction.FALL && (go.pos.y % layer.assetsObjects.get(0).tileHeight) > 0) {
-            go.pos.y = (int) (go.pos.y / layer.assetsObjects.get(0).tileHeight) * layer.assetsObjects.get(0).tileHeight;
-            go.bbox.fromGameObject(go);
-        }
-    }
-
-    public void testMoveUp(MapLayer map, GameObject go) {
-        int x1 = (int) (go.bbox.pos.x / map.assetsObjects.get(0).tileWidth);
-        int y1 = (int) ((go.bbox.pos.y) / map.assetsObjects.get(0).tileHeight);
-
-        int x2 = (int) ((go.bbox.pos.x + go.bbox.size.x) / map.assetsObjects.get(0).tileWidth);
-        int y2 = (int) ((go.bbox.pos.y) / map.assetsObjects.get(0).tileHeight);
-
-        MapObject m1 = getTileInMap(map, x1, y1);
-        MapObject m2 = getTileInMap(map, x2, y2);
-
-        if (m1 != null) {
-            collide(go, map, m1, x1, y1);
-            createDebugInfo(go, map, m1, x1, y1);
-        }
-        if (m2 != null) {
-            collide(go, map, m2, x2, y2);
-            createDebugInfo(go, map, m2, x2, y2);
-        }
-        createDebugInfo(go, map, m1, x1, y1);
-        createDebugInfo(go, map, m2, x2, y2);
-    }
-
-    public void testMoveLeft(MapLayer map, GameObject go, int ox, int oy, int oh) {
-        MapObject mo;
-        for (int iy = oy; iy < oy + oh; iy++) {
-            mo = getTileInMap(map, ox, iy);
-            createDebugInfo(go, map, mo, ox, iy);
-            if (mo != null) {
-                collide(go, map, mo, ox, iy);
+            for (Entry<String, CollisionPoint> cpe : go.collisionPoints.entrySet()) {
+                checkPoint(mLayer, asset, go, cpe);
             }
         }
     }
 
-    public void testMoveRight(MapLayer map, GameObject go, int ox, int ow, int oy, int oh) {
-        testMoveLeft(map, go, ox + ow, oy, oh);
+    private void checkPoint(MapLayer mLayer, MapObjectAsset asset, GameObject go, Entry<String, CollisionPoint> cpe) {
+        int px = (int) ((go.pos.x + cpe.getValue().dx) / asset.tileWidth);
+        int py = (int) ((go.pos.y + cpe.getValue().dy) / asset.tileWidth)+1;
+        MapObject m = getTileInMap(mLayer, px, py);
+        if (m != null) {
+            collide(go, mLayer, m, px, py, cpe);
+        }
+    }
+
+    /**
+     * As the `MapObject` is not null and is not a blocking one, we try to collect
+     * it, and test if the `MapObject` type is an item or an object.
+     *
+     * @param go
+     *                the `GameObject` that `canCollect`
+     * @param map
+     *                the map where to search for
+     * @param mo
+     *                the MapObject to be tested with
+     * @param x
+     *                the horizontal position in the tiles map
+     * @param y
+     *                the vertical position in the tiles map
+     */
+    private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y, Entry<String, CollisionPoint> cpe) {
+        go.setContact(true);
+        createDebugInfo(go, map, mo, x, y);
+        listeners.get(go.getClass()).collide(new CollisionEvent(mo.type, go, null, mo, map, cpe.getKey(), x, y));
     }
 
     /**
@@ -171,7 +109,7 @@ public class MapCollidingSystem extends AbstractSystem {
      * @param oy
      */
     private void createDebugInfo(GameObject go, MapLayer map, MapObject m1, int ox, int oy) {
-        if (game.config.debug > 3) {
+        if (game.config.debug > 1) {
             MapTileCollision mtc = new MapTileCollision();
             mtc.x = ox;
             mtc.y = oy;
@@ -185,27 +123,15 @@ public class MapCollidingSystem extends AbstractSystem {
     }
 
     /**
-     * As the `MapObject` is not null and is not a blocking one, we try to collect
-     * it, and test if the `MapObject` type is an item or an object.
-     *
-     * @param go  the `GameObject` that `canCollect`
-     * @param map the map where to search for
-     * @param mo  the MapObject to be tested with
-     * @param x   the horizontal position in the tiles map
-     * @param y   the vertical position in the tiles map
-     */
-    private void collide(GameObject go, MapLayer map, MapObject mo, int x, int y) {
-        go.setContact(true);
-        listeners.get(go.getClass()).collide(new CollisionEvent(mo.type, go, null, mo, map, x, y));
-    }
-
-    /**
      * Retrieve the MapObject from the tiles map. it's also checking that (x,y) is
      * not out pf the map. return null elsewhere.
      *
-     * @param map the map to find
-     * @param x   the horizontal position to test
-     * @param y   the vertical position to test
+     * @param map
+     *                the map to find
+     * @param x
+     *                the horizontal position to test
+     * @param y
+     *                the vertical position to test
      * @return
      */
     private MapObject getTileInMap(MapLayer map, int x, int y) {

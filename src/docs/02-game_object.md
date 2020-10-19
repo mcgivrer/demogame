@@ -567,7 +567,7 @@ This is now drawing in a better way :
 
 We now can go to framework things by adding some just develop fancy objects.
 
-## In out Framework
+## In our Framework
 
 This new `GameObject` and its internal enumeration `GameObjectType` will go as is in the `core.object` package.
 

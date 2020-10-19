@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
+import java.awt.MultipleGradientPaint;
 import java.awt.Point;
 import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
@@ -18,6 +19,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -39,6 +41,7 @@ import javax.swing.JFrame;
 
 import core.Config;
 import core.Game;
+import core.collision.CollisionPoint;
 import core.io.InputHandler;
 import core.map.MapLevel;
 import core.map.MapObject;
@@ -216,6 +219,15 @@ public class Renderer extends AbstractSystem {
 					DebugInfo.displayCollisionTest(g, go);
 					DebugInfo.display(g, go);
 				}
+				if (dg.config.debug > 1) {
+					g.setColor(Color.WHITE);
+					g.drawRect((int) go.pos.x, (int) go.pos.y, (int) (go.pos.x + 1), (int) (go.pos.y + 1));
+					g.setColor(Color.YELLOW);
+					for (CollisionPoint cp : go.collisionPoints.values()) {
+						g.drawLine((int) (go.pos.x + cp.dx), (int) (go.pos.y + cp.dy), (int) (go.pos.x + cp.dx),
+								(int) (go.pos.y + cp.dy));
+					}
+				}
 			}
 		}
 	}
@@ -235,16 +247,16 @@ public class Renderer extends AbstractSystem {
 			double ox = to.pos.x;
 			double oy = to.pos.y;
 			switch (to.align) {
-				case CENTER:
-					ox = to.pos.x - (to.size.x / 2);
-					break;
-				case RIGHT:
-					ox = to.pos.x - to.size.x;
-					break;
-				case LEFT:
-				default:
-					ox = to.pos.x;
-					break;
+			case CENTER:
+				ox = to.pos.x - (to.size.x / 2);
+				break;
+			case RIGHT:
+				ox = to.pos.x - to.size.x;
+				break;
+			case LEFT:
+			default:
+				ox = to.pos.x;
+				break;
 			}
 			int boxPadding = 4;
 
@@ -314,17 +326,17 @@ public class Renderer extends AbstractSystem {
 		Composite c = g.getComposite();
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
-			case LIGHT_SPHERE:
-				drawLightSphere(g, l);
-				break;
-			case LIGHT_AMBIANT:
-				drawLightAmbient(dg, g, l);
-				break;
-			case LIGHT_CONE:
-				drawLightCone(dg,g,l);
-				break;
-			default:
-				break;
+		case LIGHT_SPHERE:
+			drawLightSphere(g, l);
+			break;
+		case LIGHT_AMBIANT:
+			drawLightAmbient(dg, g, l);
+			break;
+		case LIGHT_CONE:
+			drawLightCone(dg, g, l);
+			break;
+		default:
+			break;
 		}
 
 		g.setComposite(c);
@@ -332,32 +344,34 @@ public class Renderer extends AbstractSystem {
 
 	private void drawLightSphere(Graphics2D g, Light l) {
 		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-		l.colors = new Color[] { 
-				l.foregroundColor,
-				new Color(	
-						l.foregroundColor.getRed() / 2, 
-						l.foregroundColor.getGreen() / 2,
-						l.foregroundColor.getBlue() / 2, 
-						l.foregroundColor.getAlpha() / 2),
+		l.colors = new Color[] { l.foregroundColor,
+				new Color(
+					(int)(l.foregroundColor.getRed() * 0.9f), 
+					(int)(l.foregroundColor.getGreen() *0.9f),
+					(int)(l.foregroundColor.getBlue() *0.9f), 
+					(int)(l.foregroundColor.getAlpha() *0.9f)),
 				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
-		l.rgp = new RadialGradientPaint(
-				new Point(
-						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
-						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-						(int) (l.size.x * 2), 
-						l.dist, 
-						l.colors);
+
+		Point center = new Point(
+				(int) (l.pos.x - (l.size.x / 2)), 
+				(int) (l.pos.y - (2*(l.size.x / 3))));
+
+		Point focus = new Point(
+				(int) (l.pos.x - (l.size.x / 2) + (5 * l.glitterEffect)),
+				(int) (l.pos.y - (l.size.x) + (10 * l.glitterEffect)));
+
+		float radius = (float) (l.size.x / 2.0);
+
+		l.rgp = new RadialGradientPaint(center, radius, focus, l.dist, l.colors,
+				MultipleGradientPaint.CycleMethod.NO_CYCLE);
+
 		g.setPaint(l.rgp);
 		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
 	}
 
 	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
-		final Area ambientArea = new Area(
-			new Rectangle2D.Double(
-				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
-				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
-				dg.config.screenWidth, 
-				dg.config.screenHeight));
+		final Area ambientArea = new Area(new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth, dg.config.screenHeight));
 		g.setColor(l.foregroundColor);
 		g.fill(ambientArea);
 
@@ -366,8 +380,8 @@ public class Renderer extends AbstractSystem {
 	/**
 	 * TODO implements the Conical Light drawing.
 	 */
-	private void drawLightCone(Game dg, Graphics2D g, Light l){
-		log.debug("draw Light cone {}",l.name);
+	private void drawLightCone(Game dg, Graphics2D g, Light l) {
+		log.debug("draw Light cone {}", l.name);
 	}
 
 	/**
@@ -380,22 +394,22 @@ public class Renderer extends AbstractSystem {
 	 */
 	private void drawObject(Game dg, Graphics2D g, GameObject go) {
 		switch (go.type) {
-			case RECTANGLE:
-				g.setColor(go.foregroundColor);
-				g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-				break;
-			case CIRCLE:
-				g.setColor(go.foregroundColor);
-				g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-				break;
-			case IMAGE:
-				if (go.direction < 0) {
-					g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x),
-							(int) go.size.y, null);
-				} else {
-					g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
-				}
-				break;
+		case RECTANGLE:
+			g.setColor(go.foregroundColor);
+			g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+			break;
+		case CIRCLE:
+			g.setColor(go.foregroundColor);
+			g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+			break;
+		case IMAGE:
+			if (go.direction < 0) {
+				g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x), (int) go.size.y,
+						null);
+			} else {
+				g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
+			}
+			break;
 		}
 	}
 

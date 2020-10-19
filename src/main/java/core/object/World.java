@@ -24,7 +24,7 @@ public class World {
 
     private Map<String, Vector2D> forces = new ConcurrentHashMap<>();
 
-    private Vector2D gravity = new Vector2D(0.0f, 9.81f);
+    private Vector2D gravity = new Vector2D(0.0f, 9.81f/3);
 
     public World(Game game) {
         this.game = game;

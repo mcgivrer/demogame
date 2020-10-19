@@ -104,3 +104,9 @@ public class Game {
 }
 ```
 
+## In our Framework
+
+Integrated in the final framework, the Camera object will reach the `core.object` package.
+
+The `Game.render()` method will take in account the new `Camera` processing to move viewpoint to camera before rendering other objects.
+

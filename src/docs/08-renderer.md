@@ -184,11 +184,7 @@ private void renderObjects(Game game, double elapsed, Graphics2D g, Camera camer
 		// draw all objects
 		for (GameObject go : layer.objects) {
 			if (go.enable && go.displayed) {
-				if (go instanceof MapLevel) {
-					// if MapLevel, delegates rendering operation to the MapRenderer.
-					mapRenderer.render(game, g, (MapLevel) go, camera, elapsed);
-
-				} else if (go instanceof TextObject) {
+				if (go instanceof TextObject) {
 					TextObject to = (TextObject) go;
 					drawText(game, g, to);
 

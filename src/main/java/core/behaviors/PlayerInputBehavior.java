@@ -47,7 +47,7 @@ public class PlayerInputBehavior implements Behavior {
         go.forces.clear();
 
         final double defaultAcc = 30;
-        // go.setAcc(new Vector2D(0.0, 0.0));
+        go.setAcc(new Vector2D(0.0, 0.0));
         if (go.action == GameAction.FALL) {
             go.forces.add(pes.getWorld().getGravity());
         } else {

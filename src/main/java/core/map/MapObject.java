@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import core.collision.CollisionPoint;
 import core.gfx.Animation;
 import core.map.MapReader.TileType;
 import core.object.BBox;
@@ -20,6 +21,7 @@ import lombok.ToString;
  */
 @ToString
 public class MapObject {
+
     public String id;
     public String image;
     public TileType type;
@@ -67,6 +69,7 @@ public class MapObject {
     public int energy;
 
     public Map<String, Object> attributes = new HashMap<>();
+    public Map<String,CollisionPoint> collisionPoints = new HashMap<>();
 
     public boolean levelOutput;
     public String nextLevel;

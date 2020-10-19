@@ -15,9 +15,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -48,21 +46,23 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     // debug display mode
     protected int debug = 0;
 
-
     // internal rendering information.
     protected Color collidingColor;
     protected Color squareColor;
 
-    public SampleGameObject(){
-        
+    public SampleGameObject() {
+
     }
 
     /**
      * Let's create a SampleGameLoop process.
      * 
-     * @param title  title for the window.
-     * @param width  width for this window.
-     * @param height height for this window.
+     * @param title
+     *                   title for the window.
+     * @param width
+     *                   width for this window.
+     * @param height
+     *                   height for this window.
      */
     public SampleGameObject(String title, int width, int height, int s) {
         super(title, width, height, s);
@@ -76,8 +76,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBackground(Color.BLACK);
         Insets ins = frame.getInsets();
-        Dimension dim = new Dimension((int)(width * scale) - (ins.left + ins.right),
-                (int)(height * scale) - (ins.top + ins.bottom));
+        Dimension dim = new Dimension((int) (width * scale) - (ins.left + ins.right),
+                (int) (height * scale) - (ins.top + ins.bottom));
         frame.setSize(dim);
         frame.setPreferredSize(dim);
         frame.pack();
@@ -100,42 +100,42 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     public void keyReleased(KeyEvent e) {
         GameObject go = objects.get("gameobject_1");
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_UP:
-                go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
-                break;
-            case KeyEvent.VK_DOWN:
-                go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
-                break;
-            case KeyEvent.VK_LEFT:
-                go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
-                break;
-            case KeyEvent.VK_RIGHT:
-                go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
-                break;
-            case KeyEvent.VK_ESCAPE:
-                exit = true;
-                break;
-            case KeyEvent.VK_SPACE:
-                // Break the first object of the objects map.
-                go.dx = 0;
-                go.dy = 0;
-                go.x = screenBuffer.getWidth() / 2;
-                go.y = screenBuffer.getHeight() / 2;
-                go.color = Color.BLUE;
-                break;
+        case KeyEvent.VK_UP:
+            go.dy = (go.dy > -go.maxD ? go.dy - 1 : go.dy);
+            break;
+        case KeyEvent.VK_DOWN:
+            go.dy = (go.dy < go.maxD ? go.dy + 1 : go.dy);
+            break;
+        case KeyEvent.VK_LEFT:
+            go.dx = (go.dx > -go.maxD ? go.dx - 1 : go.dx);
+            break;
+        case KeyEvent.VK_RIGHT:
+            go.dx = (go.dx < go.maxD ? go.dx + 1 : go.dx);
+            break;
+        case KeyEvent.VK_ESCAPE:
+            exit = true;
+            break;
+        case KeyEvent.VK_SPACE:
+            // Break the first object of the objects map.
+            go.dx = 0;
+            go.dy = 0;
+            go.x = screenBuffer.getWidth() / 2;
+            go.y = screenBuffer.getHeight() / 2;
+            go.color = Color.BLUE;
+            break;
 
-            case KeyEvent.VK_D:
-                debug = (debug < 5 ? debug + 1 : 0);
-                break;
-            case KeyEvent.VK_P:
-            case KeyEvent.VK_PAUSE:
-                pause = !pause;
-                break;
-            case KeyEvent.VK_R:
-                reshuffleVelocity(Arrays.asList("gameobject_1"));
-                break;
-            default:
-                break;
+        case KeyEvent.VK_D:
+            debug = (debug < 5 ? debug + 1 : 0);
+            break;
+        case KeyEvent.VK_P:
+        case KeyEvent.VK_PAUSE:
+            pause = !pause;
+            break;
+        case KeyEvent.VK_R:
+            reshuffleVelocity(Arrays.asList("gameobject_1"));
+            break;
+        default:
+            break;
         }
     }
 
@@ -331,8 +331,10 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     /**
      * Display debug information for the GameObject.
      * 
-     * @param sg the Graphics2D API to be used
-     * @param go the GameObject to dsplay debug for.
+     * @param sg
+     *               the Graphics2D API to be used
+     * @param go
+     *               the GameObject to dsplay debug for.
      */
     protected void displayDebug(Graphics2D sg, GameObject go) {
         Font f = sg.getFont().deriveFont(9);
@@ -343,18 +345,15 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         int yOffset = (int) (go.y * scale);
 
         sg.setColor(Color.BLUE);
-        switch(go.type){
-            case ELLIPSE:
-                sg.drawArc(
-                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
-                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale),
-                    0,360);
-                break;
-            default:
-                sg.drawRect(
-                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
-                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale));
-                break;
+        switch (go.type) {
+        case ELLIPSE:
+            sg.drawArc((int) (go.bbox.x * scale), (int) (go.bbox.y * scale), (int) (go.bbox.w * scale),
+                    (int) (go.bbox.h * scale), 0, 360);
+            break;
+        default:
+            sg.drawRect((int) (go.bbox.x * scale), (int) (go.bbox.y * scale), (int) (go.bbox.w * scale),
+                    (int) (go.bbox.h * scale));
+            break;
         }
 
         sg.setColor(new Color(0.4f, 0.4f, 0.4f, 0.6f));
@@ -366,9 +365,9 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03.2f,%03.2f", go.dx, go.dy));
         drawString(sg, xOffset, yOffset, lineHeight, 4, String.format("type:%s", go.type.name()));
         drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03.2f,%03.2f", go.width, go.height));
-        int i=0;
-        for(String d : go.debugInfo){
-            drawString(sg, xOffset, yOffset, lineHeight, 5+(i++), d);
+        int i = 0;
+        for (String d : go.debugInfo) {
+            drawString(sg, xOffset, yOffset, lineHeight, 5 + (i++), d);
         }
     }
 
@@ -386,7 +385,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         try {
             Thread.sleep(waitTime > 0 ? waitTime : 0);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            System.exit(-1);
         }
     }
 
@@ -398,5 +398,15 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     public static void main(String[] argc) {
         SampleGameObject sgl = new SampleGameObject("Sample Game Object", 320, 240, 2);
         sgl.run();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // nothing to do there.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // nothing to do there.
     }
 }

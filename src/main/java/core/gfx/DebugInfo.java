@@ -20,7 +20,7 @@ import core.object.GameObject;
  */
 public class DebugInfo {
 	public static Font debugFont;
-	public static final Color backgroundColor = new Color(0.3f, 0.3f, 0.3f,0.45f);
+	public static final Color backgroundColor = new Color(0.3f, 0.3f, 0.3f, 0.45f);
 	public static final Color borderColor = Color.BLACK;
 
 	/**
@@ -44,8 +44,7 @@ public class DebugInfo {
 		int width = (debugInfo.size() % maxLinePerColumn) * (maxWidth);
 		int height = (debugInfo.size() - 1) * (fontHeight - 3);
 
-		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, borderColor,
-				backgroundColor);
+		drawBackgroundPanel(g, offsetX, offsetY - fontHeight, width, height, borderColor, backgroundColor);
 
 		drawAttributesText(g, debugInfo, offsetX, offsetY, maxWidth, maxLinePerColumn, fontHeight, Color.WHITE);
 
@@ -115,28 +114,30 @@ public class DebugInfo {
 		if (!go.collidingZone.isEmpty()) {
 			for (MapTileCollision mtc : go.collidingZone) {
 				if (mtc.mo != null) {
+
 					Font d = g.getFont();
 					g.setFont(d.deriveFont(9.5f));
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-					g.setColor(Color.WHITE);
-					g.drawString(mtc.mo.type.toString(), mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
+					g.setColor(Color.BLACK);
+					g.drawString(mtc.mo.type.toString().toUpperCase().substring(0,2), mtc.rX + 2, mtc.rY + (mtc.h / 2) + 4);
 					g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 					g.setFont(d);
+					
 					switch (mtc.mo.type) {
-						case TILE:
-							g.setColor(Color.ORANGE);
-							break;
-						case OBJECT:
-							g.setColor(Color.YELLOW);
-							break;
-						default:
-							g.setColor(Color.GREEN);
-							break;
+					case TILE:
+						g.setColor(new Color(0.9f, 0.2f, 0.0f, 0.8f));
+						break;
+					case OBJECT:
+						g.setColor(new Color(0.9f, 0.9f, 0.0f, 0.8f));
+						break;
+					default:
+						g.setColor(new Color(0.2f, 0.9f, 0.0f, 0.8f));
+						break;
 					}
 				} else {
-					g.setColor(Color.BLUE);
+					g.setColor(new Color(0.0f, 0.2f, 0.9f, 0.8f));
 				}
-				g.drawRect(mtc.rX, mtc.rY, mtc.w, mtc.h);
+				g.fillRect(mtc.rX, mtc.rY, mtc.w, mtc.h);
 			}
 		}
 	}

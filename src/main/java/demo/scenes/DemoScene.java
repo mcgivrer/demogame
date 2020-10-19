@@ -275,10 +275,6 @@ public class DemoScene extends AbstractScene {
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
 				collidingSystem.update(go, elapsed);
-
-				// TODO implement objects collision detection with an octree
-				// objectCollider.checkCollision(go);
-
 				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}
