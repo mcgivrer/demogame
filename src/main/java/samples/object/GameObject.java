@@ -42,12 +42,15 @@ public class GameObject implements Collidable {
 
     public BoundingBox bbox;
     public boolean collidable = true;
+    public boolean displayed = true;
 
     public List<Collidable> colliders = new ArrayList<>();
     public Color collidingColor;
     public String collidableList = "";
 
     public Map<String, Object> attributes = new HashMap<>();
+
+    public List<String> debugInfo = new ArrayList<>();
 
     public double timeFactor = 0.05;
 
