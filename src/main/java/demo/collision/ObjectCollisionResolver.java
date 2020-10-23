@@ -1,8 +1,7 @@
-package demo.scenes;
+package demo.collision;
 
 import core.Game;
 import core.audio.SoundSystem;
-import core.collision.CollidingSystem;
 import core.collision.CollisionEvent;
 import core.collision.OnCollision;
 import core.object.GameObject.GameAction;

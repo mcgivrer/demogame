@@ -53,9 +53,6 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     protected Color collidingColor;
     protected Color squareColor;
 
-    // list of managed objects
-    protected Map<String, GameObject> objects = new HashMap<>();
-
     public SampleGameObject(){
         
     }
@@ -100,7 +97,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     /*----- the KeyListener interface corresponding implementation -----*/
     @Override
     public void keyPressed(KeyEvent e) {
-
+        // nothing to do there.
     }
 
     @Override
@@ -148,6 +145,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
+        // nothing to do there.
     }
 
     /*----- the sample gameloop processing -----*/
@@ -397,6 +395,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         try {
             Thread.sleep(waitTime > 0 ? waitTime : 0);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.exit(-1);
             e.printStackTrace();
         }
     }

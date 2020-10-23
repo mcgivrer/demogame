@@ -31,6 +31,7 @@ import core.resource.ResourceManager;
 import core.scene.AbstractScene;
 import core.scene.Scene;
 import core.scripts.LuaScriptSystem;
+import demo.collision.ObjectCollisionResolver;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -231,7 +232,6 @@ public class DemoScene extends AbstractScene {
 		TextObject welcome = (TextObject) objectManager.get("welcome");
 		welcome.duration = 5000;
 		welcome.displayed = true;
-
 	}
 
 	/**
@@ -275,10 +275,6 @@ public class DemoScene extends AbstractScene {
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
 				collidingSystem.update(go, elapsed);
-
-				// TODO implement objects collision detection with an octree
-				// objectCollider.checkCollision(go);
-
 				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}

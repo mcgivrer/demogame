@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 
 import core.Game;
 import core.gfx.Renderer;
+import core.object.GameObject;
+import core.object.GameObjectType;
 import core.object.TextObject;
 import core.resource.ProgressListener;
 import core.resource.ResourceManager;
@@ -16,26 +18,14 @@ import core.system.SystemManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class TitleScene extends AbstractScene {
-
-    private Renderer renderer;
-    private Font textFont;
-    private Font titleFont;
+public class TitleScene extends AbstractScene {
 
     public TitleScene() {
         this.name = "title";
     }
 
-    @Override
-    public void input(Game g) {
-        // nothing realtime for input management in this part.
-    }
-
-    @Override
-    public void initialize(Game g) {
-        titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
-        textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf");
-        renderer = SystemManager.get(Renderer.class);
+    public TitleScene(Game game) {
+        super(game);
     }
 
     @Override
@@ -47,15 +37,34 @@ class TitleScene extends AbstractScene {
                 log.info("reading resources: {} : {}", value * 100.0f, path);
             }
         });
-        // TODO add resources to be loaded.
-        ResourceManager.add(new String[] { "/res/fonts/Prince Valiant.ttf", "/res/fonts/lilliput steps.ttf" });
+
+        ResourceManager.add(new String[] { "/res/images/background-1.jpg", "/res/fonts/Prince Valiant.ttf",
+                "/res/fonts/lilliput steps.ttf" });
+
+    }
+
+    @Override
+    public void initialize(Game g) {
+        super.initialize(g);
+
+        Font textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf");
+        Font titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
+
+        GameObject background = new GameObject("background", 0, 0, 0, 0);
+        background.type = GameObjectType.IMAGE;
+        background.image = ResourceManager.getImage("/res/images/background-1.jpg");
+        background.layer = 0;
+        addObject(background);
 
         TextObject title = new TextObject("title", "DemoGame", g.config.screenWidth / 2, g.config.screenHeight / 3,
                 titleFont, new Color(0.3f, 0.3f, 0.3f, 0.6f), Color.BLACK, Color.WHITE);
+        title.layer = 1;
         addObject(title);
+
         TextObject copyright = new TextObject("copyright", "(c) 2019 FDE / MIT license", g.config.screenWidth / 2,
                 (g.config.screenHeight / 3) * 2, textFont, new Color(0.3f, 0.3f, 0.3f, 0.6f), Color.BLACK, Color.WHITE);
-        addObject(title);
+        copyright.layer = 1;
+        addObject(copyright);
     }
 
     @Override
@@ -64,8 +73,20 @@ class TitleScene extends AbstractScene {
     }
 
     @Override
+    public void input(Game g) {
+        if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
+            g.exitRequest = true;
+        }
+    }
+
+    @Override
+    public void update(Game g, double elapsed) {
+        // nothing to do there.
+    }
+
+    @Override
     public void render(Game g, Renderer r, double elapsed) {
-        renderer.render(g, elapsed);
+        r.render(g, elapsed);
     }
 
     @Override
@@ -83,12 +104,12 @@ class TitleScene extends AbstractScene {
 
         super.keyReleased(e);
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_ENTER:
-        case KeyEvent.VK_SPACE:
-            loadDemo();
-            break;
-        default:
-            break;
+            case KeyEvent.VK_ENTER:
+            case KeyEvent.VK_SPACE:
+                loadDemo();
+                break;
+            default:
+                break;
 
         }
     }
@@ -98,4 +119,15 @@ class TitleScene extends AbstractScene {
 
         stm.activate("game");
     }
+
+    @Override
+    public void onFocus(Game g) {
+        super.onFocus(g);
+    }
+
+    @Override
+    public String getName() {
+        return TitleScene.class.getSimpleName();
+    }
+
 }
