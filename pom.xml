@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.snapgames</groupId>
     <artifactId>demogame</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
     <name>DemoGame</name>
     <description>This is a sample implementation of a Game with Java JRE only</description>
     <url>https://github.com/mcgivrer/demogame</url>
@@ -103,7 +103,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -436,20 +436,20 @@
                                     <executable>pandoc</executable>
                                     <workingDirectory></workingDirectory>
                                     <arguments>
-                                        <argument>src/docs/metadata.yml</argument>
-                                        <argument>src/docs/00-introduction.md</argument>
-                                        <argument>src/docs/01-game.md</argument>
-                                        <argument>src/docs/02-game_object.md</argument>
-                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
-                                        <argument>src/docs/04-renderer.md</argument>
-                                        <argument>src/docs/05-camera.md</argument>
-                                        <argument>src/docs/06-system_manager.md</argument>
-                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
-                                        <argument>src/docs/08-physic_engine_system.md</argument>
-                                        <argument>src/docs/09-maplevel.md</argument>
-                                        <argument>src/docs/10-the_maven_project.md</argument>
-                                        <!--argument>src/docs/00-.md</argument-->
-                                        <argument>--resource-path=src/docs/</argument>
+                                        <argument>docs/pages/metadata.yml</argument>
+                                        <argument>docs/pages/00-introduction.md</argument>
+                                        <argument>docs/pages/01-game.md</argument>
+                                        <argument>docs/pages/02-game_object.md</argument>
+                                        <argument>docs/pages/03-scene_and_manager_system.md</argument>
+                                        <argument>docs/pages/04-renderer.md</argument>
+                                        <argument>docs/pages/05-camera.md</argument>
+                                        <argument>docs/pages/06-system_manager.md</argument>
+                                        <argument>docs/pages/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>docs/pages/08-physic_engine_system.md</argument>
+                                        <argument>docs/pages/09-maplevel.md</argument>
+                                        <argument>docs/pages/10-the_maven_project.md</argument>
+                                        <!--argument>docs/pages/00-.md</argument-->
+                                        <argument>--resource-path=docs/pages/</argument>
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>-t</argument>
@@ -484,20 +484,20 @@
                                     <executable>pandoc</executable>
                                     <workingDirectory></workingDirectory>
                                     <arguments>
-                                        <argument>src/docs/metadata.yml</argument>
-                                        <argument>src/docs/00-introduction.md</argument>
-                                        <argument>src/docs/01-game.md</argument>
-                                        <argument>src/docs/02-game_object.md</argument>
-                                        <argument>src/docs/03-scene_and_manager_system.md</argument>
-                                        <argument>src/docs/04-renderer.md</argument>
-                                        <argument>src/docs/05-camera.md</argument>
-                                        <argument>src/docs/06-system_manager.md</argument>
-                                        <argument>src/docs/07-behaviors_and_lua_scripts.md</argument>
-                                        <argument>src/docs/08-physic_engine_system.md</argument>
-                                        <argument>src/docs/09-maplevel.md</argument>
-                                        <argument>src/docs/10-the_maven_project.md</argument>
-                                        <!--argument>src/docs/00-.md</argument-->
-                                        <argument>--resource-path=src/docs/</argument>
+                                        <argument>docs/pages/metadata.yml</argument>
+                                        <argument>docs/pages/00-introduction.md</argument>
+                                        <argument>docs/pages/01-game.md</argument>
+                                        <argument>docs/pages/02-game_object.md</argument>
+                                        <argument>docs/pages/03-scene_and_manager_system.md</argument>
+                                        <argument>docs/pages/04-renderer.md</argument>
+                                        <argument>docs/pages/05-camera.md</argument>
+                                        <argument>docs/pages/06-system_manager.md</argument>
+                                        <argument>docs/pages/07-behaviors_and_lua_scripts.md</argument>
+                                        <argument>docs/pages/08-physic_engine_system.md</argument>
+                                        <argument>docs/pages/09-maplevel.md</argument>
+                                        <argument>docs/pages/10-the_maven_project.md</argument>
+                                        <!--argument>docs/pages/00-.md</argument-->
+                                        <argument>--resource-path=docs/pages/</argument>
                                         <argument>--toc</argument>
                                         <argument>--toc-depth=2</argument>
                                         <argument>--pdf-engine=context</argument>

@@ -15,9 +15,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -48,13 +46,12 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     // debug display mode
     protected int debug = 0;
 
-
     // internal rendering information.
     protected Color collidingColor;
     protected Color squareColor;
 
-    public SampleGameObject(){
-        
+    public SampleGameObject() {
+
     }
 
     /**
@@ -76,8 +73,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBackground(Color.BLACK);
         Insets ins = frame.getInsets();
-        Dimension dim = new Dimension((int)(width * scale) - (ins.left + ins.right),
-                (int)(height * scale) - (ins.top + ins.bottom));
+        Dimension dim = new Dimension((int) (width * scale) - (ins.left + ins.right),
+                (int) (height * scale) - (ins.top + ins.bottom));
         frame.setSize(dim);
         frame.setPreferredSize(dim);
         frame.pack();
@@ -97,7 +94,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
     /*----- the KeyListener interface corresponding implementation -----*/
     @Override
     public void keyPressed(KeyEvent e) {
-        // nothing to do there.
+        // Nothing to do there.
     }
 
     @Override
@@ -145,7 +142,7 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        // nothing to do there.
+        // Nothing special to do there.
     }
 
     /*----- the sample gameloop processing -----*/
@@ -352,17 +349,14 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         int yOffset = (int) (go.y * scale);
 
         sg.setColor(Color.BLUE);
-        switch(go.type){
+        switch (go.type) {
             case ELLIPSE:
-                sg.drawArc(
-                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
-                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale),
-                    0,360);
+                sg.drawArc((int) (go.bbox.x * scale), (int) (go.bbox.y * scale), (int) (go.bbox.w * scale),
+                        (int) (go.bbox.h * scale), 0, 360);
                 break;
             default:
-                sg.drawRect(
-                    (int)(go.bbox.x*scale),(int)(go.bbox.y*scale), 
-                    (int)(go.bbox.w*scale), (int)(go.bbox.h*scale));
+                sg.drawRect((int) (go.bbox.x * scale), (int) (go.bbox.y * scale), (int) (go.bbox.w * scale),
+                        (int) (go.bbox.h * scale));
                 break;
         }
 
@@ -375,9 +369,9 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         drawString(sg, xOffset, yOffset, lineHeight, 3, String.format("vel:%03.2f,%03.2f", go.dx, go.dy));
         drawString(sg, xOffset, yOffset, lineHeight, 4, String.format("type:%s", go.type.name()));
         drawString(sg, xOffset, yOffset, lineHeight, 5, String.format("siz:%03.2f,%03.2f", go.width, go.height));
-        int i=0;
-        for(String d : go.debugInfo){
-            drawString(sg, xOffset, yOffset, lineHeight, 5+(i++), d);
+        int i = 0;
+        for (String d : go.debugInfo) {
+            drawString(sg, xOffset, yOffset, lineHeight, 5 + (i++), d);
         }
     }
 
