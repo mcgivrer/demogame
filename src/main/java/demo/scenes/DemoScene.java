@@ -324,32 +324,33 @@ public class DemoScene extends AbstractScene {
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
 		GameObject player = objectManager.get("player");
-
-		int offsetX = 24;
-		int offsetY = 30;
-
-		// draw Life
-		r.drawImage(lifeImg, offsetX, offsetY - 16);
-		r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
-
-		// draw Coins
-		g.drawImage(coinsImg, offsetX, offsetY, null);
-		double coins = (double) (player.attributes.get("coins"));
-		r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK,
-				infoFont);
-
-		// draw Mana
-		double nrjRatio = (energyImg.getWidth() / 100.0f);
-		double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
-		g.drawImage(energyImg, offsetX + 24, offsetY - 12, (int) nrj, energyImg.getHeight(), null);
-
-		// draw Energy
-		double manaRatio = (manaImg.getWidth() / 100.0f);
-		double mana = manaRatio * ((double) (player.attributes.get("mana")));
-		g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
-
-		// draw Items
-		inventory.render(ga, r);
+		if(player!=null){
+			int offsetX = 24;
+			int offsetY = 30;
+	
+			// draw Life
+			r.drawImage(lifeImg, offsetX, offsetY - 16);
+			r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
+	
+			// draw Coins
+			g.drawImage(coinsImg, offsetX, offsetY, null);
+			double coins = (double) (player.attributes.get("coins"));
+			r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK,
+					infoFont);
+	
+			// draw Mana
+			double nrjRatio = (energyImg.getWidth() / 100.0f);
+			double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
+			g.drawImage(energyImg, offsetX + 24, offsetY - 12, (int) nrj, energyImg.getHeight(), null);
+	
+			// draw Energy
+			double manaRatio = (manaImg.getWidth() / 100.0f);
+			double mana = manaRatio * ((double) (player.attributes.get("mana")));
+			g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
+	
+			// draw Items
+			inventory.render(ga, r);	
+		}
 	}
 
 }

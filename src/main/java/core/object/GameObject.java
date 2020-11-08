@@ -176,7 +176,7 @@ public class GameObject implements Collidable {
 	 * @see Renderer#render(Game, double)
 	 */
 	public void render(Game dg, Graphics2D g) {
-
+		// default implementyation is doing nothing special.
 	}
 
 	public enum GameAction {
@@ -238,5 +238,12 @@ public class GameObject implements Collidable {
 	@Override
 	public BBox getCollisionBox() {
 		return bbox;
+	}
+
+	public void setImage(BufferedImage image){
+		this.image = image;
+		this.type = GameObjectType.IMAGE;
+		this.size.x = image.getWidth();
+		this.size.y = image.getHeight();
 	}
 }

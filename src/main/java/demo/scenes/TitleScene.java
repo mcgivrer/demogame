@@ -48,37 +48,47 @@ public class TitleScene extends AbstractScene {
     public void initialize(Game g) {
         super.initialize(g);
 
-		g.config.attributes.put("sound_volume", 0.8f);
+        g.config.attributes.put("sound_volume", 0.8f);
         g.config.attributes.put("music_volume", 0.4f);
-        
+
         inputHandler.addListener(this);
 
-		objectManager.clear();
+        objectManager.clear();
         g.sysMan.getSystem(Renderer.class).clear();
-        
+
         Font textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(9.0f);
         Font titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(20.0f);
 
-		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
+        soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
         soundSystem.setMute(g.config.mute);
 
-
-        GameObject background = new GameObject("background", 0, 0, 0, 0);
+        GameObject background = new GameObject("background", 
+            0.0f, (g.config.screenHeight / 5.0f) * 1.0f, 
+            0, 0);
         background.type = GameObjectType.IMAGE;
         background.setImage(ResourceManager.getImage("/res/images/background-1.jpg"));
         background.layer = 0;
         addObject(background);
 
-        TextObject title = new TextObject("title", "DemoGame", g.config.screenWidth / 2, g.config.screenHeight / 3,
-                titleFont, new Color(0.3f, 0.3f, 0.3f, 0.6f), Color.BLACK, Color.WHITE);
+        TextObject title = new TextObject("title", "DemoGame", 
+                g.config.screenWidth / 2.0f,
+                (g.config.screenHeight / 5f) * 2.0f, 
+                titleFont, 
+                new Color(0.3f, 0.3f, 0.3f, 0.6f), 
+                Color.BLACK,
+                Color.WHITE);
         title.layer = 1;
         addObject(title);
 
-        TextObject copyright = new TextObject("copyright", "(c) 2020 FDE / MIT license", g.config.screenWidth / 2,
-                (g.config.screenHeight / 3) * 2, textFont, new Color(0.3f, 0.3f, 0.3f, 0.6f), Color.BLACK, Color.WHITE);
+        TextObject copyright = new TextObject("copyright", "(c) 2020 FDE / MIT license", 
+                g.config.screenWidth / 2.0f,
+                (g.config.screenHeight / 5.0f) * 4.0f, 
+                textFont, 
+                new Color(0.3f, 0.3f, 0.3f, 0.6f), 
+                Color.BLACK,
+                Color.WHITE);
         copyright.layer = 1;
         addObject(copyright);
-
 
         // start game music background
         soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
