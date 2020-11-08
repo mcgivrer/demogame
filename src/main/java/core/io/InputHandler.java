@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import core.Game;
 import core.system.AbstractSystem;
@@ -41,7 +43,7 @@ public class InputHandler extends AbstractSystem implements KeyListener {
     /**
      * Game input key listeners.
      */
-    public List<KeyListener> listeners = new ArrayList<>();
+    public List<KeyListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * The parent game.
@@ -137,6 +139,8 @@ public class InputHandler extends AbstractSystem implements KeyListener {
     public void addListener(KeyListener kl) {
         if (!listeners.contains(kl)) {
             listeners.add(kl);
+        }else{
+            log.warn("the listener {} is already set.",kl.getClass().getName());
         }
     }
 

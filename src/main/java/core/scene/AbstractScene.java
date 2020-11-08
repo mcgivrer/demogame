@@ -49,6 +49,15 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	 *
 	 * @param g the parent game.
 	 */
+	public AbstractScene(Game g, String name) {
+		this(g);
+		this.name = name;
+	}
+	/**
+	 * Initialize the AbstractState with the parent game
+	 *
+	 * @param g the parent game.
+	 */
 	public AbstractScene(Game g) {
 		this.game = g;
 	}

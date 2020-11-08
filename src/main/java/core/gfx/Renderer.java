@@ -48,6 +48,7 @@ import core.object.GameObject;
 import core.object.Light;
 import core.object.TextObject;
 import core.resource.ResourceManager;
+import core.scene.Scene;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
 
@@ -180,7 +181,11 @@ public class Renderer extends AbstractSystem {
 			}
 
 			// draw HUD
-			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
+			Scene current = dg.sceneManager.getCurrent();
+			if(current.isLoaded()) {
+				current.drawHUD(dg, this, g);
+			}	
+			
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg, realFPS, realUPS);
 		}

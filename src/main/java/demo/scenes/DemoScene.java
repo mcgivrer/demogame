@@ -71,11 +71,10 @@ public class DemoScene extends AbstractScene {
 	private Font messageFont;
 
 	public DemoScene() {
-		this.name = "DemoState";
 	}
 
 	public DemoScene(Game g) {
-		super(g);
+		super(g,"DemoState");
 	}
 
 	@Override
@@ -114,7 +113,6 @@ public class DemoScene extends AbstractScene {
 		scoreFont = messageFont.deriveFont(24.0f);
 		infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
-		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class);
 
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
@@ -176,6 +174,8 @@ public class DemoScene extends AbstractScene {
 
 		}
 
+		inputHandler.addListener(this);
+
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class DemoScene extends AbstractScene {
 
 	@Override
 	public boolean isLoaded() {
-		return mapLevel != null;
+		return objectManager != null;
 	}
 
 	/**
@@ -197,9 +197,11 @@ public class DemoScene extends AbstractScene {
 		if (inputHandler != null && inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
 		}
-		objectManager.objects.values().forEach(go -> {
-			objectManager.inputObject(game, go);
-		});
+		if(objectManager!=null){
+			objectManager.objects.values().forEach(go -> {
+				objectManager.inputObject(game, go);
+			});	
+		}
 	}
 
 	/**

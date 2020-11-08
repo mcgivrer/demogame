@@ -56,8 +56,8 @@ public class TitleScene extends AbstractScene {
 		objectManager.clear();
         g.sysMan.getSystem(Renderer.class).clear();
         
-        Font textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf");
-        Font titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
+        Font textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(9.0f);
+        Font titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf").deriveFont(20.0f);
 
 		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
         soundSystem.setMute(g.config.mute);

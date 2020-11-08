@@ -82,6 +82,7 @@ public class SceneManager extends AbstractSystem {
         current = states.get(sceneName);
         if (current != null && !current.isLoaded()) {
             current.load(game);
+            current.initialize(game);
             log.debug("activate state {}", sceneName);
         }
         if (current != null) {
@@ -108,7 +109,7 @@ public class SceneManager extends AbstractSystem {
      * @param g Parent game.
      */
     public void startState(final Game g) {
-        if(current==null){
+        if (current == null) {
             activate(scenesMap.defaultScene);
         }
         if (current != null && current.isLoaded()) {
@@ -129,15 +130,21 @@ public class SceneManager extends AbstractSystem {
     }
 
     public void input(final Game g) {
-        current.input(g);
+        if (current.isLoaded()) {
+            current.input(g);
+        }
     }
 
     public void update(final Game g, final double elapsed) {
-        current.update(g, elapsed);
+        if (current.isLoaded()) {
+            current.update(g, elapsed);
+        }
     }
 
     public void render(final Game g, final Renderer r, final double elapsed) {
-        current.render(g, r, elapsed);
+        if (current.isLoaded()) {
+            current.render(g, r, elapsed);
+        }
     }
 
     public void dispose(final Game g) {

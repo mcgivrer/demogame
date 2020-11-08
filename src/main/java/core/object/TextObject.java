@@ -63,27 +63,20 @@ public class TextObject extends GameObject {
     /**
      * Create a brand new Text object.
      * 
-     * @param name
-     *                            name of this TextObject.
-     * @param text
-     *                            text to be displayed.
-     * @param x
-     *                            horizontal position.
-     * @param y
-     *                            vertical position.
-     * @param f
-     *                            fon tto be used.
-     * @param shadowColor
-     *                            color of the shadow.
-     * @param borderColor
-     *                            color of te text edge border.
-     * @param foregroundColor
-     *                            background color of the text.
+     * @param name            name of this TextObject.
+     * @param text            text to be displayed.
+     * @param x               horizontal position.
+     * @param y               vertical position.
+     * @param f               fon tto be used.
+     * @param shadowColor     color of the shadow.
+     * @param borderColor     color of te text edge border.
+     * @param foregroundColor background color of the text.
      */
     public TextObject(String name, String text, float x, float y, Font f, Color shadowColor, Color borderColor,
             Color foregroundColor) {
         super(name, x, y, 0, 0);
         this.font = f;
+        this.text = text;
         this.shadowColor = shadowColor;
         this.borderColor = borderColor;
         this.foregroundColor = foregroundColor;
@@ -97,10 +90,8 @@ public class TextObject extends GameObject {
      * <p>
      * TODO this would be change to recompute only when needed
      *
-     * @param dg
-     *                    the core.Game containing the object.
-     * @param elapsed
-     *                    the elapsed time since previous call.
+     * @param dg      the core.Game containing the object.
+     * @param elapsed the elapsed time since previous call.
      */
     @Override
     public void update(Game dg, double elapsed) {
@@ -113,10 +104,8 @@ public class TextObject extends GameObject {
     /**
      * Specific rendering for the text of TextObject.
      *
-     * @param dg
-     *               the core.Game containing the object.
-     * @param g
-     *               the graphics API.
+     * @param dg the core.Game containing the object.
+     * @param g  the graphics API.
      */
     @Override
     public void render(Game dg, Graphics2D g) {
