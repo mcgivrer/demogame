@@ -389,6 +389,8 @@ public class SampleGameObject extends DefaultSample implements KeyListener {
         try {
             Thread.sleep(waitTime > 0 ? waitTime : 0);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.exit(-1);
             e.printStackTrace();
         }
     }

@@ -49,6 +49,15 @@ public abstract class AbstractScene implements Scene, KeyListener {
 	 *
 	 * @param g the parent game.
 	 */
+	public AbstractScene(Game g, String name) {
+		this(g);
+		this.name = name;
+	}
+	/**
+	 * Initialize the AbstractState with the parent game
+	 *
+	 * @param g the parent game.
+	 */
 	public AbstractScene(Game g) {
 		this.game = g;
 	}
@@ -67,17 +76,7 @@ public abstract class AbstractScene implements Scene, KeyListener {
 		inputHandler = g.sysMan.getSystem(InputHandler.class);
 		// load Sounds
 		soundSystem = g.sysMan.getSystem(SoundSystem.class);
-
-	};
-
-	@Override
-	public abstract void load(Game g);
-
-	@Override
-	public abstract void update(Game g, double elapsed);
-
-	@Override
-	public abstract void render(Game g, Renderer r, double elpased);
+	}
 
 	@Override
 	public void onFocus(Game g) {
@@ -179,6 +178,7 @@ public abstract class AbstractScene implements Scene, KeyListener {
 				break;
 			case KeyEvent.VK_F3:
 				r.saveScreenshot(game.config);
+				break;
 			default:
 				break;
 		}

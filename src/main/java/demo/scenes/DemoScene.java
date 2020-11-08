@@ -31,6 +31,7 @@ import core.resource.ResourceManager;
 import core.scene.AbstractScene;
 import core.scene.Scene;
 import core.scripts.LuaScriptSystem;
+import demo.collision.ObjectCollisionResolver;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -70,11 +71,10 @@ public class DemoScene extends AbstractScene {
 	private Font messageFont;
 
 	public DemoScene() {
-		this.name = "DemoState";
 	}
 
 	public DemoScene(Game g) {
-		super(g);
+		super(g,"DemoState");
 	}
 
 	@Override
@@ -113,8 +113,8 @@ public class DemoScene extends AbstractScene {
 		scoreFont = messageFont.deriveFont(24.0f);
 		infoFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf").deriveFont(10.0f);
 
-		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class);
+
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.ogg");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.ogg");
@@ -174,6 +174,8 @@ public class DemoScene extends AbstractScene {
 
 		}
 
+		inputHandler.addListener(this);
+
 	}
 
 	@Override
@@ -183,7 +185,7 @@ public class DemoScene extends AbstractScene {
 
 	@Override
 	public boolean isLoaded() {
-		return mapLevel != null;
+		return objectManager != null;
 	}
 
 	/**
@@ -192,12 +194,14 @@ public class DemoScene extends AbstractScene {
 	@Override
 	public void input(Game g) {
 
-		if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
+		if (inputHandler != null && inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
 		}
-		objectManager.objects.values().forEach(go -> {
-			objectManager.inputObject(game, go);
-		});
+		if(objectManager!=null){
+			objectManager.objects.values().forEach(go -> {
+				objectManager.inputObject(game, go);
+			});	
+		}
 	}
 
 	/**
@@ -208,18 +212,18 @@ public class DemoScene extends AbstractScene {
 		super.keyReleased(e);
 		boolean control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_R:
-			if (control) {
-				resetGameObjects();
-			}
-			break;
-		case KeyEvent.VK_Z:
-			if (control) {
-				resetState();
-			}
-			break;
-		default:
-			break;
+			case KeyEvent.VK_R:
+				if (control) {
+					resetGameObjects();
+				}
+				break;
+			case KeyEvent.VK_Z:
+				if (control) {
+					resetState();
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -231,7 +235,6 @@ public class DemoScene extends AbstractScene {
 		TextObject welcome = (TextObject) objectManager.get("welcome");
 		welcome.duration = 5000;
 		welcome.displayed = true;
-
 	}
 
 	/**
@@ -245,7 +248,6 @@ public class DemoScene extends AbstractScene {
 			if (go.name.contentEquals("player")) {
 				go.action = GameAction.IDLE2;
 				go.setSpeed(0.0f, 0.0f);
-
 			}
 		}
 	}
@@ -275,10 +277,6 @@ public class DemoScene extends AbstractScene {
 				mapCollider.checkCollision(frontLayer, 0, go);
 				mapLevel.constrainToMapLevel(frontLayer, 0, go);
 				collidingSystem.update(go, elapsed);
-
-				// TODO implement objects collision detection with an octree
-				// objectCollider.checkCollision(go);
-
 				// execute any lua script attached to this object
 				executeScriptUpdate(g, go);
 			}
@@ -306,7 +304,6 @@ public class DemoScene extends AbstractScene {
 			for (String script : scripts) {
 				try {
 					luas.execute(g, physicEngine.getWorld(), script, go, objects);
-
 				} catch (ScriptException e) {
 					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
 				}
@@ -327,32 +324,33 @@ public class DemoScene extends AbstractScene {
 
 	public void drawHUD(Game ga, Renderer r, Graphics2D g) {
 		GameObject player = objectManager.get("player");
-
-		int offsetX = 24;
-		int offsetY = 30;
-
-		// draw Life
-		r.drawImage(lifeImg, offsetX, offsetY - 16);
-		r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
-
-		// draw Coins
-		g.drawImage(coinsImg, offsetX, offsetY, null);
-		double coins = (double) (player.attributes.get("coins"));
-		r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK,
-				infoFont);
-
-		// draw Mana
-		double nrjRatio = (energyImg.getWidth() / 100.0f);
-		double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
-		g.drawImage(energyImg, offsetX + 24, offsetY - 12, (int) nrj, energyImg.getHeight(), null);
-
-		// draw Energy
-		double manaRatio = (manaImg.getWidth() / 100.0f);
-		double mana = manaRatio * ((double) (player.attributes.get("mana")));
-		g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
-
-		// draw Items
-		inventory.render(ga, r);
+		if(player!=null){
+			int offsetX = 24;
+			int offsetY = 30;
+	
+			// draw Life
+			r.drawImage(lifeImg, offsetX, offsetY - 16);
+			r.drawOutLinedText(g, String.format("%d", life), offsetX + 9, offsetY + 1, Color.WHITE, Color.BLACK, infoFont);
+	
+			// draw Coins
+			g.drawImage(coinsImg, offsetX, offsetY, null);
+			double coins = (double) (player.attributes.get("coins"));
+			r.drawOutLinedText(g, String.format("%d", (int) coins), offsetX + 8, offsetY + 16, Color.WHITE, Color.BLACK,
+					infoFont);
+	
+			// draw Mana
+			double nrjRatio = (energyImg.getWidth() / 100.0f);
+			double nrj = nrjRatio * ((double) (player.attributes.get("energy")));
+			g.drawImage(energyImg, offsetX + 24, offsetY - 12, (int) nrj, energyImg.getHeight(), null);
+	
+			// draw Energy
+			double manaRatio = (manaImg.getWidth() / 100.0f);
+			double mana = manaRatio * ((double) (player.attributes.get("mana")));
+			g.drawImage(manaImg, offsetX + 24, offsetY - 2, (int) mana, manaImg.getHeight(), null);
+	
+			// draw Items
+			inventory.render(ga, r);	
+		}
 	}
 
 }

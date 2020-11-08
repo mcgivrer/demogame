@@ -161,6 +161,7 @@ public class Game {
 				Thread.sleep((int) wait);
 			} catch (InterruptedException e) {
 				log.error("Unable to wait {} wait ms", wait, e);
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

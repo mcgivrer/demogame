@@ -48,6 +48,7 @@ import core.object.GameObject;
 import core.object.Light;
 import core.object.TextObject;
 import core.resource.ResourceManager;
+import core.scene.Scene;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
 
@@ -180,7 +181,11 @@ public class Renderer extends AbstractSystem {
 			}
 
 			// draw HUD
-			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
+			Scene current = dg.sceneManager.getCurrent();
+			if(current.isLoaded()) {
+				current.drawHUD(dg, this, g);
+			}	
+			
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg, realFPS, realUPS);
 		}
@@ -321,7 +326,7 @@ public class Renderer extends AbstractSystem {
 				drawLightAmbient(dg, g, l);
 				break;
 			case LIGHT_CONE:
-				drawLightCone(dg,g,l);
+				drawLightCone(dg, g, l);
 				break;
 			default:
 				break;
@@ -332,32 +337,21 @@ public class Renderer extends AbstractSystem {
 
 	private void drawLightSphere(Graphics2D g, Light l) {
 		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-		l.colors = new Color[] { 
-				l.foregroundColor,
-				new Color(	
-						l.foregroundColor.getRed() / 2, 
-						l.foregroundColor.getGreen() / 2,
-						l.foregroundColor.getBlue() / 2, 
-						l.foregroundColor.getAlpha() / 2),
+		l.colors = new Color[] { l.foregroundColor,
+				new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+						l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
 				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
 		l.rgp = new RadialGradientPaint(
-				new Point(
-						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+				new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
 						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-						(int) (l.size.x * 2), 
-						l.dist, 
-						l.colors);
+				(int) (l.size.x * 2), l.dist, l.colors);
 		g.setPaint(l.rgp);
 		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
 	}
 
 	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
-		final Area ambientArea = new Area(
-			new Rectangle2D.Double(
-				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
-				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
-				dg.config.screenWidth, 
-				dg.config.screenHeight));
+		final Area ambientArea = new Area(new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth, dg.config.screenHeight));
 		g.setColor(l.foregroundColor);
 		g.fill(ambientArea);
 
@@ -366,8 +360,8 @@ public class Renderer extends AbstractSystem {
 	/**
 	 * TODO implements the Conical Light drawing.
 	 */
-	private void drawLightCone(Game dg, Graphics2D g, Light l){
-		log.debug("draw Light cone {}",l.name);
+	private void drawLightCone(Game dg, Graphics2D g, Light l) {
+		log.debug("draw Light cone {}", l.name);
 	}
 
 	/**
@@ -427,16 +421,19 @@ public class Renderer extends AbstractSystem {
 
 				if (dg.config.debug > 0) {
 					g.setColor(Color.ORANGE);
-					g.drawString(
-							String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
-									realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
-							4, jf.getHeight() - 20);
-
-					if (dg.config.debug > 2) {
-						g.setColor(Color.ORANGE);
-						g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
-						g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX),
-								(int) ((dg.config.screenHeight - 20) * sY));
+					if (camera != null) {
+						g.drawString(String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)",
+								dg.config.debug, realFPS.getCounter(), realUPS.getCounter(), camera.pos.x,
+								camera.pos.y), 4, jf.getHeight() - 20);
+						if (dg.config.debug > 2) {
+							g.setColor(Color.ORANGE);
+							g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
+							g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX),
+									(int) ((dg.config.screenHeight - 20) * sY));
+						}
+					}else{
+						g.drawString(String.format("debug:%01d | FPS: %03f | UPS: %03f",
+								dg.config.debug, realFPS.getCounter(), realUPS.getCounter()), 4, jf.getHeight() - 20);
 					}
 				}
 			}
