@@ -41,27 +41,27 @@ Or after a build, just execute:
 
 ## Some screenshot
 
-![Screenshot of the old demo](docs/images/screen-1.png "An old view of the prototype !")
+![Screenshot of the old demo](docs/pages/images/screen-1.png "An old view of the prototype !")
 
 *figure 1 - the old prototype*
 
-![Screenshot of the core](docs/images/screen-2.png "A Good view of the latest prototype !")
+![Screenshot of the core](docs/pages/images/screen-2.png "A Good view of the latest prototype !")
 
 *figure 2 - the latest version with a HUD*
 
-![Tilemap debugging activated](docs/images/screen-3.png "Tilemap debugging activated")
+![Tilemap debugging activated](docs/pages/images/screen-3.png "Tilemap debugging activated")
 
 *figure 3 - the same display with tilemap debug activated*
 
-![A lot of new things like lights !](docs/images/screen-4.png "Adding lights and text")
+![A lot of new things like lights !](docs/pages/images/screen-4.png "Adding lights and text")
 
 *figure 4 - A lot of new things like lights, Gothic Score, Items and Text!*
 
-![One other just for fun](docs/images/screen-5.png "One other just for fun")
+![One other just for fun](docs/pages/images/screen-5.png "One other just for fun")
 
 *figure 5 - One other just for fun*
 
-![So much debug information !](docs/images/screen-7.png "So much debug information !")
+![So much debug information !](docs/pages/images/screen-7.png "So much debug information !")
 
 *figure 6 - So much debug information !*
 
