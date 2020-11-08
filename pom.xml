@@ -311,10 +311,11 @@
                 </configuration>
             </plugin>
             <!-- Cucumber reporting -->
+            <!-- https://mvnrepository.com/artifact/net.masterthought/maven-cucumber-reporting -->
             <plugin>
                 <groupId>net.masterthought</groupId>
                 <artifactId>maven-cucumber-reporting</artifactId>
-                <version>2.0.0</version>
+                <version>5.4.0</version>
                 <executions>
                     <execution>
                         <id>execution</id>
@@ -327,7 +328,7 @@
                             <outputDirectory>${project.build.directory}/site/cucumber-reports</outputDirectory>
                             <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
                             <skippedFails>true</skippedFails>
-                            <enableFlashCharts>false</enableFlashCharts>
+                            <enableFlashCharts>true</enableFlashCharts>
                             <buildNumber>4</buildNumber>
                         </configuration>
                     </execution>

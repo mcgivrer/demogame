@@ -5,7 +5,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class DemoGameStepDefs {
     Game dg;
@@ -19,17 +19,17 @@ public class DemoGameStepDefs {
 
     @And("^the DemoGame config has width=(\\d+)$")
     public void theDemoGameInstanceHasWidth(int width) {
-        assertTrue("The width is not correctly set", dg.config.screenWidth == width);
+        assertEquals("The width is not correctly set", width, dg.config.screenWidth);
     }
 
     @And("^the DemoGame config has height=(\\d+)$")
     public void theDemoGameInstanceHasHeight(int height) {
-        assertTrue("The height is not correctly set", dg.config.screenHeight == height);
+        assertEquals("The height is not correctly set", height, dg.config.screenHeight);
     }
 
     @And("^the DemoGame config has scale=(\\d+)$")
-    public void theDemoGameInstanceHasScale(int scale) {
-        assertTrue("The scale is not correctly set", dg.config.screenScale == scale);
+    public void theDemoGameInstanceHasScale(double scale) {
+        assertEquals("The scale is not correctly set", scale, dg.config.screenScale,0.005);
     }
 
     @Then("^the DemoGame instance initialized$")
@@ -39,7 +39,9 @@ public class DemoGameStepDefs {
 
     @And("^the DemoGame screenBuffer is width=(\\d+) and height=(\\d+)$")
     public void theDemoGameScreenBufferIsWidthAndHeight(int width, int height) {
-        assertTrue("screenBuffer width has not been set correctly to " + width, dg.renderer.screenBuffer.getWidth() == width);
-        assertTrue("screenBuffer height has not been set correctly to " + height, dg.renderer.screenBuffer.getHeight() == height);
+        assertEquals("screenBuffer width has not been set correctly to " + width, width,
+                dg.renderer.screenBuffer.getWidth());
+        assertEquals("screenBuffer height has not been set correctly to " + height, height,
+                dg.renderer.screenBuffer.getHeight());
     }
 }
