@@ -116,6 +116,7 @@ public class DemoScene extends AbstractScene {
 
 		inputHandler.addListener(this);
 		mapCollider = g.sysMan.getSystem(MapCollidingSystem.class);
+
 		soundSystem.load("coins", "/res/audio/sounds/collect-coin.ogg");
 		soundSystem.load("item-1", "/res/audio/sounds/collect-item-1.ogg");
 		soundSystem.load("item-2", "/res/audio/sounds/collect-item-2.ogg");
@@ -193,7 +194,7 @@ public class DemoScene extends AbstractScene {
 	@Override
 	public void input(Game g) {
 
-		if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
+		if (inputHandler != null && inputHandler.keys[KeyEvent.VK_ESCAPE]) {
 			g.exitRequest = true;
 		}
 		objectManager.objects.values().forEach(go -> {
@@ -209,18 +210,18 @@ public class DemoScene extends AbstractScene {
 		super.keyReleased(e);
 		boolean control = e.getModifiersEx() == KeyEvent.CTRL_DOWN_MASK;
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_R:
-			if (control) {
-				resetGameObjects();
-			}
-			break;
-		case KeyEvent.VK_Z:
-			if (control) {
-				resetState();
-			}
-			break;
-		default:
-			break;
+			case KeyEvent.VK_R:
+				if (control) {
+					resetGameObjects();
+				}
+				break;
+			case KeyEvent.VK_Z:
+				if (control) {
+					resetState();
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -245,7 +246,6 @@ public class DemoScene extends AbstractScene {
 			if (go.name.contentEquals("player")) {
 				go.action = GameAction.IDLE2;
 				go.setSpeed(0.0f, 0.0f);
-
 			}
 		}
 	}
@@ -302,7 +302,6 @@ public class DemoScene extends AbstractScene {
 			for (String script : scripts) {
 				try {
 					luas.execute(g, physicEngine.getWorld(), script, go, objects);
-
 				} catch (ScriptException e) {
 					log.error("unable to update game object {} with its own LUA scripts : {}", go.name, e.getMessage());
 				}

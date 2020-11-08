@@ -30,6 +30,7 @@ public class TitleScene extends AbstractScene {
 
     @Override
     public void load(Game g) {
+
         ResourceManager.clear();
         ResourceManager.addListener(new ProgressListener() {
             @Override
@@ -47,12 +48,24 @@ public class TitleScene extends AbstractScene {
     public void initialize(Game g) {
         super.initialize(g);
 
+		g.config.attributes.put("sound_volume", 0.8f);
+        g.config.attributes.put("music_volume", 0.4f);
+        
+        inputHandler.addListener(this);
+
+		objectManager.clear();
+        g.sysMan.getSystem(Renderer.class).clear();
+        
         Font textFont = ResourceManager.getFont("/res/fonts/lilliput steps.ttf");
         Font titleFont = ResourceManager.getFont("/res/fonts/Prince Valiant.ttf");
 
+		soundSystem.load("music", "/res/audio/musics/once-around-the-kingdom.ogg");
+        soundSystem.setMute(g.config.mute);
+
+
         GameObject background = new GameObject("background", 0, 0, 0, 0);
         background.type = GameObjectType.IMAGE;
-        background.image = ResourceManager.getImage("/res/images/background-1.jpg");
+        background.setImage(ResourceManager.getImage("/res/images/background-1.jpg"));
         background.layer = 0;
         addObject(background);
 
@@ -61,20 +74,25 @@ public class TitleScene extends AbstractScene {
         title.layer = 1;
         addObject(title);
 
-        TextObject copyright = new TextObject("copyright", "(c) 2019 FDE / MIT license", g.config.screenWidth / 2,
+        TextObject copyright = new TextObject("copyright", "(c) 2020 FDE / MIT license", g.config.screenWidth / 2,
                 (g.config.screenHeight / 3) * 2, textFont, new Color(0.3f, 0.3f, 0.3f, 0.6f), Color.BLACK, Color.WHITE);
         copyright.layer = 1;
         addObject(copyright);
+
+
+        // start game music background
+        soundSystem.loop("music", (float) g.config.attributes.get("music_volume"));
+
     }
 
     @Override
     public boolean isLoaded() {
-        return false;
+        return true;
     }
 
     @Override
     public void input(Game g) {
-        if (inputHandler.keys[KeyEvent.VK_ESCAPE]) {
+        if (inputHandler != null && inputHandler.keys[KeyEvent.VK_ESCAPE]) {
             g.exitRequest = true;
         }
     }

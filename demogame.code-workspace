@@ -6,6 +6,20 @@
 	],
 	"settings": {
 		"java.configuration.updateBuildConfiguration": "automatic",
-		"java.format.settings.url": "eclipse-formatter.xml"
+		"java.format.settings.url": "eclipse-formatter.xml",
+		"python.pythonPath": "/bin/python3"
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+		
+			{
+				"name": "Python : Fichier actuel",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			}
+		]
 	}
 }

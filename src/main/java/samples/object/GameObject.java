@@ -50,8 +50,6 @@ public class GameObject implements Collidable {
 
     public Map<String, Object> attributes = new HashMap<>();
 
-    public List<String> debugInfo = new ArrayList<>();
-
     public double timeFactor = 0.05;
 
     public List<String> debugInfo = new ArrayList<>();
