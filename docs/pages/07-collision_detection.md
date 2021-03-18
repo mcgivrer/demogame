@@ -1,4 +1,4 @@
-# Collision Detection
+# Collision Detection
 
 In any game, the most part is not only animated objects, but detect when there are colliding, and propose a adapted behavior facing such collision.
 
