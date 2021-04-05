@@ -92,7 +92,7 @@ public class Game {
 			renderer = (IRenderer) (r.getConstructor(Game.class).newInstance(this));
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			log.error("Unable to instanciate the IRenderer class");
+			log.error("Unable to instanciate the IRenderer implementation class");
 			System.exit(1);
 		}
 		sysMan.add(renderer);
@@ -172,6 +172,7 @@ public class Game {
 				Thread.sleep((int) wait);
 			} catch (final InterruptedException e) {
 				log.error("Unable to wait {} wait ms", wait, e);
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

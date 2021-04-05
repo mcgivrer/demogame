@@ -61,6 +61,31 @@ public class TextObject extends GameObject {
     }
 
     /**
+     * Create a brand new Text object.
+     * 
+     * @param name            name of this TextObject.
+     * @param text            text to be displayed.
+     * @param x               horizontal position.
+     * @param y               vertical position.
+     * @param f               fon tto be used.
+     * @param shadowColor     color of the shadow.
+     * @param borderColor     color of te text edge border.
+     * @param foregroundColor background color of the text.
+     */
+    public TextObject(String name, String text, float x, float y, Font f, Color shadowColor, Color borderColor,
+            Color foregroundColor) {
+        super(name, x, y, 0, 0);
+        this.font = f;
+        this.text = text;
+        this.shadowColor = shadowColor;
+        this.borderColor = borderColor;
+        this.foregroundColor = foregroundColor;
+        this.align = TextAlign.CENTER;
+        this.layer = 0;
+        this.physicType = PhysicType.STATIC;
+    }
+
+    /**
      * recompute text to be displayed on each frame.
      * <p>
      * TODO this would be change to recompute only when needed

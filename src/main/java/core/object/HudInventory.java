@@ -75,8 +75,10 @@ public class HudInventory extends GameObject {
      */
     @Override
     public void update(Game dg, double elapsed) {
-        maxItems = (double) player.attributes.get("maxItems");
-        selectedItem = (double) player.attributes.get("selectedItem");
+        if (player != null) {
+            maxItems = (double) player.attributes.get("maxItems");
+            selectedItem = (double) player.attributes.get("selectedItem");
+        }
     }
 
     private BufferedImage switchItem(int itmNb, MapObject item, double selectedItem) {

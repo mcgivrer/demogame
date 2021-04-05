@@ -72,8 +72,7 @@ public class GLRenderer extends AbstractSystem implements IRenderer {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return "renderer";
+		return IRenderer.class.getSimpleName();
 	}
 
 	@Override
@@ -123,5 +122,5 @@ public class GLRenderer extends AbstractSystem implements IRenderer {
 		// TODO Auto-generated method stub
 		return null;
 	}
-    
+
 }

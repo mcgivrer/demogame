@@ -1,5 +1,7 @@
 package core.scene;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,6 +10,7 @@ import com.google.gson.Gson;
 
 import core.Game;
 import core.gfx.IRenderer;
+import core.gfx.soft.Renderer;
 import core.resource.ResourceManager;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,8 @@ public class SceneManager extends AbstractSystem {
      * List of all states managed for the game.
      */
     private final Map<String, Scene> states = new HashMap<>();
+
+    private ScenesMap scenesMap;
 
     /**
      * Current active State.
@@ -52,30 +57,40 @@ public class SceneManager extends AbstractSystem {
         try {
             final String gameScenes = ResourceManager.getString(path);
             final Gson gs = new Gson();
-            final ScenesMap scenesMap = gs.fromJson(gameScenes, ScenesMap.class);
+            scenesMap = gs.fromJson(gameScenes, ScenesMap.class);
             for (final Entry<String, String> stateItem : scenesMap.scenes.entrySet()) {
-                final Class<Scene> cs = (Class<Scene>) Class.forName(stateItem.getValue());
-                final Scene s = cs.newInstance();
-                s.setGame(game);
+                final Class<?> cs = Class.forName(stateItem.getValue());
+                final Constructor<?> sceneConstructor = cs.getConstructor(new Class[] { Game.class });
+                final Scene s = (Scene) sceneConstructor.newInstance(game);
                 states.put(stateItem.getKey(), s);
                 log.info("load state {}", stateItem.getKey());
             }
-            activate(scenesMap.defaultScene);
-        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+        } catch (IllegalAccessException | InstantiationException | ClassNotFoundException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             log.info("Unable to create class", e);
         }
     }
 
-    public void activate(final String s) {
+    /**
+     * activate the scene named <code>sceneName</code>>
+     * 
+     * @param sceneName name of the scene to be activated.
+     */
+    public void activate(final String sceneName) {
         if (current != null) {
             current.lostFocus(game);
         }
-        current = states.get(s);
-        if (!current.isLoaded()) {
+        current = states.get(sceneName);
+        if (current != null && !current.isLoaded()) {
             current.load(game);
-            log.debug("activate state {}", s);
+            current.initialize(game);
+            log.debug("activate state {}", sceneName);
         }
-        current.onFocus(game);
+        if (current != null) {
+            current.onFocus(game);
+        } else {
+            log.error("something went wrong, current gamescene is null while requesting {}", sceneName);
+        }
     }
 
     @Override
@@ -83,12 +98,21 @@ public class SceneManager extends AbstractSystem {
         return SceneManager.class.getCanonicalName();
     }
 
+    @Override
     public int initialize(final Game g) {
         log.debug("SceneManager system initialized");
         return 0;
     }
 
+    /**
+     * initialize current state.
+     * 
+     * @param g Parent game.
+     */
     public void startState(final Game g) {
+        if (current == null) {
+            activate(scenesMap.defaultScene);
+        }
         if (current != null && current.isLoaded()) {
             current.initialize(g);
             log.debug("{} state started", this.current.getName());
@@ -97,7 +121,9 @@ public class SceneManager extends AbstractSystem {
 
     @Override
     public void dispose() {
-
+        for (Scene s : states.values()) {
+            current.dispose(this.game);
+        }
     }
 
     public void load(final Game g) {
@@ -105,15 +131,21 @@ public class SceneManager extends AbstractSystem {
     }
 
     public void input(final Game g) {
-        current.input(g);
+        if (current.isLoaded()) {
+            current.input(g);
+        }
     }
 
     public void update(final Game g, final double elapsed) {
-        current.update(g, elapsed);
+        if (current.isLoaded()) {
+            current.update(g, elapsed);
+        }
     }
 
     public void render(final Game g, final IRenderer r, final double elapsed) {
-        current.render(g, r, elapsed);
+        if (current.isLoaded()) {
+            current.render(g, r, elapsed);
+        }
     }
 
     public void dispose(final Game g) {

@@ -46,7 +46,6 @@ public class ResourceManager extends AbstractSystem {
     private static Map<String, Object> resources = new ConcurrentHashMap<>();
     private static List<ProgressListener> listeners = new ArrayList<>();
     private static List<String> resourcesNotPreloaded = new ArrayList<>();
-    private Game game;
 
     public ResourceManager(Game game) {
         super(game);
@@ -124,56 +123,81 @@ public class ResourceManager extends AbstractSystem {
      */
     public static void add(String path) {
         log.debug("Add resource '{}'", path);
-        try {
-            if (path.endsWith(".jpg") || path.contains(".png")) {
-                BufferedImage o;
-                o = ImageIO.read(ResourceManager.class.getClass().getResourceAsStream(path));
-                if (o != null) {
-                    resources.put(path, o);
-                }
-                log.debug("'{}' added as an image resource", path);
-            }
-            if (path.contains(".json")) {
-                InputStream stream = ResourceManager.class.getResourceAsStream(path);
-                String json = new BufferedReader(new InputStreamReader(stream)).lines().parallel()
-                        .collect(Collectors.joining("\n"));
-                if (json != null && !json.equals("")) {
-                    resources.put(path, json);
-                }
-                log.debug("'{}' added as a JSON resource", path);
-            }
-            if (path.contains(".lua")) {
-                InputStream stream = ResourceManager.class.getResourceAsStream(path);
-                String luas = new BufferedReader(new InputStreamReader(stream)).lines().parallel()
-                        .collect(Collectors.joining("\n"));
-                if (luas != null && !luas.equals("")) {
-                    resources.put(path, luas);
-                }
-                log.debug("'{}' added as a LUA script resource", path);
-            }
-            if (path.contains(".wav") || path.contains(".mp3") || path.contains(".aiff")) {
-                InputStream sndStream = ResourceManager.class.getResourceAsStream(path);
-                SoundClip sc = new SoundClip(path, sndStream);
-                if (sc != null) {
-                    resources.put(path, sc);
-                }
-                log.debug("'{}' added as an audio resource", path);
-            }
-            if (path.contains(".ttf")) {
-                // load a Font resource
-                try {
-                    InputStream stream = ResourceManager.class.getResourceAsStream(path);
-                    Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
-                    if (font != null) {
-                        resources.put(path, font);
-                    }
-                } catch (FontFormatException | IOException e) {
-                    log.error("Unable to read font from " + path);
-                }
+        String ext = path.substring(path.lastIndexOf("."));
+        try (InputStream stream = ResourceManager.class.getResourceAsStream(path)) {
+
+            switch (ext) {
+                case ".jpg":
+                case ".png":
+                    loadImage(path, stream);
+                    break;
+                case ".json":
+                    loadJson(path, stream);
+                    break;
+                case ".lua":
+                    loadLuaScript(path, stream);
+                    break;
+                case ".wav":
+                case ".mp3":
+                case ".aiff":
+                    loadSound(path, stream);
+                    break;
+                case ".ttf":
+                    loadFont(path, stream);
+                    break;
+                default:
+                    log.error("Unknown file type {} in {}", ext, path);
+                    break;
             }
         } catch (IOException e) {
             log.error("Unable to read the resource : '{}'", path, e);
         }
+    }
+
+    private static void loadFont(String path, InputStream stream) {
+        // load a Font resource
+        try {
+            Font font = Font.createFont(Font.TRUETYPE_FONT, stream);
+            if (font != null) {
+                resources.put(path, font);
+            }
+        } catch (FontFormatException | IOException e) {
+            log.error("Unable to read font from " + path);
+        }
+    }
+
+    private static void loadSound(String path, InputStream stream) {
+        SoundClip sc = new SoundClip(path, stream);
+        if (sc != null) {
+            resources.put(path, sc);
+        }
+        log.debug("'{}' added as an audio resource", path);
+    }
+
+    private static void loadLuaScript(String path, InputStream stream) {
+        String luas = new BufferedReader(new InputStreamReader(stream)).lines().parallel()
+                .collect(Collectors.joining("\n"));
+        if (luas != null && !luas.equals("")) {
+            resources.put(path, luas);
+        }
+        log.debug("'{}' added as a LUA script resource", path);
+    }
+
+    private static void loadJson(String path, InputStream stream) {
+        String json = new BufferedReader(new InputStreamReader(stream)).lines().parallel()
+                .collect(Collectors.joining("\n"));
+        if (json != null && !json.equals("")) {
+            resources.put(path, json);
+        }
+        log.debug("'{}' added as a JSON resource", path);
+    }
+
+    private static void loadImage(String path, InputStream stream) throws IOException {
+        BufferedImage o = ImageIO.read(stream);
+        if (o != null) {
+            resources.put(path, o);
+        }
+        log.debug("'{}' added as an image resource", path);
     }
 
     /**

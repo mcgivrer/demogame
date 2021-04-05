@@ -1,4 +1,4 @@
-package demo.scenes;
+package demo.collision;
 
 import core.Game;
 import core.audio.SoundSystem;

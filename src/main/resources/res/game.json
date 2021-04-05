@@ -1,6 +1,7 @@
 {
-  "defaultScene": "game",
+  "defaultScene": "title",
   "scenes": {
+    "title": "demo.scenes.TitleScene",
     "game": "demo.scenes.DemoScene"
   }
 }

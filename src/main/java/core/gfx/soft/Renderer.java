@@ -51,6 +51,7 @@ import core.object.GameObject;
 import core.object.Light;
 import core.object.TextObject;
 import core.resource.ResourceManager;
+import core.scene.Scene;
 import core.system.AbstractSystem;
 import lombok.extern.slf4j.Slf4j;
 
@@ -184,7 +185,11 @@ public class Renderer extends AbstractSystem implements IRenderer {
 			}
 
 			// draw HUD
-			dg.sceneManager.getCurrent().drawHUD(dg, this, g);
+			Scene current = dg.sceneManager.getCurrent();
+			if (current.isLoaded()) {
+				current.drawHUD(dg, this, g);
+			}
+
 			// render image to real screen (applying scale factor)
 			renderToScreen(dg, realFPS, realUPS);
 		}
@@ -239,16 +244,16 @@ public class Renderer extends AbstractSystem implements IRenderer {
 			double ox = to.pos.x;
 			double oy = to.pos.y;
 			switch (to.align) {
-				case CENTER:
-					ox = to.pos.x - (to.size.x / 2);
-					break;
-				case RIGHT:
-					ox = to.pos.x - to.size.x;
-					break;
-				case LEFT:
-				default:
-					ox = to.pos.x;
-					break;
+			case CENTER:
+				ox = to.pos.x - (to.size.x / 2);
+				break;
+			case RIGHT:
+				ox = to.pos.x - to.size.x;
+				break;
+			case LEFT:
+			default:
+				ox = to.pos.x;
+				break;
 			}
 			int boxPadding = 4;
 
@@ -318,17 +323,17 @@ public class Renderer extends AbstractSystem implements IRenderer {
 		Composite c = g.getComposite();
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) l.intensity));
 		switch (l.lightType) {
-			case LIGHT_SPHERE:
-				drawLightSphere(g, l);
-				break;
-			case LIGHT_AMBIANT:
-				drawLightAmbient(dg, g, l);
-				break;
-			case LIGHT_CONE:
-				drawLightCone(dg,g,l);
-				break;
-			default:
-				break;
+		case LIGHT_SPHERE:
+			drawLightSphere(g, l);
+			break;
+		case LIGHT_AMBIANT:
+			drawLightAmbient(dg, g, l);
+			break;
+		case LIGHT_CONE:
+			drawLightCone(dg, g, l);
+			break;
+		default:
+			break;
 		}
 
 		g.setComposite(c);
@@ -336,32 +341,21 @@ public class Renderer extends AbstractSystem implements IRenderer {
 
 	private void drawLightSphere(Graphics2D g, Light l) {
 		l.foregroundColor = brighten(l.foregroundColor, l.intensity);
-		l.colors = new Color[] { 
-				l.foregroundColor,
-				new Color(	
-						l.foregroundColor.getRed() / 2, 
-						l.foregroundColor.getGreen() / 2,
-						l.foregroundColor.getBlue() / 2, 
-						l.foregroundColor.getAlpha() / 2),
+		l.colors = new Color[] { l.foregroundColor,
+				new Color(l.foregroundColor.getRed() / 2, l.foregroundColor.getGreen() / 2,
+						l.foregroundColor.getBlue() / 2, l.foregroundColor.getAlpha() / 2),
 				new Color(0.0f, 0.0f, 0.0f, 0.0f) };
 		l.rgp = new RadialGradientPaint(
-				new Point(
-						(int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
+				new Point((int) (l.pos.x + (20 * Math.random() * l.glitterEffect)),
 						(int) (l.pos.y + (20 * Math.random() * l.glitterEffect))),
-						(int) (l.size.x * 2), 
-						l.dist, 
-						l.colors);
+				(int) (l.size.x * 2), l.dist, l.colors);
 		g.setPaint(l.rgp);
 		g.fill(new Ellipse2D.Double(l.pos.x, l.pos.y, l.size.x, l.size.y));
 	}
 
 	private void drawLightAmbient(Game dg, Graphics2D g, Light l) {
-		final Area ambientArea = new Area(
-			new Rectangle2D.Double(
-				dg.sceneManager.getCurrent().getActiveCamera().pos.x,
-				dg.sceneManager.getCurrent().getActiveCamera().pos.y, 
-				dg.config.screenWidth, 
-				dg.config.screenHeight));
+		final Area ambientArea = new Area(new Rectangle2D.Double(dg.sceneManager.getCurrent().getActiveCamera().pos.x,
+				dg.sceneManager.getCurrent().getActiveCamera().pos.y, dg.config.screenWidth, dg.config.screenHeight));
 		g.setColor(l.foregroundColor);
 		g.fill(ambientArea);
 
@@ -370,8 +364,8 @@ public class Renderer extends AbstractSystem implements IRenderer {
 	/**
 	 * TODO implements the Conical Light drawing.
 	 */
-	private void drawLightCone(Game dg, Graphics2D g, Light l){
-		log.debug("draw Light cone {}",l.name);
+	private void drawLightCone(Game dg, Graphics2D g, Light l) {
+		log.debug("draw Light cone {}", l.name);
 	}
 
 	/**
@@ -384,22 +378,24 @@ public class Renderer extends AbstractSystem implements IRenderer {
 	 */
 	private void drawObject(Game dg, Graphics2D g, GameObject go) {
 		switch (go.type) {
-			case RECTANGLE:
-				g.setColor(go.foregroundColor);
-				g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-				break;
-			case CIRCLE:
-				g.setColor(go.foregroundColor);
-				g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
-				break;
-			case IMAGE:
-				if (go.direction < 0) {
-					g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x),
-							(int) go.size.y, null);
-				} else {
-					g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
-				}
-				break;
+		case RECTANGLE:
+			g.setColor(go.foregroundColor);
+			g.fillRect((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+			break;
+		case CIRCLE:
+			g.setColor(go.foregroundColor);
+			g.fillOval((int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y);
+			break;
+		case IMAGE:
+			if (go.direction < 0) {
+				g.drawImage(go.image, (int) (go.pos.x + go.size.x), (int) go.pos.y, (int) (-go.size.x), (int) go.size.y,
+						null);
+			} else {
+				g.drawImage(go.image, (int) go.pos.x, (int) go.pos.y, (int) go.size.x, (int) go.size.y, null);
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -431,23 +427,32 @@ public class Renderer extends AbstractSystem implements IRenderer {
 				g.drawImage(screenBuffer, 0, 0, jf.getWidth(), jf.getHeight(), 0, 0, dg.config.screenWidth,
 						dg.config.screenHeight, Color.BLACK, null);
 
-				if (dg.config.debug > 0) {
-					g.setColor(Color.ORANGE);
-					g.drawString(
-							String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
-									realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
-							4, jf.getHeight() - 20);
-
-					if (dg.config.debug > 2) {
-						g.setColor(Color.ORANGE);
-						g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
-						g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX),
-								(int) ((dg.config.screenHeight - 20) * sY));
-					}
-				}
+				displayDebugInformation(dg, realFPS, realUPS, camera, g, sX, sY);
 			}
 			bs.show();
 
+		}
+	}
+
+	private void displayDebugInformation(Game dg, Counter realFPS, Counter realUPS, Camera camera, Graphics2D g,
+			float sX, float sY) {
+		if (dg.config.debug > 0) {
+			g.setColor(Color.ORANGE);
+			if (camera != null) {
+				g.drawString(
+						String.format("debug:%01d | FPS: %03f | UPS: %03f | cam:(%03.1f,%03.1f)", dg.config.debug,
+								realFPS.getCounter(), realUPS.getCounter(), camera.pos.x, camera.pos.y),
+						4, jf.getHeight() - 20);
+				if (dg.config.debug > 2) {
+					g.setColor(Color.ORANGE);
+					g.drawString("cam:" + camera.name, (int) (20 + sX), (int) (20 * sY));
+					g.drawRect((int) ((10) * sX), (int) ((10) * sY), (int) ((dg.config.screenWidth - 20) * sX),
+							(int) ((dg.config.screenHeight - 20) * sY));
+				}
+			} else {
+				g.drawString(String.format("debug:%01d | FPS: %03f | UPS: %03f", dg.config.debug, realFPS.getCounter(),
+						realUPS.getCounter()), 4, jf.getHeight() - 20);
+			}
 		}
 	}
 
@@ -561,7 +566,7 @@ public class Renderer extends AbstractSystem implements IRenderer {
 		final String path = this.getClass().getResource("/").getFile();
 		Path targetDir = Paths.get(path + File.separator);
 		String filename = path + File.separator + config.title + "-screenshot-" + java.lang.System.nanoTime() + "-"
-				+ (screenShotIndex++) + ".png";
+				+ (Renderer.screenShotIndex++) + ".png";
 
 		try {
 			if (!Files.exists(targetDir)) {
@@ -582,12 +587,12 @@ public class Renderer extends AbstractSystem implements IRenderer {
 
 	@Override
 	public String getName() {
-		return "renderer";
+		return IRenderer.class.getSimpleName();
 	}
 
 	@Override
 	public void dispose() {
-
+		// TODO Need to be implement the disposing of all resources.
 	}
 
 	/**
